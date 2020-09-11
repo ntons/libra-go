@@ -2,16 +2,19 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"os"
 	"sync"
 
-	"google.golang.org/grpc"
 	hw "google.golang.org/grpc/examples/helloworld/helloworld"
 
 	acct_v1 "github.com/ntons/libra-go/api/acct/v1"
+	_ "github.com/ntons/libra-go/api/sdk/v1"
 	"github.com/ntons/libra-go/client/sdk"
+)
+
+var (
+	appId = "example"
 )
 
 type AppClient struct {
@@ -19,9 +22,14 @@ type AppClient struct {
 	hw.GreeterClient
 }
 
-func Dial(
-	addr, appId string, opts ...grpc.DialOption) (_ *AppClient, err error) {
-	cli, err := sdk.Dial(addr, appId, opts...)
+func Dial() (_ *AppClient, err error) {
+	cli, err := sdk.Dial(
+		appId,
+		&sdk.Endpoint{Target: "127.0.0.1:80"},
+		sdk.WithInsecure(),
+		sdk.WithGwEndpoint(&sdk.Endpoint{Target: "127.0.0.1:8080"}),
+		sdk.WithPtEndpoint(&sdk.Endpoint{Target: "127.0.0.1:8080"}),
+	)
 	if err != nil {
 		return
 	}
@@ -31,8 +39,8 @@ func Dial(
 	}, nil
 }
 
-func run(addr, appId string) (err error) {
-	cli, err := Dial(addr, appId, grpc.WithInsecure())
+func run() (err error) {
+	cli, err := Dial()
 	if err != nil {
 		return fmt.Errorf("failed to dial: %v", err)
 	}
@@ -89,10 +97,7 @@ func run(addr, appId string) (err error) {
 }
 
 func main() {
-	var addr string
-	flag.StringVar(&addr, "addr", "", "address to server")
-	flag.Parse()
-	if err := run(addr, "example"); err != nil {
+	if err := run(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

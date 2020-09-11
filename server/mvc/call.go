@@ -99,8 +99,8 @@ func (call *call) GetModel(
 }
 
 func (call *call) LoadModel(
-	ctx context.Context, id string, model proto.Message, opts ...GetOption) (
-	err error) {
+	ctx context.Context,
+	id string, model proto.Message, opts ...GetOption) (err error) {
 	if _, ok := call.loaded[id]; ok {
 		return fmt.Errorf("model %s already loaded", id)
 	}

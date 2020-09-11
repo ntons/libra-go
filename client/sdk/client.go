@@ -13,16 +13,17 @@ import (
 
 	gwapi_v1 "github.com/ntons/libra-go/api/gwapi/v1"
 	ptapi_v1 "github.com/ntons/libra-go/api/ptapi/v1"
+	sdk_v1 "github.com/ntons/libra-go/api/sdk/v1"
 )
-
-type OnStreamErrorFunc func(error) error
-
-func muteStreamError(err error) error { return nil }
 
 type Client struct {
 	*grpc.ClientConn
 
 	appId  string
+	userId string // assigned after login
+	roleId string // assigned after sigi in
+
+	// session
 	token  string
 	ticket string
 
@@ -32,30 +33,48 @@ type Client struct {
 	cancel context.CancelFunc
 	wg     sync.WaitGroup
 
-	ptv1 ptapi_v1.AccountClient
 	gwv1 gwapi_v1.AccessClient
+	ptv1 ptapi_v1.AccountClient
 }
 
-func Dial(addr, appId string, opts ...grpc.DialOption) (_ *Client, err error) {
+func Dial(appId string, ap *sdk_v1.Endpoint, opts ...DialOption) (_ *Client, err error) {
+	var o dialOptions
+	for _, opt := range opts {
+		opt.apply(&o)
+	}
 	cli := &Client{
 		appId:   appId,
 		msgChan: make(chan proto.Message, 64),
 	}
-	opts = append(opts,
-		grpc.WithUnaryInterceptor(cli.unaryInterceptor),
-		grpc.WithStreamInterceptor(cli.streamInterceptor))
-	if cli.ClientConn, err = grpc.Dial(addr, opts...); err != nil {
+	conn, err := cli.dial(ap, o.opts)
+	if err != nil {
 		return
 	}
-	cli.gwv1 = gwapi_v1.NewAccessClient(cli)
-	cli.ptv1 = ptapi_v1.NewAccountClient(cli)
+	cli.ClientConn = conn
+	if o.libraAccessPoint != nil {
+		if conn, err = cli.dial(o.libraAccessPoint, o.opts); err != nil {
+			return
+		}
+	}
+	cli.gwv1 = gwapi_v1.NewAccessClient(conn)
+	cli.ptv1 = ptapi_v1.NewAccountClient(conn)
 	cli.ctx, cli.cancel = context.WithCancel(context.Background())
 	return cli, nil
 }
 
+// dial to endpoint if endpoint is not nil, otherwise conn will be returned
+func (cli *Client) dial(
+	ap *sdk_v1.Endpoint, opts []grpc.DialOption) (*grpc.ClientConn, error) {
+	return grpc.Dial(ap.Address, append(
+		opts,
+		grpc.WithAuthority(ap.Authority),
+		grpc.WithUnaryInterceptor(cli.unaryInterceptor),
+		grpc.WithStreamInterceptor(cli.streamInterceptor),
+	)...)
+}
+
 func (cli *Client) Close() {
 	cli.cancel()
-	cli.ClientConn.Close()
 	cli.wg.Wait()
 }
 
@@ -83,8 +102,8 @@ func (cli *Client) Login(
 		return
 	}
 	cli.token = resp.Token
-	user = resp.User
-	return
+	cli.userId = resp.User.Id
+	return resp.User, nil
 }
 
 func (cli *Client) ListRoles(
@@ -136,6 +155,7 @@ func (cli *Client) ptSignIn(ctx context.Context, roleId string) (err error) {
 		return
 	}
 	cli.ticket = resp.Ticket
+	cli.roleId = roleId
 	return
 }
 func (cli *Client) gwSignIn(ctx context.Context) (err error) {
@@ -193,6 +213,12 @@ func (cli *Client) addMd(
 	ctx context.Context, method string) context.Context {
 	md := metadata.MD{}
 	md.Set("x-libra-app-id", cli.appId)
+	if cli.userId != "" {
+		md.Set("x-libra-user-id", cli.userId)
+	}
+	if cli.roleId != "" {
+		md.Set("x-libra-role-id", cli.roleId)
+	}
 	if cli.token != "" {
 		md.Set("x-libra-token", cli.token)
 	}

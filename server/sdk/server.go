@@ -20,6 +20,7 @@ import (
 
 	dbapi_v1 "github.com/ntons/libra-go/api/dbapi/v1"
 	gwapi_v1 "github.com/ntons/libra-go/api/gwapi/v1"
+	sdk_v1 "github.com/ntons/libra-go/api/sdk/v1"
 	"github.com/ntons/log-go"
 	"github.com/ntons/tongo/template"
 )
@@ -53,11 +54,10 @@ func NewServer() (s *Server) {
 	return
 }
 
-func (s *Server) initLog(cfg *Config) (err error) {
-	if cfg.Log == nil {
-		return
-	}
-	logger, err := cfg.Log.Build(zap.AddCaller())
+func (s *Server) initLog(cfg *sdk_v1.ServerConfig) (err error) {
+	zcfg := zap.NewProductionConfig()
+	zcfg.Sampling = nil
+	logger, err := zcfg.Build(zap.AddCaller())
 	if err != nil {
 		return
 	}
@@ -65,33 +65,30 @@ func (s *Server) initLog(cfg *Config) (err error) {
 	return
 }
 
-func (s *Server) initApi(cfg *Config) (err error) {
-	if cfg.DBV1 != nil {
-		var conn *grpc.ClientConn
-		if conn, err = grpc.Dial(
-			cfg.DBV1.Target,
-			grpc.WithAuthority(cfg.DBV1.Authority),
-			grpc.WithInsecure(),
-			grpc.WithUnaryInterceptor(s.dbIntercept),
-		); err != nil {
-			log.Fatalf("failed to dail db: %v", err)
-			return
-		}
-		s.dbv1 = dbapi_v1.NewDBClient(conn)
+func (s *Server) initApi(cfg *sdk_v1.ServerConfig) (err error) {
+	var conn *grpc.ClientConn
+	if conn, err = grpc.Dial(
+		cfg.AccessPoint.Address,
+		grpc.WithAuthority(cfg.AccessPoint.Authority),
+		grpc.WithInsecure(),
+		grpc.WithUnaryInterceptor(s.dbIntercept),
+	); err != nil {
+		log.Errorf("failed to dail to db: %v")
+		return
 	}
-	if cfg.GWV1 != nil {
-		var conn *grpc.ClientConn
-		if conn, err = grpc.Dial(
-			cfg.GWV1.Target,
-			grpc.WithAuthority(cfg.GWV1.Authority),
-			grpc.WithInsecure(),
-			grpc.WithUnaryInterceptor(s.gateIntercept),
-		); err != nil {
-			log.Fatalf("failed to dail gate: %v", err)
-			return
-		}
-		s.gwv1 = gwapi_v1.NewGatewayClient(conn)
+	s.dbv1 = dbapi_v1.NewDBClient(conn)
+
+	if conn, err = grpc.Dial(
+		cfg.AccessPoint.Address,
+		grpc.WithAuthority(cfg.AccessPoint.Authority),
+		grpc.WithInsecure(),
+		grpc.WithUnaryInterceptor(s.gwIntercept),
+	); err != nil {
+		log.Errorf("failed to dail to gw: %v")
+		return
 	}
+	s.gwv1 = gwapi_v1.NewGatewayClient(conn)
+
 	return
 }
 
@@ -102,7 +99,7 @@ func (s *Server) Init() (err error) {
 	if fp == "" {
 		return fmt.Errorf("failed to parse options")
 	}
-	cfg := &Config{}
+	cfg := &sdk_v1.ServerConfig{}
 	if err = template.UnmarshalFile(fp, nil, cfg); err != nil {
 		return fmt.Errorf("failed to load config: %v", err)
 	}
@@ -115,7 +112,7 @@ func (s *Server) Init() (err error) {
 	if s.listener, err = net.Listen("tcp", cfg.Bind); err != nil {
 		return fmt.Errorf("failed to listen: %v", err)
 	}
-	log.Debugf("listen on %s", cfg.Bind)
+	log.Infof("listen on %s", cfg.Bind)
 	return
 }
 
@@ -178,7 +175,7 @@ func (s *Server) intercept(
 	}
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		return nil, status.Errorf(codes.FailedPrecondition, "no metadata")
+		return nil, status.Errorf(codes.InvalidArgument, "no metadata")
 	}
 	// retrieve session values from md
 	appId := getValueFromMetadata(md, "x-libra-app-id")
@@ -221,11 +218,10 @@ func (s *Server) dbIntercept(
 	log.Infof("invoke db: %s", method)
 	return invoker(ctx, method, req, reply, cc, opts...)
 }
-
-func (s *Server) gateIntercept(
+func (s *Server) gwIntercept(
 	ctx context.Context, method string, req, reply interface{},
 	cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) (
 	err error) {
-	log.Infof("invoke gate: %s", method)
+	log.Infof("invoke gw: %s", method)
 	return invoker(ctx, method, req, reply, cc, opts...)
 }
