@@ -2,15 +2,18 @@ package sdk
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"net"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"sync"
 	"syscall"
 
+	"github.com/ghodss/yaml"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -92,6 +95,20 @@ func (s *Server) initApi(cfg *sdk_v1.ServerConfig) (err error) {
 	return
 }
 
+func readConfig(fp string) (b []byte, err error) {
+	if b, err = template.RenderFile(fp, nil); err != nil {
+		return
+	}
+	switch ext := filepath.Ext(fp); ext {
+	case ".json":
+		return
+	case ".yml", ".yaml":
+		return yaml.YAMLToJSON(b)
+	default:
+		return nil, fmt.Errorf("unknown file extension: %v", ext)
+	}
+}
+
 func (s *Server) Init() (err error) {
 	var fp string
 	flag.StringVar(&fp, "c", "", "config file")
@@ -100,8 +117,10 @@ func (s *Server) Init() (err error) {
 		return fmt.Errorf("failed to parse options")
 	}
 	cfg := &sdk_v1.ServerConfig{}
-	if err = template.UnmarshalFile(fp, nil, cfg); err != nil {
-		return fmt.Errorf("failed to load config: %v", err)
+	if b, err := readConfig(fp); err != nil {
+		return err
+	} else if err = json.Unmarshal(b, cfg); err != nil {
+		return err
 	}
 	if err = s.initLog(cfg); err != nil {
 		return
