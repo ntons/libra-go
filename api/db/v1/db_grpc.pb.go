@@ -382,5 +382,5 @@ var _DB_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "dbapi/v1/db.proto",
+	Metadata: "db/v1/db.proto",
 }

@@ -116,5 +116,5 @@ var _Access_serviceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "gwapi/v1/access.proto",
+	Metadata: "gw/v1/access.proto",
 }

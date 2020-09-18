@@ -2,30 +2,21 @@ package sdk
 
 import (
 	"context"
-	"encoding/json"
-	"flag"
-	"fmt"
 	"net"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"strings"
-	"sync"
 	"syscall"
+	"time"
 
-	"github.com/ghodss/yaml"
-	"go.uber.org/zap"
+	"github.com/ntons/log-go"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/health"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-
-	dbapi_v1 "github.com/ntons/libra-go/api/dbapi/v1"
-	gwapi_v1 "github.com/ntons/libra-go/api/gwapi/v1"
-	sdk_v1 "github.com/ntons/libra-go/api/sdk/v1"
-	"github.com/ntons/log-go"
-	"github.com/ntons/tongo/template"
 )
 
 const (
@@ -34,134 +25,101 @@ const (
 )
 
 type Server struct {
-	// grpc server
-	gRPCServer *grpc.Server
-	// grpc health service
-	health *healthServer
+	// implement health service
+	health *health.Server
+	// connection to libra access point
+	conn grpc.ClientConnInterface
 	// quit routine
 	ctx    context.Context
 	cancel context.CancelFunc
-	// service listener
-	listener net.Listener
-	// api
-	dbv1 dbapi_v1.DBClient
-	gwv1 gwapi_v1.GatewayClient
+	// registered svcs
+	svcs []Service
 }
 
-func NewServer() (s *Server) {
-	s = &Server{}
-	s.gRPCServer = grpc.NewServer(grpc.UnaryInterceptor(s.intercept))
-	s.ctx, s.cancel = context.WithCancel(context.Background())
-	s.health = newHealth(s.ctx)
-	grpc_health_v1.RegisterHealthServer(s.gRPCServer, s.health)
+func NewServer() (srv *Server) {
+	srv = &Server{
+		health: health.NewServer(),
+	}
+	srv.ctx, srv.cancel = context.WithCancel(context.Background())
 	return
 }
 
-func (s *Server) initLog(cfg *sdk_v1.ServerConfig) (err error) {
-	zcfg := zap.NewProductionConfig()
-	zcfg.Sampling = nil
-	logger, err := zcfg.Build(zap.AddCaller())
+func (srv *Server) RegisterService(svc Service) {
+	srv.svcs = append(srv.svcs, svc)
+}
+
+// dial to libra access point
+func (srv *Server) Dial(addr string, opts ...DialOption) (err error) {
+	var o = &dialOptions{}
+	for _, opt := range opts {
+		opt.apply(o)
+	}
+	if srv.conn, err = grpc.Dial(
+		addr,
+		append([]grpc.DialOption{
+			grpc.WithChainUnaryInterceptor(srv.interceptClient),
+		}, o.dialOptions...)...,
+	); err != nil {
+		return
+	}
+	return
+}
+
+func (srv *Server) ListenAndServe(addr string, opts ...ServeOption) (err error) {
+	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		return
 	}
-	log.SetZapLogger(logger)
+	defer lis.Close()
+	return srv.Serve(lis)
+}
+func (srv *Server) Serve(lis net.Listener, opts ...ServeOption) (err error) {
+	var o = &serveOptions{}
+	for _, opt := range opts {
+		opt.apply(o)
+	}
+	gs := grpc.NewServer(
+		append([]grpc.ServerOption{
+			grpc.KeepaliveEnforcementPolicy(
+				keepalive.EnforcementPolicy{
+					MinTime: 30 * time.Second,
+				},
+			),
+			grpc.UnaryInterceptor(srv.interceptServer),
+		}, o.serverOptions...)...)
+	defer gs.GracefulStop()
+
+	for _, svc := range srv.svcs {
+		svc.Register(gs, srv.conn)
+		defer svc.Stop()
+	}
+
+	healthpb.RegisterHealthServer(gs, srv.health)
+	defer srv.health.Shutdown()
+
+	go gs.Serve(lis)
+
+	<-srv.ctx.Done()
 	return
 }
 
-func (s *Server) initApi(cfg *sdk_v1.ServerConfig) (err error) {
-	var conn *grpc.ClientConn
-	if conn, err = grpc.Dial(
-		cfg.AccessPoint.Address,
-		grpc.WithAuthority(cfg.AccessPoint.Authority),
-		grpc.WithInsecure(),
-		grpc.WithUnaryInterceptor(s.dbIntercept),
-	); err != nil {
-		log.Errorf("failed to dail to db: %v")
-		return
-	}
-	s.dbv1 = dbapi_v1.NewDBClient(conn)
-
-	if conn, err = grpc.Dial(
-		cfg.AccessPoint.Address,
-		grpc.WithAuthority(cfg.AccessPoint.Authority),
-		grpc.WithInsecure(),
-		grpc.WithUnaryInterceptor(s.gwIntercept),
-	); err != nil {
-		log.Errorf("failed to dail to gw: %v")
-		return
-	}
-	s.gwv1 = gwapi_v1.NewGatewayClient(conn)
-
-	return
+// shutdown server
+func (srv *Server) Shutdown() {
+	srv.cancel()
 }
 
-func readConfig(fp string) (b []byte, err error) {
-	if b, err = template.RenderFile(fp, nil); err != nil {
-		return
-	}
-	switch ext := filepath.Ext(fp); ext {
-	case ".json":
-		return
-	case ".yml", ".yaml":
-		return yaml.YAMLToJSON(b)
-	default:
-		return nil, fmt.Errorf("unknown file extension: %v", ext)
-	}
-}
-
-func (s *Server) Init() (err error) {
-	var fp string
-	flag.StringVar(&fp, "c", "", "config file")
-	flag.Parse()
-	if fp == "" {
-		return fmt.Errorf("failed to parse options")
-	}
-	cfg := &sdk_v1.ServerConfig{}
-	if b, err := readConfig(fp); err != nil {
-		return err
-	} else if err = json.Unmarshal(b, cfg); err != nil {
-		return err
-	}
-	if err = s.initLog(cfg); err != nil {
-		return
-	}
-	if err = s.initApi(cfg); err != nil {
-		return
-	}
-	if s.listener, err = net.Listen("tcp", cfg.Bind); err != nil {
-		return fmt.Errorf("failed to listen: %v", err)
-	}
-	log.Infof("listen on %s", cfg.Bind)
-	return
-}
-
-func (s *Server) Serve() (err error) {
-	var wg sync.WaitGroup
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		if err = s.gRPCServer.Serve(s.listener); err != nil {
-			return
-		}
-	}()
-	defer s.gRPCServer.GracefulStop()
-
+// block util term signal or shutdown
+func (srv *Server) WaitForTerm() {
 	sig := make(chan os.Signal, 1)
 	signal.Ignore(syscall.SIGPIPE)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 	defer signal.Stop(sig)
 	select {
 	case <-sig:
-		s.Stop()
-	case <-s.ctx.Done():
+	case <-srv.ctx.Done():
 	}
 	return
 }
-
-func (s *Server) Stop() { s.cancel() }
-
-// SomeService.RegisterSomeServer(s.GRPC(), SomeImplement)
-func (s *Server) GRPCServer() *grpc.Server { return s.gRPCServer }
 
 func getValueFromMetadata(md metadata.MD, key string) string {
 	if values := md.Get(key); len(values) > 0 {
@@ -176,9 +134,12 @@ func getRequestIdFromMetadata(md metadata.MD) string {
 		getValueFromMetadata(md, "x-request-id"), "-", "")
 }
 
-func (s *Server) intercept(
+func (srv *Server) interceptServer(
 	ctx context.Context, req interface{}, info *grpc.UnaryServerInfo,
 	handler grpc.UnaryHandler) (resp interface{}, err error) {
+	if info.Server == srv.health {
+		return handler(ctx, req)
+	}
 	defer func() {
 		// business layer panic check
 		if r := recover(); r != nil {
@@ -189,9 +150,6 @@ func (s *Server) intercept(
 			}
 		}
 	}()
-	if info.Server == s.health {
-		return handler(ctx, req)
-	}
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Errorf(codes.InvalidArgument, "no metadata")
@@ -203,18 +161,15 @@ func (s *Server) intercept(
 	if appId == "" || userId == "" || roleId == "" {
 		return nil, status.Errorf(codes.PermissionDenied, "no session")
 	}
-	rec := log.With(log.M{
-		"userId":    userId,
-		"roleId":    roleId,
-		"requestId": getRequestIdFromMetadata(md),
-	})
-	call := &call{
-		Recorder: rec,
-		appId:    appId,
-		userId:   userId,
-		roleId:   roleId,
-		dbv1:     s.dbv1,
-		gwv1:     s.gwv1,
+	sdk := &sdk{
+		Recorder: log.With(log.M{
+			"userId":    userId,
+			"roleId":    roleId,
+			"requestId": getRequestIdFromMetadata(md),
+		}),
+		appId:  appId,
+		userId: userId,
+		roleId: roleId,
 	}
 	out := metadata.MD{}
 	for key, vals := range md {
@@ -223,24 +178,16 @@ func (s *Server) intercept(
 		}
 	}
 	ctx = metadata.NewOutgoingContext(ctx, out)
-	resp, err = handler(withCall(ctx, call), req)
-	if call.onReply != nil {
-		err = call.onReply(ctx, err)
+	resp, err = handler(context.WithValue(ctx, &sdkKey{}, sdk), req)
+	if sdk.onReply != nil {
+		err = sdk.onReply(ctx, err)
 	}
 	return
 }
 
-func (s *Server) dbIntercept(
+func (srv *Server) interceptClient(
 	ctx context.Context, method string, req, reply interface{},
 	cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) (
 	err error) {
-	log.Infof("invoke db: %s", method)
-	return invoker(ctx, method, req, reply, cc, opts...)
-}
-func (s *Server) gwIntercept(
-	ctx context.Context, method string, req, reply interface{},
-	cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) (
-	err error) {
-	log.Infof("invoke gw: %s", method)
-	return invoker(ctx, method, req, reply, cc, opts...)
+	return
 }

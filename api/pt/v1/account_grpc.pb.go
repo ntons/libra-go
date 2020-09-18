@@ -266,5 +266,5 @@ var _Account_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "ptapi/v1/account.proto",
+	Metadata: "pt/v1/account.proto",
 }

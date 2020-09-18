@@ -1,0 +1,7 @@
+bind: :80
+
+access_point:
+  address: 127.0.0.1:10000
+
+app:
+  foo: bar

@@ -3,10 +3,11 @@
 all:
 
 API_PROTOS = $(wildcard libra-api/acct/v1/*.proto) \
-			 $(wildcard libra-api/dbapi/v1/*.proto) \
-			 $(wildcard libra-api/gwapi/v1/*.proto) \
-			 $(wildcard libra-api/ptapi/v1/*.proto) \
-			 $(wildcard libra-api/sdk/v1/*.proto)
+			 $(wildcard libra-api/db/v1/*.proto) \
+			 $(wildcard libra-api/gw/v1/*.proto) \
+			 $(wildcard libra-api/pt/v1/*.proto) \
+			 $(wildcard libra-api/sdk/v1/*.proto) \
+			 $(wildcard libra-api/sdk/example/*/*.proto)
 
 api: $(API_PROTOS)
 	mkdir -p api && rm -rf api/*

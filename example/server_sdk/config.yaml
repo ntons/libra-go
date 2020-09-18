@@ -1,5 +1,0 @@
-bind: :80
-
-access_point:
-  address: 127.0.0.1:8080
-

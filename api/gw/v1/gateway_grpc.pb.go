@@ -126,5 +126,5 @@ var _Gateway_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "gwapi/v1/gateway.proto",
+	Metadata: "gw/v1/gateway.proto",
 }
