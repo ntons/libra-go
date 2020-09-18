@@ -1,0 +1,5 @@
+bind: :80
+access_point:
+  address: libra-envoy
+app:
+  foo: bar

@@ -98,6 +98,7 @@ func Serve(factory ServiceFactory) (err error) {
 	); err != nil {
 		return
 	}
+
 	wg.Add(1)
 	go func() { defer wg.Done(); srv.Serve(lis) }()
 

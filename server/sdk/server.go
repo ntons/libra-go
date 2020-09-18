@@ -73,20 +73,21 @@ func (srv *Server) ListenAndServe(addr string, opts ...ServeOption) (err error) 
 	defer lis.Close()
 	return srv.Serve(lis)
 }
+
 func (srv *Server) Serve(lis net.Listener, opts ...ServeOption) (err error) {
 	var o = &serveOptions{}
 	for _, opt := range opts {
 		opt.apply(o)
 	}
-	gs := grpc.NewServer(
-		append([]grpc.ServerOption{
-			grpc.KeepaliveEnforcementPolicy(
-				keepalive.EnforcementPolicy{
-					MinTime: 30 * time.Second,
-				},
-			),
-			grpc.UnaryInterceptor(srv.interceptServer),
-		}, o.serverOptions...)...)
+
+	gs := grpc.NewServer(append([]grpc.ServerOption{
+		grpc.KeepaliveEnforcementPolicy(
+			keepalive.EnforcementPolicy{
+				MinTime: 30 * time.Second,
+			},
+		),
+		grpc.ChainUnaryInterceptor(srv.interceptServer),
+	}, o.serverOptions...)...)
 	defer gs.GracefulStop()
 
 	for _, svc := range srv.svcs {
@@ -140,16 +141,19 @@ func (srv *Server) interceptServer(
 	if info.Server == srv.health {
 		return handler(ctx, req)
 	}
-	defer func() {
-		// business layer panic check
-		if r := recover(); r != nil {
-			log.Errorf("recover: %v", r)
-			var ok bool
-			if err, ok = r.(error); !ok {
-				err = status.Errorf(codes.Aborted, "%s", r)
+	log.Infof("intecept: %v", info)
+	/*
+		defer func() {
+			// business layer panic check
+			if r := recover(); r != nil {
+				log.Errorf("recover: %v", r)
+				var ok bool
+				if err, ok = r.(error); !ok {
+					err = status.Errorf(codes.Aborted, "%s", r)
+				}
 			}
-		}
-	}()
+		}()
+	*/
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Errorf(codes.InvalidArgument, "no metadata")
@@ -162,6 +166,7 @@ func (srv *Server) interceptServer(
 		return nil, status.Errorf(codes.PermissionDenied, "no session")
 	}
 	sdk := &sdk{
+		ClientConnInterface: srv.conn,
 		Recorder: log.With(log.M{
 			"userId":    userId,
 			"roleId":    roleId,
@@ -171,6 +176,7 @@ func (srv *Server) interceptServer(
 		userId: userId,
 		roleId: roleId,
 	}
+	log.Infof("sdk: %#v", sdk)
 	out := metadata.MD{}
 	for key, vals := range md {
 		if strings.HasPrefix(key, "x-libra-") {
@@ -178,7 +184,7 @@ func (srv *Server) interceptServer(
 		}
 	}
 	ctx = metadata.NewOutgoingContext(ctx, out)
-	resp, err = handler(context.WithValue(ctx, &sdkKey{}, sdk), req)
+	resp, err = handler(context.WithValue(ctx, sdkKey{}, sdk), req)
 	if sdk.onReply != nil {
 		err = sdk.onReply(ctx, err)
 	}
@@ -189,5 +195,6 @@ func (srv *Server) interceptClient(
 	ctx context.Context, method string, req, reply interface{},
 	cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) (
 	err error) {
-	return
+	log.Infof("rpc call: %s", method)
+	return invoker(ctx, method, req, reply, cc, opts...)
 }

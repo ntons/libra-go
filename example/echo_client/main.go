@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"time"
 
-	hw "google.golang.org/grpc/examples/helloworld/helloworld"
+	"google.golang.org/grpc"
 
-	acct_v1 "github.com/ntons/libra-go/api/acct/v1"
-	_ "github.com/ntons/libra-go/api/sdk/v1"
+	acctpb "github.com/ntons/libra-go/api/acct/v1"
+	echopb "github.com/ntons/libra-go/api/sdk/example/echo"
+	sdkpb "github.com/ntons/libra-go/api/sdk/v1"
 	"github.com/ntons/libra-go/client/sdk"
 )
 
@@ -17,25 +19,23 @@ var (
 	appId = "example"
 )
 
-type AppClient struct {
-	*sdk.Client
-	hw.GreeterClient
+type EchoClient struct {
+	sdk.Client
+	echopb.EchoClient
 }
 
-func Dial() (_ *AppClient, err error) {
+func Dial() (_ *EchoClient, err error) {
 	cli, err := sdk.Dial(
 		appId,
-		&sdk.Endpoint{Target: "127.0.0.1:80"},
-		sdk.WithInsecure(),
-		sdk.WithGwEndpoint(&sdk.Endpoint{Target: "127.0.0.1:8080"}),
-		sdk.WithPtEndpoint(&sdk.Endpoint{Target: "127.0.0.1:8080"}),
+		"127.0.0.1:10000",
+		sdk.WithGrpcDialOption(grpc.WithInsecure()),
 	)
 	if err != nil {
 		return
 	}
-	return &AppClient{
-		Client:        cli,
-		GreeterClient: hw.NewGreeterClient(cli),
+	return &EchoClient{
+		Client:     cli,
+		EchoClient: echopb.NewEchoClient(cli),
 	}, nil
 }
 
@@ -52,7 +52,7 @@ func run() (err error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	user, err := cli.Login(ctx, &acct_v1.Dev{Username: "userxxxx"})
+	user, err := cli.Login(ctx, &acctpb.Dev{Username: "userxxxx"})
 	if err != nil {
 		return fmt.Errorf("failed to login: %v", err)
 	}
@@ -83,16 +83,18 @@ func run() (err error) {
 		if msg, err := cli.Recv(ctx); err != nil {
 			fmt.Println("failed to recv: ", err)
 		} else {
-			fmt.Println("recv: ", msg)
+			update := msg.(*sdkpb.UpdateModelNotice)
+			fmt.Println(update.Model.UnmarshalNew())
 		}
 	}()
 
-	x := hw.NewGreeterClient(cli)
-	resp, err := x.SayHello(ctx, &hw.HelloRequest{Name: "foo"})
+	resp, err := cli.Send(ctx, &echopb.SendRequest{Content: "foo"})
 	if err != nil {
 		return fmt.Errorf("failed to say hello: %v", err)
 	}
 	fmt.Println("reply: ", resp)
+
+	<-time.After(time.Second)
 	return
 }
 
