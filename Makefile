@@ -2,12 +2,12 @@
 
 all:
 
-API_PROTOS = $(wildcard libra-api/acct/v1/*.proto) \
-			 $(wildcard libra-api/db/v1/*.proto) \
-			 $(wildcard libra-api/gw/v1/*.proto) \
-			 $(wildcard libra-api/pt/v1/*.proto) \
-			 $(wildcard libra-api/sdk/v1/*.proto) \
-			 $(wildcard libra-api/sdk/example/*/*.proto)
+API_PROTOS =  \
+			 $(shell find libra-api/db/         -name "*.proto") \
+			 $(shell find libra-api/gw/         -name "*.proto") \
+			 $(shell find libra-api/pt/         -name "*.proto") \
+			 $(shell find libra-api/sdk/        -name "*.proto") \
+			 $(shell find libra-api/thirdparty/ -name "*.proto")
 
 api: $(API_PROTOS)
 	mkdir -p api && rm -rf api/*
