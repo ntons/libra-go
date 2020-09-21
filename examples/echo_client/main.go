@@ -2,16 +2,16 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"os"
-	"sync"
 	"time"
 
 	"google.golang.org/grpc"
 
 	acctpb "github.com/ntons/libra-go/api/acct/v1"
 	echopb "github.com/ntons/libra-go/api/sdk/example/echo"
-	sdkpb "github.com/ntons/libra-go/api/sdk/v1"
+	"github.com/ntons/libra-go/client/mvc"
 	"github.com/ntons/libra-go/client/sdk"
 )
 
@@ -20,38 +20,25 @@ var (
 )
 
 type EchoClient struct {
-	sdk.Client
+	mvc.Client
 	echopb.EchoClient
 }
 
-func Dial() (_ *EchoClient, err error) {
+func dial(addr string) (_ *EchoClient, err error) {
 	cli, err := sdk.Dial(
-		appId,
-		"127.0.0.1:10000",
+		appId, addr,
 		sdk.WithGrpcDialOption(grpc.WithInsecure()),
 	)
 	if err != nil {
 		return
 	}
 	return &EchoClient{
-		Client:     cli,
+		Client:     mvc.New(cli),
 		EchoClient: echopb.NewEchoClient(cli),
 	}, nil
 }
 
-func run() (err error) {
-	cli, err := Dial()
-	if err != nil {
-		return fmt.Errorf("failed to dial: %v", err)
-	}
-	defer cli.Close()
-
-	var wg sync.WaitGroup
-	defer wg.Wait()
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
+func login(ctx context.Context, cli *EchoClient) (err error) {
 	user, err := cli.Login(ctx, &acctpb.Dev{Username: "userxxxx"})
 	if err != nil {
 		return fmt.Errorf("failed to login: %v", err)
@@ -77,18 +64,20 @@ func run() (err error) {
 	}
 	fmt.Println("sign in: ok")
 
-	wg.Add(1)
 	go func() {
-		defer wg.Done()
-		if msg, err := cli.Recv(ctx); err != nil {
-			fmt.Println("failed to recv: ", err)
-		} else {
-			update := msg.(*sdkpb.UpdateModelNotice)
-			fmt.Println(update.Model.UnmarshalNew())
-		}
+		fmt.Println(cli.Recv(ctx))
+		//if msg, err := cli.Recv(ctx); err != nil {
+		//	fmt.Println("failed to recv: ", err)
+		//} else {
+		//	update := msg.(*sdkpb.UpdateModelNotice)
+		//	fmt.Println(update.Model.UnmarshalNew())
+		//}
 	}()
+	return
+}
 
-	resp, err := cli.Send(ctx, &echopb.SendRequest{Content: "foo"})
+func echo(ctx context.Context, cli *EchoClient, content string) (err error) {
+	resp, err := cli.Send(ctx, &echopb.SendRequest{Content: content})
 	if err != nil {
 		return fmt.Errorf("failed to say hello: %v", err)
 	}
@@ -99,8 +88,31 @@ func run() (err error) {
 }
 
 func main() {
-	if err := run(); err != nil {
+	var (
+		address string
+		content string
+	)
+	flag.StringVar(&address, "a", "127.0.0.1:10000", "server address")
+	flag.StringVar(&content, "m", "hello", "message content")
+	flag.Parse()
+
+	cli, err := dial(address)
+	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	defer cli.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	if err = login(ctx, cli); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	if err := echo(ctx, cli, content); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	<-ctx.Done()
 }

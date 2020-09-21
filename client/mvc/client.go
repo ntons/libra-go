@@ -3,37 +3,42 @@ package mvc
 import (
 	"context"
 
+	"github.com/ntons/log-go"
 	"google.golang.org/protobuf/proto"
 
-	sdk_v1 "github.com/ntons/libra-go/api/sdk/v1"
+	sdkpb "github.com/ntons/libra-go/api/sdk/v1"
 	"github.com/ntons/libra-go/client/sdk"
 )
 
-type Client struct {
-	*sdk.Client
+type Client interface {
+	sdk.Client
+}
+
+type client struct {
+	sdk.Client
 	model proto.Message
 }
 
-func New(cli *sdk.Client, model proto.Message) *Client {
-	return &Client{Client: cli}
+func New(cli sdk.Client) Client {
+	return &client{Client: cli}
 }
 
-func (cli *Client) GetModel() proto.Message { return cli.model }
+func (cli *client) GetModel() proto.Message { return cli.model }
 
-func (cli *Client) Recv(ctx context.Context) (msg proto.Message, err error) {
+func (cli *client) Recv(ctx context.Context) (msg proto.Message, err error) {
 	for {
 		if msg, err = cli.Client.Recv(ctx); err != nil {
 			return
 		}
 		switch msg.(type) {
-		case *sdk_v1.UpdateModelNotice:
-			cli.updateModel(msg.(*sdk_v1.UpdateModelNotice))
+		case *sdkpb.UpdateModelNotice:
+			cli.updateModel(msg.(*sdkpb.UpdateModelNotice))
 		default:
 			return
 		}
 	}
 }
 
-func (cli *Client) updateModel(msg *sdk_v1.UpdateModelNotice) {
-	// TODO How model works?
+func (cli *client) updateModel(msg *sdkpb.UpdateModelNotice) {
+	log.Infof("update model: %v", msg)
 }
