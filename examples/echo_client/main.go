@@ -9,8 +9,8 @@ import (
 
 	"google.golang.org/grpc"
 
+	ptpb "github.com/ntons/libra-go/api/pt/v1"
 	echopb "github.com/ntons/libra-go/api/sdk/example/echo"
-	devpb "github.com/ntons/libra-go/api/thirdparty/dev"
 	"github.com/ntons/libra-go/client/mvc"
 	"github.com/ntons/libra-go/client/sdk"
 )
@@ -39,7 +39,7 @@ func dial(addr string) (_ *EchoClient, err error) {
 }
 
 func login(ctx context.Context, cli *EchoClient) (err error) {
-	user, err := cli.Login(ctx, &devpb.LoginState{Username: "userxxxx"})
+	user, err := cli.Login(ctx, &ptpb.DevLoginState{Username: "userxxxx"})
 	if err != nil {
 		return fmt.Errorf("failed to login: %v", err)
 	}

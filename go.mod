@@ -9,7 +9,6 @@ require (
 	github.com/ntons/log-go v0.0.0-20200814034523-0ad12f491b2b
 	github.com/ntons/tongo/template v0.0.0-20200915100842-af1058d95ac9
 	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20200904194848-62affa334b73
 	golang.org/x/sys v0.0.0-20200915084602-288bc346aa39 // indirect
 	golang.org/x/tools v0.0.0-20200813231717-0a73ddcff9b8 // indirect
 	google.golang.org/genproto v0.0.0-20200915202801-9f80d0600517
