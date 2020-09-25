@@ -9,17 +9,16 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	dbpb "github.com/ntons/libra-go/api/db/v1"
-	gwpb "github.com/ntons/libra-go/api/gw/v1"
-	echopb "github.com/ntons/libra-go/api/sdk/example/echo"
+	echopb "github.com/ntons/libra-go/api/sdk/examples/echo"
+	v1pb "github.com/ntons/libra-go/api/v1"
 	"github.com/ntons/libra-go/server/mvc"
 	"github.com/ntons/libra-go/server/sdk"
 )
 
 type echoServer struct {
 	echopb.UnimplementedEchoServer
-	dbapi dbpb.DBClient
-	gwapi gwpb.GatewayClient
+	gwapi v1pb.GatewayClient
+	dbapi v1pb.DatabaseClient
 }
 
 func create(b json.RawMessage) (svc sdk.Service, err error) {
@@ -30,8 +29,8 @@ func create(b json.RawMessage) (svc sdk.Service, err error) {
 func (srv *echoServer) Register(
 	gs *grpc.Server, conn grpc.ClientConnInterface) error {
 	echopb.RegisterEchoServer(gs, srv)
-	srv.dbapi = dbpb.NewDBClient(conn)
-	srv.gwapi = gwpb.NewGatewayClient(conn)
+	srv.gwapi = v1pb.NewGatewayClient(conn)
+	srv.dbapi = v1pb.NewDatabaseClient(conn)
 	return nil
 }
 func (srv *echoServer) Stop() {

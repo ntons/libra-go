@@ -8,8 +8,8 @@ import (
 	pb "google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 
-	dbpb "github.com/ntons/libra-go/api/db/v1"
 	sdkpb "github.com/ntons/libra-go/api/sdk/v1"
+	v1pb "github.com/ntons/libra-go/api/v1"
 	"github.com/ntons/libra-go/server/sdk"
 )
 
@@ -40,7 +40,7 @@ type item struct {
 type mvc struct {
 	sdk.SDK
 	cache map[string]*item
-	dbapi dbpb.DBClient
+	dbapi v1pb.DatabaseClient
 }
 
 func FromContext(ctx context.Context) (MVC, bool) {
@@ -48,7 +48,7 @@ func FromContext(ctx context.Context) (MVC, bool) {
 		x := &mvc{
 			SDK:   sdk,
 			cache: make(map[string]*item),
-			dbapi: dbpb.NewDBClient(sdk),
+			dbapi: v1pb.NewDatabaseClient(sdk),
 		}
 		sdk.OnReply(x.submit)
 		return x, true
@@ -119,9 +119,9 @@ func (x *mvc) getModel(
 	for _, opt := range opts {
 		opt.apply(&o)
 	}
-	req := &dbpb.ArchiveGetRequest{Id: id, WithLock: true}
+	req := &v1pb.GetArchiveRequest{Id: id, WithLock: true}
 	if o.addIfNotFound != nil {
-		req.AddIfNotFound = &dbpb.Archive{
+		req.AddIfNotFound = &v1pb.Archive{
 			Id:    id,
 			Model: newAny(o.addIfNotFound),
 		}
@@ -139,8 +139,8 @@ func (x *mvc) submit(ctx context.Context, handleErr error) (firstErr error) {
 	firstErr = handleErr
 	for id, it := range x.cache {
 		if err := func() (err error) {
-			req := &dbpb.ArchiveSetRequest{
-				Archive:    &dbpb.Archive{Id: id},
+			req := &v1pb.SetArchiveRequest{
+				Archive:    &v1pb.Archive{Id: id},
 				Token:      it.token,
 				WithUnlock: true,
 			}

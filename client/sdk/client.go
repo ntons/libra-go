@@ -11,17 +11,16 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 
-	gwpb "github.com/ntons/libra-go/api/gw/v1"
-	ptpb "github.com/ntons/libra-go/api/pt/v1"
+	v1pb "github.com/ntons/libra-go/api/v1"
 )
 
 type Client interface {
 	grpc.ClientConnInterface
 	Close()
 	Recv(ctx context.Context) (proto.Message, error)
-	Login(ctx context.Context, state proto.Message) (*ptpb.User, error)
-	ListRoles(ctx context.Context) ([]*ptpb.Role, error)
-	CreateRole(ctx context.Context, index int32) (*ptpb.Role, error)
+	Login(ctx context.Context, state proto.Message) (*v1pb.User, error)
+	ListRoles(ctx context.Context) ([]*v1pb.Role, error)
+	CreateRole(ctx context.Context, index int32) (*v1pb.Role, error)
 	SignIn(ctx context.Context, roleId string) error
 }
 
@@ -42,8 +41,8 @@ type client struct {
 	cancel context.CancelFunc
 	wg     sync.WaitGroup
 
-	gwapi gwpb.AccessClient
-	ptapi ptpb.AccountClient
+	gwapi v1pb.AccessClient
+	ptapi v1pb.AccountClient
 }
 
 func Dial(appId string, addr string, opts ...DialOption) (_ Client, err error) {
@@ -63,8 +62,8 @@ func Dial(appId string, addr string, opts ...DialOption) (_ Client, err error) {
 	); err != nil {
 		return
 	}
-	cli.gwapi = gwpb.NewAccessClient(cli)
-	cli.ptapi = ptpb.NewAccountClient(cli)
+	cli.gwapi = v1pb.NewAccessClient(cli)
+	cli.ptapi = v1pb.NewAccountClient(cli)
 	cli.ctx, cli.cancel = context.WithCancel(context.Background())
 	return cli, nil
 }
@@ -86,8 +85,8 @@ func (cli *client) Recv(ctx context.Context) (msg proto.Message, err error) {
 }
 
 func (cli *client) Login(
-	ctx context.Context, state proto.Message) (user *ptpb.User, err error) {
-	req := &ptpb.LoginRequest{
+	ctx context.Context, state proto.Message) (user *v1pb.User, err error) {
+	req := &v1pb.LoginRequest{
 		AppId: cli.appId,
 	}
 	if req.State, err = anypb.New(state); err != nil {
@@ -103,8 +102,8 @@ func (cli *client) Login(
 }
 
 func (cli *client) ListRoles(
-	ctx context.Context) (roles []*ptpb.Role, err error) {
-	req := &ptpb.ListRolesRequest{
+	ctx context.Context) (roles []*v1pb.Role, err error) {
+	req := &v1pb.ListRolesRequest{
 		AppId: cli.appId,
 		Token: cli.token,
 	}
@@ -117,8 +116,8 @@ func (cli *client) ListRoles(
 }
 
 func (cli *client) CreateRole(
-	ctx context.Context, index int32) (role *ptpb.Role, err error) {
-	req := &ptpb.CreateRoleRequest{
+	ctx context.Context, index int32) (role *v1pb.Role, err error) {
+	req := &v1pb.CreateRoleRequest{
 		AppId: cli.appId,
 		Token: cli.token,
 		Index: index,
@@ -132,21 +131,21 @@ func (cli *client) CreateRole(
 }
 
 func (cli *client) SignIn(ctx context.Context, roleId string) (err error) {
-	if err = cli.ptSignIn(ctx, roleId); err != nil {
+	if err = cli.signIn(ctx, roleId); err != nil {
 		return
 	}
-	if err = cli.gwSignIn(ctx); err != nil {
+	if err = cli.access(ctx); err != nil {
 		return
 	}
 	return
 }
-func (cli *client) ptSignIn(ctx context.Context, roleId string) (err error) {
-	req := &ptpb.SignInRequest{
+func (cli *client) signIn(ctx context.Context, roleId string) (err error) {
+	req := &v1pb.SignInRequest{
 		AppId:  cli.appId,
 		Token:  cli.token,
 		RoleId: roleId,
 	}
-	var resp *ptpb.SignInResponse
+	var resp *v1pb.SignInResponse
 	if resp, err = cli.ptapi.SignIn(ctx, req); err != nil {
 		return
 	}
@@ -154,9 +153,9 @@ func (cli *client) ptSignIn(ctx context.Context, roleId string) (err error) {
 	cli.roleId = roleId
 	return
 }
-func (cli *client) gwSignIn(ctx context.Context) (err error) {
-	req := &gwpb.SignInRequest{}
-	stream, err := cli.gwapi.SignIn(ctx, req)
+func (cli *client) access(ctx context.Context) (err error) {
+	req := &v1pb.AccessRequest{}
+	stream, err := cli.gwapi.Access(ctx, req)
 	if err != nil {
 		return
 	}

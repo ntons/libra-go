@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.25.0
 // 	protoc        v3.11.4
-// source: pt/v1/login_state.proto
+// source: v1/login_state.proto
 
-package pt_v1
+package v1
 
 import (
 	proto "github.com/golang/protobuf/proto"
@@ -37,7 +37,7 @@ type DevLoginState struct {
 func (x *DevLoginState) Reset() {
 	*x = DevLoginState{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pt_v1_login_state_proto_msgTypes[0]
+		mi := &file_v1_login_state_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -50,7 +50,7 @@ func (x *DevLoginState) String() string {
 func (*DevLoginState) ProtoMessage() {}
 
 func (x *DevLoginState) ProtoReflect() protoreflect.Message {
-	mi := &file_pt_v1_login_state_proto_msgTypes[0]
+	mi := &file_v1_login_state_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -63,7 +63,7 @@ func (x *DevLoginState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DevLoginState.ProtoReflect.Descriptor instead.
 func (*DevLoginState) Descriptor() ([]byte, []int) {
-	return file_pt_v1_login_state_proto_rawDescGZIP(), []int{0}
+	return file_v1_login_state_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *DevLoginState) GetUsername() string {
@@ -76,7 +76,7 @@ func (x *DevLoginState) GetUsername() string {
 // Librad not implement any account (check) system, the real account state
 // should be verified via a third-party server, then send a login request
 // to librad to fetch passport(token).
-type LoginState struct {
+type UniformLoginState struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -92,23 +92,23 @@ type LoginState struct {
 	Signature string `protobuf:"bytes,15,opt,name=signature,proto3" json:"signature,omitempty"`
 }
 
-func (x *LoginState) Reset() {
-	*x = LoginState{}
+func (x *UniformLoginState) Reset() {
+	*x = UniformLoginState{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pt_v1_login_state_proto_msgTypes[1]
+		mi := &file_v1_login_state_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
 
-func (x *LoginState) String() string {
+func (x *UniformLoginState) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*LoginState) ProtoMessage() {}
+func (*UniformLoginState) ProtoMessage() {}
 
-func (x *LoginState) ProtoReflect() protoreflect.Message {
-	mi := &file_pt_v1_login_state_proto_msgTypes[1]
+func (x *UniformLoginState) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_login_state_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -119,70 +119,69 @@ func (x *LoginState) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LoginState.ProtoReflect.Descriptor instead.
-func (*LoginState) Descriptor() ([]byte, []int) {
-	return file_pt_v1_login_state_proto_rawDescGZIP(), []int{1}
+// Deprecated: Use UniformLoginState.ProtoReflect.Descriptor instead.
+func (*UniformLoginState) Descriptor() ([]byte, []int) {
+	return file_v1_login_state_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *LoginState) GetAcctId() []string {
+func (x *UniformLoginState) GetAcctId() []string {
 	if x != nil {
 		return x.AcctId
 	}
 	return nil
 }
 
-func (x *LoginState) GetNonce() string {
+func (x *UniformLoginState) GetNonce() string {
 	if x != nil {
 		return x.Nonce
 	}
 	return ""
 }
 
-func (x *LoginState) GetSignature() string {
+func (x *UniformLoginState) GetSignature() string {
 	if x != nil {
 		return x.Signature
 	}
 	return ""
 }
 
-var File_pt_v1_login_state_proto protoreflect.FileDescriptor
+var File_v1_login_state_proto protoreflect.FileDescriptor
 
-var file_pt_v1_login_state_proto_rawDesc = []byte{
-	0x0a, 0x17, 0x70, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x5f, 0x73, 0x74,
-	0x61, 0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0b, 0x6c, 0x69, 0x62, 0x72, 0x61,
-	0x2e, 0x70, 0x74, 0x2e, 0x76, 0x31, 0x22, 0x2b, 0x0a, 0x0d, 0x44, 0x65, 0x76, 0x4c, 0x6f, 0x67,
-	0x69, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e,
-	0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e,
-	0x61, 0x6d, 0x65, 0x22, 0x59, 0x0a, 0x0a, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x53, 0x74, 0x61, 0x74,
-	0x65, 0x12, 0x17, 0x0a, 0x07, 0x61, 0x63, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x03,
-	0x28, 0x09, 0x52, 0x06, 0x61, 0x63, 0x63, 0x74, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x6e, 0x6f,
-	0x6e, 0x63, 0x65, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6e, 0x6f, 0x6e, 0x63, 0x65,
-	0x12, 0x1c, 0x0a, 0x09, 0x73, 0x69, 0x67, 0x6e, 0x61, 0x74, 0x75, 0x72, 0x65, 0x18, 0x0f, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x09, 0x73, 0x69, 0x67, 0x6e, 0x61, 0x74, 0x75, 0x72, 0x65, 0x42, 0x2b,
-	0x5a, 0x29, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6e, 0x74, 0x6f,
-	0x6e, 0x73, 0x2f, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2d, 0x67, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f,
-	0x70, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x70, 0x74, 0x5f, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+var file_v1_login_state_proto_rawDesc = []byte{
+	0x0a, 0x14, 0x76, 0x31, 0x2f, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x5f, 0x73, 0x74, 0x61, 0x74, 0x65,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x08, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31,
+	0x22, 0x2b, 0x0a, 0x0d, 0x44, 0x65, 0x76, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x53, 0x74, 0x61, 0x74,
+	0x65, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x60, 0x0a,
+	0x11, 0x55, 0x6e, 0x69, 0x66, 0x6f, 0x72, 0x6d, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x53, 0x74, 0x61,
+	0x74, 0x65, 0x12, 0x17, 0x0a, 0x07, 0x61, 0x63, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20,
+	0x03, 0x28, 0x09, 0x52, 0x06, 0x61, 0x63, 0x63, 0x74, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x6e,
+	0x6f, 0x6e, 0x63, 0x65, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6e, 0x6f, 0x6e, 0x63,
+	0x65, 0x12, 0x1c, 0x0a, 0x09, 0x73, 0x69, 0x67, 0x6e, 0x61, 0x74, 0x75, 0x72, 0x65, 0x18, 0x0f,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x73, 0x69, 0x67, 0x6e, 0x61, 0x74, 0x75, 0x72, 0x65, 0x42,
+	0x22, 0x5a, 0x20, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6e, 0x74,
+	0x6f, 0x6e, 0x73, 0x2f, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2d, 0x67, 0x6f, 0x2f, 0x61, 0x70, 0x69,
+	0x2f, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
-	file_pt_v1_login_state_proto_rawDescOnce sync.Once
-	file_pt_v1_login_state_proto_rawDescData = file_pt_v1_login_state_proto_rawDesc
+	file_v1_login_state_proto_rawDescOnce sync.Once
+	file_v1_login_state_proto_rawDescData = file_v1_login_state_proto_rawDesc
 )
 
-func file_pt_v1_login_state_proto_rawDescGZIP() []byte {
-	file_pt_v1_login_state_proto_rawDescOnce.Do(func() {
-		file_pt_v1_login_state_proto_rawDescData = protoimpl.X.CompressGZIP(file_pt_v1_login_state_proto_rawDescData)
+func file_v1_login_state_proto_rawDescGZIP() []byte {
+	file_v1_login_state_proto_rawDescOnce.Do(func() {
+		file_v1_login_state_proto_rawDescData = protoimpl.X.CompressGZIP(file_v1_login_state_proto_rawDescData)
 	})
-	return file_pt_v1_login_state_proto_rawDescData
+	return file_v1_login_state_proto_rawDescData
 }
 
-var file_pt_v1_login_state_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_pt_v1_login_state_proto_goTypes = []interface{}{
-	(*DevLoginState)(nil), // 0: libra.pt.v1.DevLoginState
-	(*LoginState)(nil),    // 1: libra.pt.v1.LoginState
+var file_v1_login_state_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_v1_login_state_proto_goTypes = []interface{}{
+	(*DevLoginState)(nil),     // 0: libra.v1.DevLoginState
+	(*UniformLoginState)(nil), // 1: libra.v1.UniformLoginState
 }
-var file_pt_v1_login_state_proto_depIdxs = []int32{
+var file_v1_login_state_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -190,13 +189,13 @@ var file_pt_v1_login_state_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_pt_v1_login_state_proto_init() }
-func file_pt_v1_login_state_proto_init() {
-	if File_pt_v1_login_state_proto != nil {
+func init() { file_v1_login_state_proto_init() }
+func file_v1_login_state_proto_init() {
+	if File_v1_login_state_proto != nil {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_pt_v1_login_state_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_v1_login_state_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DevLoginState); i {
 			case 0:
 				return &v.state
@@ -208,8 +207,8 @@ func file_pt_v1_login_state_proto_init() {
 				return nil
 			}
 		}
-		file_pt_v1_login_state_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*LoginState); i {
+		file_v1_login_state_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UniformLoginState); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -225,18 +224,18 @@ func file_pt_v1_login_state_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_pt_v1_login_state_proto_rawDesc,
+			RawDescriptor: file_v1_login_state_proto_rawDesc,
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_pt_v1_login_state_proto_goTypes,
-		DependencyIndexes: file_pt_v1_login_state_proto_depIdxs,
-		MessageInfos:      file_pt_v1_login_state_proto_msgTypes,
+		GoTypes:           file_v1_login_state_proto_goTypes,
+		DependencyIndexes: file_v1_login_state_proto_depIdxs,
+		MessageInfos:      file_v1_login_state_proto_msgTypes,
 	}.Build()
-	File_pt_v1_login_state_proto = out.File
-	file_pt_v1_login_state_proto_rawDesc = nil
-	file_pt_v1_login_state_proto_goTypes = nil
-	file_pt_v1_login_state_proto_depIdxs = nil
+	File_v1_login_state_proto = out.File
+	file_v1_login_state_proto_rawDesc = nil
+	file_v1_login_state_proto_goTypes = nil
+	file_v1_login_state_proto_depIdxs = nil
 }

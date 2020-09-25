@@ -3,7 +3,7 @@ package sdk
 import (
 	"context"
 
-	gwpb "github.com/ntons/libra-go/api/gw/v1"
+	v1pb "github.com/ntons/libra-go/api/v1"
 	log "github.com/ntons/log-go"
 	"google.golang.org/grpc"
 	pb "google.golang.org/protobuf/proto"
@@ -51,11 +51,11 @@ func (x *sdk) OnReply(callback OnReplyFunc) { x.onReply = callback }
 
 func (x *sdk) PushTo(
 	ctx context.Context, roleId string, msg pb.Message) (err error) {
-	req := &gwpb.PushRequest{RoleId: roleId}
+	req := &v1pb.PushRequest{RoleId: roleId}
 	if req.Data, err = anypb.New(msg); err != nil {
 		return
 	}
-	if _, err = gwpb.NewGatewayClient(x).Push(ctx, req); err != nil {
+	if _, err = v1pb.NewGatewayClient(x).Push(ctx, req); err != nil {
 		return
 	}
 	return

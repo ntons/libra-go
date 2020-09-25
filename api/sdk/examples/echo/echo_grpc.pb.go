@@ -30,7 +30,7 @@ func NewEchoClient(cc grpc.ClientConnInterface) EchoClient {
 
 func (c *echoClient) Send(ctx context.Context, in *SendRequest, opts ...grpc.CallOption) (*SendResponse, error) {
 	out := new(SendResponse)
-	err := c.cc.Invoke(ctx, "/libra.sdk.example.echo.Echo/Send", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/libra.sdk.examples.echo.Echo/Send", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func _Echo_Send_Handler(srv interface{}, ctx context.Context, dec func(interface
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/libra.sdk.example.echo.Echo/Send",
+		FullMethod: "/libra.sdk.examples.echo.Echo/Send",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(EchoServer).Send(ctx, req.(*SendRequest))
@@ -77,7 +77,7 @@ func _Echo_Send_Handler(srv interface{}, ctx context.Context, dec func(interface
 }
 
 var _Echo_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "libra.sdk.example.echo.Echo",
+	ServiceName: "libra.sdk.examples.echo.Echo",
 	HandlerType: (*EchoServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -86,5 +86,5 @@ var _Echo_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "sdk/example/echo/echo.proto",
+	Metadata: "sdk/examples/echo/echo.proto",
 }
