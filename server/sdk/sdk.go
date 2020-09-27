@@ -51,7 +51,7 @@ func (x *sdk) OnReply(callback OnReplyFunc) { x.onReply = callback }
 
 func (x *sdk) PushTo(
 	ctx context.Context, roleId string, msg pb.Message) (err error) {
-	req := &v1pb.PushRequest{RoleId: roleId}
+	req := &v1pb.GatewayPushRequest{RoleId: roleId}
 	if req.Data, err = anypb.New(msg); err != nil {
 		return
 	}

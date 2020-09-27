@@ -33,7 +33,7 @@ type MVC interface {
 // cache item
 type item struct {
 	model pb.Message // model message
-	token string     // db token
+	lock  *anypb.Any // db token
 	data  *anypb.Any // original model data
 }
 
@@ -114,43 +114,50 @@ func (x *mvc) LoadModel(ctx context.Context, id string, model pb.Message, opts .
 
 func (x *mvc) getModel(
 	ctx context.Context, id string, opts ...GetOption) (
-	_ *anypb.Any, token string, err error) {
+	_, lock *anypb.Any, err error) {
 	var o getOptions
 	for _, opt := range opts {
 		opt.apply(&o)
 	}
-	req := &v1pb.GetArchiveRequest{Id: id, WithLock: true}
+	req := &v1pb.DatabaseGetRequest{
+		AppId:       x.GetAppId(),
+		Collection:  "models",
+		Id:          id,
+		LockOptions: &v1pb.LockOptions{}}
 	if o.addIfNotFound != nil {
-		req.AddIfNotFound = &v1pb.Archive{
-			Id:    id,
-			Model: newAny(o.addIfNotFound),
-		}
+		req.AddIfNotFound = newAny(o.addIfNotFound)
 	}
 	log.Infof("getModel req: %#v", req)
-	resp, err := x.dbapi.GetModel(ctx, req)
+	resp, err := x.dbapi.Get(ctx, req)
 	if err != nil {
 		return
 	}
 	log.Infof("getModel resp: %#v", resp)
-	return resp.Archive.Model, resp.Token, nil
+	return resp.Data, resp.Lock, nil
 }
 
 func (x *mvc) submit(ctx context.Context, handleErr error) (firstErr error) {
 	firstErr = handleErr
 	for id, it := range x.cache {
 		if err := func() (err error) {
-			req := &v1pb.SetArchiveRequest{
-				Archive:    &v1pb.Archive{Id: id},
-				Token:      it.token,
-				WithUnlock: true,
-			}
 			if data := newAny(it.model); pb.Equal(data, it.data) {
+				req := &v1pb.DatabaseUnlockRequest{
+					Lock:          it.lock,
+					UnlockOptions: &v1pb.UnlockOptions{EvenOnFailure: true},
+				}
 				if _, err = x.dbapi.Unlock(ctx, req); err != nil {
 					return
 				}
 			} else {
-				req.Archive.Model = data
-				if _, err = x.dbapi.SetModel(ctx, req); err != nil {
+				req := &v1pb.DatabaseSetRequest{
+					AppId:         x.GetAppId(),
+					Collection:    "models",
+					Id:            id,
+					Data:          data,
+					Lock:          it.lock,
+					UnlockOptions: &v1pb.UnlockOptions{EvenOnFailure: true},
+				}
+				if _, err = x.dbapi.Set(ctx, req); err != nil {
 					return
 				}
 				msg := &sdkpb.UpdateModelNotice{Model: data}

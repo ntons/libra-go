@@ -17,19 +17,13 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DatabaseClient interface {
-	RegisterSchema(ctx context.Context, in *RegisterSchemaRequest, opts ...grpc.CallOption) (*RegisterSchemaResponse, error)
-	// lock/unlock archive mutex
-	Lock(ctx context.Context, in *GetArchiveRequest, opts ...grpc.CallOption) (*GetArchiveResponse, error)
-	Unlock(ctx context.Context, in *SetArchiveRequest, opts ...grpc.CallOption) (*SetArchiveResponse, error)
-	// get/set whole archive
-	GetArchive(ctx context.Context, in *GetArchiveRequest, opts ...grpc.CallOption) (*GetArchiveResponse, error)
-	SetArchive(ctx context.Context, in *SetArchiveRequest, opts ...grpc.CallOption) (*SetArchiveResponse, error)
-	// get/set archive model
-	GetModel(ctx context.Context, in *GetArchiveRequest, opts ...grpc.CallOption) (*GetArchiveResponse, error)
-	SetModel(ctx context.Context, in *SetArchiveRequest, opts ...grpc.CallOption) (*SetArchiveResponse, error)
-	// get/set archive metadata
-	GetMetadata(ctx context.Context, in *GetArchiveRequest, opts ...grpc.CallOption) (*GetArchiveResponse, error)
-	SetMetadata(ctx context.Context, in *SetArchiveRequest, opts ...grpc.CallOption) (*SetArchiveResponse, error)
+	RegisterSchema(ctx context.Context, in *DatabaseRegisterSchemaRequest, opts ...grpc.CallOption) (*DatabaseRegisterSchemaResponse, error)
+	// lock/unlock
+	Lock(ctx context.Context, in *DatabaseLockRequest, opts ...grpc.CallOption) (*DatabaseLockResponse, error)
+	Unlock(ctx context.Context, in *DatabaseUnlockRequest, opts ...grpc.CallOption) (*DatabaseUnlockResponse, error)
+	// get/set data
+	Get(ctx context.Context, in *DatabaseGetRequest, opts ...grpc.CallOption) (*DatabaseGetResponse, error)
+	Set(ctx context.Context, in *DatabaseSetRequest, opts ...grpc.CallOption) (*DatabaseSetResponse, error)
 }
 
 type databaseClient struct {
@@ -40,8 +34,8 @@ func NewDatabaseClient(cc grpc.ClientConnInterface) DatabaseClient {
 	return &databaseClient{cc}
 }
 
-func (c *databaseClient) RegisterSchema(ctx context.Context, in *RegisterSchemaRequest, opts ...grpc.CallOption) (*RegisterSchemaResponse, error) {
-	out := new(RegisterSchemaResponse)
+func (c *databaseClient) RegisterSchema(ctx context.Context, in *DatabaseRegisterSchemaRequest, opts ...grpc.CallOption) (*DatabaseRegisterSchemaResponse, error) {
+	out := new(DatabaseRegisterSchemaResponse)
 	err := c.cc.Invoke(ctx, "/libra.v1.Database/RegisterSchema", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -49,8 +43,8 @@ func (c *databaseClient) RegisterSchema(ctx context.Context, in *RegisterSchemaR
 	return out, nil
 }
 
-func (c *databaseClient) Lock(ctx context.Context, in *GetArchiveRequest, opts ...grpc.CallOption) (*GetArchiveResponse, error) {
-	out := new(GetArchiveResponse)
+func (c *databaseClient) Lock(ctx context.Context, in *DatabaseLockRequest, opts ...grpc.CallOption) (*DatabaseLockResponse, error) {
+	out := new(DatabaseLockResponse)
 	err := c.cc.Invoke(ctx, "/libra.v1.Database/Lock", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -58,8 +52,8 @@ func (c *databaseClient) Lock(ctx context.Context, in *GetArchiveRequest, opts .
 	return out, nil
 }
 
-func (c *databaseClient) Unlock(ctx context.Context, in *SetArchiveRequest, opts ...grpc.CallOption) (*SetArchiveResponse, error) {
-	out := new(SetArchiveResponse)
+func (c *databaseClient) Unlock(ctx context.Context, in *DatabaseUnlockRequest, opts ...grpc.CallOption) (*DatabaseUnlockResponse, error) {
+	out := new(DatabaseUnlockResponse)
 	err := c.cc.Invoke(ctx, "/libra.v1.Database/Unlock", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -67,54 +61,18 @@ func (c *databaseClient) Unlock(ctx context.Context, in *SetArchiveRequest, opts
 	return out, nil
 }
 
-func (c *databaseClient) GetArchive(ctx context.Context, in *GetArchiveRequest, opts ...grpc.CallOption) (*GetArchiveResponse, error) {
-	out := new(GetArchiveResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Database/GetArchive", in, out, opts...)
+func (c *databaseClient) Get(ctx context.Context, in *DatabaseGetRequest, opts ...grpc.CallOption) (*DatabaseGetResponse, error) {
+	out := new(DatabaseGetResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.Database/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *databaseClient) SetArchive(ctx context.Context, in *SetArchiveRequest, opts ...grpc.CallOption) (*SetArchiveResponse, error) {
-	out := new(SetArchiveResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Database/SetArchive", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *databaseClient) GetModel(ctx context.Context, in *GetArchiveRequest, opts ...grpc.CallOption) (*GetArchiveResponse, error) {
-	out := new(GetArchiveResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Database/GetModel", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *databaseClient) SetModel(ctx context.Context, in *SetArchiveRequest, opts ...grpc.CallOption) (*SetArchiveResponse, error) {
-	out := new(SetArchiveResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Database/SetModel", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *databaseClient) GetMetadata(ctx context.Context, in *GetArchiveRequest, opts ...grpc.CallOption) (*GetArchiveResponse, error) {
-	out := new(GetArchiveResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Database/GetMetadata", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *databaseClient) SetMetadata(ctx context.Context, in *SetArchiveRequest, opts ...grpc.CallOption) (*SetArchiveResponse, error) {
-	out := new(SetArchiveResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Database/SetMetadata", in, out, opts...)
+func (c *databaseClient) Set(ctx context.Context, in *DatabaseSetRequest, opts ...grpc.CallOption) (*DatabaseSetResponse, error) {
+	out := new(DatabaseSetResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.Database/Set", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -125,19 +83,13 @@ func (c *databaseClient) SetMetadata(ctx context.Context, in *SetArchiveRequest,
 // All implementations must embed UnimplementedDatabaseServer
 // for forward compatibility
 type DatabaseServer interface {
-	RegisterSchema(context.Context, *RegisterSchemaRequest) (*RegisterSchemaResponse, error)
-	// lock/unlock archive mutex
-	Lock(context.Context, *GetArchiveRequest) (*GetArchiveResponse, error)
-	Unlock(context.Context, *SetArchiveRequest) (*SetArchiveResponse, error)
-	// get/set whole archive
-	GetArchive(context.Context, *GetArchiveRequest) (*GetArchiveResponse, error)
-	SetArchive(context.Context, *SetArchiveRequest) (*SetArchiveResponse, error)
-	// get/set archive model
-	GetModel(context.Context, *GetArchiveRequest) (*GetArchiveResponse, error)
-	SetModel(context.Context, *SetArchiveRequest) (*SetArchiveResponse, error)
-	// get/set archive metadata
-	GetMetadata(context.Context, *GetArchiveRequest) (*GetArchiveResponse, error)
-	SetMetadata(context.Context, *SetArchiveRequest) (*SetArchiveResponse, error)
+	RegisterSchema(context.Context, *DatabaseRegisterSchemaRequest) (*DatabaseRegisterSchemaResponse, error)
+	// lock/unlock
+	Lock(context.Context, *DatabaseLockRequest) (*DatabaseLockResponse, error)
+	Unlock(context.Context, *DatabaseUnlockRequest) (*DatabaseUnlockResponse, error)
+	// get/set data
+	Get(context.Context, *DatabaseGetRequest) (*DatabaseGetResponse, error)
+	Set(context.Context, *DatabaseSetRequest) (*DatabaseSetResponse, error)
 	mustEmbedUnimplementedDatabaseServer()
 }
 
@@ -145,32 +97,20 @@ type DatabaseServer interface {
 type UnimplementedDatabaseServer struct {
 }
 
-func (*UnimplementedDatabaseServer) RegisterSchema(context.Context, *RegisterSchemaRequest) (*RegisterSchemaResponse, error) {
+func (*UnimplementedDatabaseServer) RegisterSchema(context.Context, *DatabaseRegisterSchemaRequest) (*DatabaseRegisterSchemaResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterSchema not implemented")
 }
-func (*UnimplementedDatabaseServer) Lock(context.Context, *GetArchiveRequest) (*GetArchiveResponse, error) {
+func (*UnimplementedDatabaseServer) Lock(context.Context, *DatabaseLockRequest) (*DatabaseLockResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Lock not implemented")
 }
-func (*UnimplementedDatabaseServer) Unlock(context.Context, *SetArchiveRequest) (*SetArchiveResponse, error) {
+func (*UnimplementedDatabaseServer) Unlock(context.Context, *DatabaseUnlockRequest) (*DatabaseUnlockResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Unlock not implemented")
 }
-func (*UnimplementedDatabaseServer) GetArchive(context.Context, *GetArchiveRequest) (*GetArchiveResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetArchive not implemented")
+func (*UnimplementedDatabaseServer) Get(context.Context, *DatabaseGetRequest) (*DatabaseGetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (*UnimplementedDatabaseServer) SetArchive(context.Context, *SetArchiveRequest) (*SetArchiveResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetArchive not implemented")
-}
-func (*UnimplementedDatabaseServer) GetModel(context.Context, *GetArchiveRequest) (*GetArchiveResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetModel not implemented")
-}
-func (*UnimplementedDatabaseServer) SetModel(context.Context, *SetArchiveRequest) (*SetArchiveResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetModel not implemented")
-}
-func (*UnimplementedDatabaseServer) GetMetadata(context.Context, *GetArchiveRequest) (*GetArchiveResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetMetadata not implemented")
-}
-func (*UnimplementedDatabaseServer) SetMetadata(context.Context, *SetArchiveRequest) (*SetArchiveResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetMetadata not implemented")
+func (*UnimplementedDatabaseServer) Set(context.Context, *DatabaseSetRequest) (*DatabaseSetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Set not implemented")
 }
 func (*UnimplementedDatabaseServer) mustEmbedUnimplementedDatabaseServer() {}
 
@@ -179,7 +119,7 @@ func RegisterDatabaseServer(s *grpc.Server, srv DatabaseServer) {
 }
 
 func _Database_RegisterSchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RegisterSchemaRequest)
+	in := new(DatabaseRegisterSchemaRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -191,13 +131,13 @@ func _Database_RegisterSchema_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/libra.v1.Database/RegisterSchema",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseServer).RegisterSchema(ctx, req.(*RegisterSchemaRequest))
+		return srv.(DatabaseServer).RegisterSchema(ctx, req.(*DatabaseRegisterSchemaRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Database_Lock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetArchiveRequest)
+	in := new(DatabaseLockRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -209,13 +149,13 @@ func _Database_Lock_Handler(srv interface{}, ctx context.Context, dec func(inter
 		FullMethod: "/libra.v1.Database/Lock",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseServer).Lock(ctx, req.(*GetArchiveRequest))
+		return srv.(DatabaseServer).Lock(ctx, req.(*DatabaseLockRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Database_Unlock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetArchiveRequest)
+	in := new(DatabaseUnlockRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -227,115 +167,43 @@ func _Database_Unlock_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/libra.v1.Database/Unlock",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseServer).Unlock(ctx, req.(*SetArchiveRequest))
+		return srv.(DatabaseServer).Unlock(ctx, req.(*DatabaseUnlockRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Database_GetArchive_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetArchiveRequest)
+func _Database_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DatabaseGetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DatabaseServer).GetArchive(ctx, in)
+		return srv.(DatabaseServer).Get(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/libra.v1.Database/GetArchive",
+		FullMethod: "/libra.v1.Database/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseServer).GetArchive(ctx, req.(*GetArchiveRequest))
+		return srv.(DatabaseServer).Get(ctx, req.(*DatabaseGetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Database_SetArchive_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetArchiveRequest)
+func _Database_Set_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DatabaseSetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DatabaseServer).SetArchive(ctx, in)
+		return srv.(DatabaseServer).Set(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/libra.v1.Database/SetArchive",
+		FullMethod: "/libra.v1.Database/Set",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseServer).SetArchive(ctx, req.(*SetArchiveRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Database_GetModel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetArchiveRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DatabaseServer).GetModel(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/libra.v1.Database/GetModel",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseServer).GetModel(ctx, req.(*GetArchiveRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Database_SetModel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetArchiveRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DatabaseServer).SetModel(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/libra.v1.Database/SetModel",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseServer).SetModel(ctx, req.(*SetArchiveRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Database_GetMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetArchiveRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DatabaseServer).GetMetadata(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/libra.v1.Database/GetMetadata",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseServer).GetMetadata(ctx, req.(*GetArchiveRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Database_SetMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetArchiveRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DatabaseServer).SetMetadata(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/libra.v1.Database/SetMetadata",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseServer).SetMetadata(ctx, req.(*SetArchiveRequest))
+		return srv.(DatabaseServer).Set(ctx, req.(*DatabaseSetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -357,28 +225,12 @@ var _Database_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Database_Unlock_Handler,
 		},
 		{
-			MethodName: "GetArchive",
-			Handler:    _Database_GetArchive_Handler,
+			MethodName: "Get",
+			Handler:    _Database_Get_Handler,
 		},
 		{
-			MethodName: "SetArchive",
-			Handler:    _Database_SetArchive_Handler,
-		},
-		{
-			MethodName: "GetModel",
-			Handler:    _Database_GetModel_Handler,
-		},
-		{
-			MethodName: "SetModel",
-			Handler:    _Database_SetModel_Handler,
-		},
-		{
-			MethodName: "GetMetadata",
-			Handler:    _Database_GetMetadata_Handler,
-		},
-		{
-			MethodName: "SetMetadata",
-			Handler:    _Database_SetMetadata_Handler,
+			MethodName: "Set",
+			Handler:    _Database_Set_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

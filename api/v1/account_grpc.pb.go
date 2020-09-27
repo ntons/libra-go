@@ -19,19 +19,19 @@ const _ = grpc.SupportPackageIsVersion6
 type AccountClient interface {
 	// Login verify the login state, return user and token as passport
 	// a user will be created automatically if not exists
-	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	Login(ctx context.Context, in *AccountLoginRequest, opts ...grpc.CallOption) (*AccountLoginResponse, error)
 	// Bind another acct_id to user
-	Bind(ctx context.Context, in *BindRequest, opts ...grpc.CallOption) (*BindResponse, error)
+	Bind(ctx context.Context, in *AccountBindRequest, opts ...grpc.CallOption) (*AccountBindResponse, error)
 	// List roles which belonging to the user
-	ListRoles(ctx context.Context, in *ListRolesRequest, opts ...grpc.CallOption) (*ListRolesResponse, error)
+	ListRoles(ctx context.Context, in *AccountListRolesRequest, opts ...grpc.CallOption) (*AccountListRolesResponse, error)
 	// Create role to the user
-	CreateRole(ctx context.Context, in *CreateRoleRequest, opts ...grpc.CallOption) (*CreateRoleResponse, error)
+	CreateRole(ctx context.Context, in *AccountCreateRoleRequest, opts ...grpc.CallOption) (*AccountCreateRoleResponse, error)
 	// Sign in the role, get a ticket as passport
-	SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error)
+	SignIn(ctx context.Context, in *AccountSignInRequest, opts ...grpc.CallOption) (*AccountSignInResponse, error)
 	// Set metadata of the user
-	SetUserMetadata(ctx context.Context, in *SetUserMetadataRequest, opts ...grpc.CallOption) (*SetUserMetadataResponse, error)
+	SetUserMetadata(ctx context.Context, in *AccountSetUserMetadataRequest, opts ...grpc.CallOption) (*AccountSetUserMetadataResponse, error)
 	// Set metadata of a role
-	SetRoleMetadata(ctx context.Context, in *SetRoleMetadataRequest, opts ...grpc.CallOption) (*SetRoleMetadataResponse, error)
+	SetRoleMetadata(ctx context.Context, in *AccountSetRoleMetadataRequest, opts ...grpc.CallOption) (*AccountSetRoleMetadataResponse, error)
 }
 
 type accountClient struct {
@@ -42,8 +42,8 @@ func NewAccountClient(cc grpc.ClientConnInterface) AccountClient {
 	return &accountClient{cc}
 }
 
-func (c *accountClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
-	out := new(LoginResponse)
+func (c *accountClient) Login(ctx context.Context, in *AccountLoginRequest, opts ...grpc.CallOption) (*AccountLoginResponse, error) {
+	out := new(AccountLoginResponse)
 	err := c.cc.Invoke(ctx, "/libra.v1.Account/Login", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -51,8 +51,8 @@ func (c *accountClient) Login(ctx context.Context, in *LoginRequest, opts ...grp
 	return out, nil
 }
 
-func (c *accountClient) Bind(ctx context.Context, in *BindRequest, opts ...grpc.CallOption) (*BindResponse, error) {
-	out := new(BindResponse)
+func (c *accountClient) Bind(ctx context.Context, in *AccountBindRequest, opts ...grpc.CallOption) (*AccountBindResponse, error) {
+	out := new(AccountBindResponse)
 	err := c.cc.Invoke(ctx, "/libra.v1.Account/Bind", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -60,8 +60,8 @@ func (c *accountClient) Bind(ctx context.Context, in *BindRequest, opts ...grpc.
 	return out, nil
 }
 
-func (c *accountClient) ListRoles(ctx context.Context, in *ListRolesRequest, opts ...grpc.CallOption) (*ListRolesResponse, error) {
-	out := new(ListRolesResponse)
+func (c *accountClient) ListRoles(ctx context.Context, in *AccountListRolesRequest, opts ...grpc.CallOption) (*AccountListRolesResponse, error) {
+	out := new(AccountListRolesResponse)
 	err := c.cc.Invoke(ctx, "/libra.v1.Account/ListRoles", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -69,8 +69,8 @@ func (c *accountClient) ListRoles(ctx context.Context, in *ListRolesRequest, opt
 	return out, nil
 }
 
-func (c *accountClient) CreateRole(ctx context.Context, in *CreateRoleRequest, opts ...grpc.CallOption) (*CreateRoleResponse, error) {
-	out := new(CreateRoleResponse)
+func (c *accountClient) CreateRole(ctx context.Context, in *AccountCreateRoleRequest, opts ...grpc.CallOption) (*AccountCreateRoleResponse, error) {
+	out := new(AccountCreateRoleResponse)
 	err := c.cc.Invoke(ctx, "/libra.v1.Account/CreateRole", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -78,8 +78,8 @@ func (c *accountClient) CreateRole(ctx context.Context, in *CreateRoleRequest, o
 	return out, nil
 }
 
-func (c *accountClient) SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error) {
-	out := new(SignInResponse)
+func (c *accountClient) SignIn(ctx context.Context, in *AccountSignInRequest, opts ...grpc.CallOption) (*AccountSignInResponse, error) {
+	out := new(AccountSignInResponse)
 	err := c.cc.Invoke(ctx, "/libra.v1.Account/SignIn", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -87,8 +87,8 @@ func (c *accountClient) SignIn(ctx context.Context, in *SignInRequest, opts ...g
 	return out, nil
 }
 
-func (c *accountClient) SetUserMetadata(ctx context.Context, in *SetUserMetadataRequest, opts ...grpc.CallOption) (*SetUserMetadataResponse, error) {
-	out := new(SetUserMetadataResponse)
+func (c *accountClient) SetUserMetadata(ctx context.Context, in *AccountSetUserMetadataRequest, opts ...grpc.CallOption) (*AccountSetUserMetadataResponse, error) {
+	out := new(AccountSetUserMetadataResponse)
 	err := c.cc.Invoke(ctx, "/libra.v1.Account/SetUserMetadata", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -96,8 +96,8 @@ func (c *accountClient) SetUserMetadata(ctx context.Context, in *SetUserMetadata
 	return out, nil
 }
 
-func (c *accountClient) SetRoleMetadata(ctx context.Context, in *SetRoleMetadataRequest, opts ...grpc.CallOption) (*SetRoleMetadataResponse, error) {
-	out := new(SetRoleMetadataResponse)
+func (c *accountClient) SetRoleMetadata(ctx context.Context, in *AccountSetRoleMetadataRequest, opts ...grpc.CallOption) (*AccountSetRoleMetadataResponse, error) {
+	out := new(AccountSetRoleMetadataResponse)
 	err := c.cc.Invoke(ctx, "/libra.v1.Account/SetRoleMetadata", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -111,19 +111,19 @@ func (c *accountClient) SetRoleMetadata(ctx context.Context, in *SetRoleMetadata
 type AccountServer interface {
 	// Login verify the login state, return user and token as passport
 	// a user will be created automatically if not exists
-	Login(context.Context, *LoginRequest) (*LoginResponse, error)
+	Login(context.Context, *AccountLoginRequest) (*AccountLoginResponse, error)
 	// Bind another acct_id to user
-	Bind(context.Context, *BindRequest) (*BindResponse, error)
+	Bind(context.Context, *AccountBindRequest) (*AccountBindResponse, error)
 	// List roles which belonging to the user
-	ListRoles(context.Context, *ListRolesRequest) (*ListRolesResponse, error)
+	ListRoles(context.Context, *AccountListRolesRequest) (*AccountListRolesResponse, error)
 	// Create role to the user
-	CreateRole(context.Context, *CreateRoleRequest) (*CreateRoleResponse, error)
+	CreateRole(context.Context, *AccountCreateRoleRequest) (*AccountCreateRoleResponse, error)
 	// Sign in the role, get a ticket as passport
-	SignIn(context.Context, *SignInRequest) (*SignInResponse, error)
+	SignIn(context.Context, *AccountSignInRequest) (*AccountSignInResponse, error)
 	// Set metadata of the user
-	SetUserMetadata(context.Context, *SetUserMetadataRequest) (*SetUserMetadataResponse, error)
+	SetUserMetadata(context.Context, *AccountSetUserMetadataRequest) (*AccountSetUserMetadataResponse, error)
 	// Set metadata of a role
-	SetRoleMetadata(context.Context, *SetRoleMetadataRequest) (*SetRoleMetadataResponse, error)
+	SetRoleMetadata(context.Context, *AccountSetRoleMetadataRequest) (*AccountSetRoleMetadataResponse, error)
 	mustEmbedUnimplementedAccountServer()
 }
 
@@ -131,25 +131,25 @@ type AccountServer interface {
 type UnimplementedAccountServer struct {
 }
 
-func (*UnimplementedAccountServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
+func (*UnimplementedAccountServer) Login(context.Context, *AccountLoginRequest) (*AccountLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (*UnimplementedAccountServer) Bind(context.Context, *BindRequest) (*BindResponse, error) {
+func (*UnimplementedAccountServer) Bind(context.Context, *AccountBindRequest) (*AccountBindResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Bind not implemented")
 }
-func (*UnimplementedAccountServer) ListRoles(context.Context, *ListRolesRequest) (*ListRolesResponse, error) {
+func (*UnimplementedAccountServer) ListRoles(context.Context, *AccountListRolesRequest) (*AccountListRolesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListRoles not implemented")
 }
-func (*UnimplementedAccountServer) CreateRole(context.Context, *CreateRoleRequest) (*CreateRoleResponse, error) {
+func (*UnimplementedAccountServer) CreateRole(context.Context, *AccountCreateRoleRequest) (*AccountCreateRoleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRole not implemented")
 }
-func (*UnimplementedAccountServer) SignIn(context.Context, *SignInRequest) (*SignInResponse, error) {
+func (*UnimplementedAccountServer) SignIn(context.Context, *AccountSignInRequest) (*AccountSignInResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignIn not implemented")
 }
-func (*UnimplementedAccountServer) SetUserMetadata(context.Context, *SetUserMetadataRequest) (*SetUserMetadataResponse, error) {
+func (*UnimplementedAccountServer) SetUserMetadata(context.Context, *AccountSetUserMetadataRequest) (*AccountSetUserMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetUserMetadata not implemented")
 }
-func (*UnimplementedAccountServer) SetRoleMetadata(context.Context, *SetRoleMetadataRequest) (*SetRoleMetadataResponse, error) {
+func (*UnimplementedAccountServer) SetRoleMetadata(context.Context, *AccountSetRoleMetadataRequest) (*AccountSetRoleMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetRoleMetadata not implemented")
 }
 func (*UnimplementedAccountServer) mustEmbedUnimplementedAccountServer() {}
@@ -159,7 +159,7 @@ func RegisterAccountServer(s *grpc.Server, srv AccountServer) {
 }
 
 func _Account_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoginRequest)
+	in := new(AccountLoginRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -171,13 +171,13 @@ func _Account_Login_Handler(srv interface{}, ctx context.Context, dec func(inter
 		FullMethod: "/libra.v1.Account/Login",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).Login(ctx, req.(*LoginRequest))
+		return srv.(AccountServer).Login(ctx, req.(*AccountLoginRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Account_Bind_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BindRequest)
+	in := new(AccountBindRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -189,13 +189,13 @@ func _Account_Bind_Handler(srv interface{}, ctx context.Context, dec func(interf
 		FullMethod: "/libra.v1.Account/Bind",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).Bind(ctx, req.(*BindRequest))
+		return srv.(AccountServer).Bind(ctx, req.(*AccountBindRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Account_ListRoles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListRolesRequest)
+	in := new(AccountListRolesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -207,13 +207,13 @@ func _Account_ListRoles_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: "/libra.v1.Account/ListRoles",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).ListRoles(ctx, req.(*ListRolesRequest))
+		return srv.(AccountServer).ListRoles(ctx, req.(*AccountListRolesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Account_CreateRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateRoleRequest)
+	in := new(AccountCreateRoleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -225,13 +225,13 @@ func _Account_CreateRole_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: "/libra.v1.Account/CreateRole",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).CreateRole(ctx, req.(*CreateRoleRequest))
+		return srv.(AccountServer).CreateRole(ctx, req.(*AccountCreateRoleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Account_SignIn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SignInRequest)
+	in := new(AccountSignInRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -243,13 +243,13 @@ func _Account_SignIn_Handler(srv interface{}, ctx context.Context, dec func(inte
 		FullMethod: "/libra.v1.Account/SignIn",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).SignIn(ctx, req.(*SignInRequest))
+		return srv.(AccountServer).SignIn(ctx, req.(*AccountSignInRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Account_SetUserMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetUserMetadataRequest)
+	in := new(AccountSetUserMetadataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -261,13 +261,13 @@ func _Account_SetUserMetadata_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/libra.v1.Account/SetUserMetadata",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).SetUserMetadata(ctx, req.(*SetUserMetadataRequest))
+		return srv.(AccountServer).SetUserMetadata(ctx, req.(*AccountSetUserMetadataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Account_SetRoleMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetRoleMetadataRequest)
+	in := new(AccountSetRoleMetadataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -279,7 +279,7 @@ func _Account_SetRoleMetadata_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/libra.v1.Account/SetRoleMetadata",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).SetRoleMetadata(ctx, req.(*SetRoleMetadataRequest))
+		return srv.(AccountServer).SetRoleMetadata(ctx, req.(*AccountSetRoleMetadataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

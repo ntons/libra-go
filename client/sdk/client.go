@@ -41,7 +41,7 @@ type client struct {
 	cancel context.CancelFunc
 	wg     sync.WaitGroup
 
-	gwapi v1pb.AccessClient
+	gwapi v1pb.GatewayClient
 	ptapi v1pb.AccountClient
 }
 
@@ -62,7 +62,7 @@ func Dial(appId string, addr string, opts ...DialOption) (_ Client, err error) {
 	); err != nil {
 		return
 	}
-	cli.gwapi = v1pb.NewAccessClient(cli)
+	cli.gwapi = v1pb.NewGatewayClient(cli)
 	cli.ptapi = v1pb.NewAccountClient(cli)
 	cli.ctx, cli.cancel = context.WithCancel(context.Background())
 	return cli, nil
@@ -86,9 +86,7 @@ func (cli *client) Recv(ctx context.Context) (msg proto.Message, err error) {
 
 func (cli *client) Login(
 	ctx context.Context, state proto.Message) (user *v1pb.User, err error) {
-	req := &v1pb.LoginRequest{
-		AppId: cli.appId,
-	}
+	req := &v1pb.AccountLoginRequest{AppId: cli.appId}
 	if req.State, err = anypb.New(state); err != nil {
 		return
 	}
@@ -103,10 +101,7 @@ func (cli *client) Login(
 
 func (cli *client) ListRoles(
 	ctx context.Context) (roles []*v1pb.Role, err error) {
-	req := &v1pb.ListRolesRequest{
-		AppId: cli.appId,
-		Token: cli.token,
-	}
+	req := &v1pb.AccountListRolesRequest{AppId: cli.appId, Token: cli.token}
 	resp, err := cli.ptapi.ListRoles(ctx, req)
 	if err != nil {
 		return
@@ -117,7 +112,7 @@ func (cli *client) ListRoles(
 
 func (cli *client) CreateRole(
 	ctx context.Context, index int32) (role *v1pb.Role, err error) {
-	req := &v1pb.CreateRoleRequest{
+	req := &v1pb.AccountCreateRoleRequest{
 		AppId: cli.appId,
 		Token: cli.token,
 		Index: index,
@@ -140,12 +135,12 @@ func (cli *client) SignIn(ctx context.Context, roleId string) (err error) {
 	return
 }
 func (cli *client) signIn(ctx context.Context, roleId string) (err error) {
-	req := &v1pb.SignInRequest{
+	req := &v1pb.AccountSignInRequest{
 		AppId:  cli.appId,
 		Token:  cli.token,
 		RoleId: roleId,
 	}
-	var resp *v1pb.SignInResponse
+	var resp *v1pb.AccountSignInResponse
 	if resp, err = cli.ptapi.SignIn(ctx, req); err != nil {
 		return
 	}
@@ -154,7 +149,7 @@ func (cli *client) signIn(ctx context.Context, roleId string) (err error) {
 	return
 }
 func (cli *client) access(ctx context.Context) (err error) {
-	req := &v1pb.AccessRequest{}
+	req := &v1pb.GatewayAccessRequest{}
 	stream, err := cli.gwapi.Access(ctx, req)
 	if err != nil {
 		return
