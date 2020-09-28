@@ -39,16 +39,18 @@ type item struct {
 
 type mvc struct {
 	sdk.SDK
-	cache map[string]*item
-	dbapi v1pb.DatabaseClient
+	cache   map[string]*item
+	dbapi   v1pb.DatabaseClient
+	syncapi v1pb.SyncClient
 }
 
 func FromContext(ctx context.Context) (MVC, bool) {
 	if sdk, ok := sdk.FromContext(ctx); ok {
 		x := &mvc{
-			SDK:   sdk,
-			cache: make(map[string]*item),
-			dbapi: v1pb.NewDatabaseClient(sdk),
+			SDK:     sdk,
+			cache:   make(map[string]*item),
+			dbapi:   v1pb.NewDatabaseClient(sdk),
+			syncapi: v1pb.NewSyncClient(sdk),
 		}
 		sdk.OnReply(x.submit)
 		return x, true
@@ -123,7 +125,7 @@ func (x *mvc) getModel(
 		AppId:       x.GetAppId(),
 		Collection:  "models",
 		Id:          id,
-		LockOptions: &v1pb.LockOptions{}}
+		LockOptions: &v1pb.SyncLockOptions{}}
 	if o.addIfNotFound != nil {
 		req.AddIfNotFound = newAny(o.addIfNotFound)
 	}
@@ -141,11 +143,11 @@ func (x *mvc) submit(ctx context.Context, handleErr error) (firstErr error) {
 	for id, it := range x.cache {
 		if err := func() (err error) {
 			if data := newAny(it.model); pb.Equal(data, it.data) {
-				req := &v1pb.DatabaseUnlockRequest{
+				req := &v1pb.SyncUnlockRequest{
 					Lock:          it.lock,
-					UnlockOptions: &v1pb.UnlockOptions{EvenOnFailure: true},
+					UnlockOptions: &v1pb.SyncUnlockOptions{EvenOnFailure: true},
 				}
-				if _, err = x.dbapi.Unlock(ctx, req); err != nil {
+				if _, err = x.syncapi.Unlock(ctx, req); err != nil {
 					return
 				}
 			} else {
@@ -155,7 +157,7 @@ func (x *mvc) submit(ctx context.Context, handleErr error) (firstErr error) {
 					Id:            id,
 					Data:          data,
 					Lock:          it.lock,
-					UnlockOptions: &v1pb.UnlockOptions{EvenOnFailure: true},
+					UnlockOptions: &v1pb.SyncUnlockOptions{EvenOnFailure: true},
 				}
 				if _, err = x.dbapi.Set(ctx, req); err != nil {
 					return

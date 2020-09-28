@@ -18,9 +18,6 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DatabaseClient interface {
 	RegisterSchema(ctx context.Context, in *DatabaseRegisterSchemaRequest, opts ...grpc.CallOption) (*DatabaseRegisterSchemaResponse, error)
-	// lock/unlock
-	Lock(ctx context.Context, in *DatabaseLockRequest, opts ...grpc.CallOption) (*DatabaseLockResponse, error)
-	Unlock(ctx context.Context, in *DatabaseUnlockRequest, opts ...grpc.CallOption) (*DatabaseUnlockResponse, error)
 	// get/set data
 	Get(ctx context.Context, in *DatabaseGetRequest, opts ...grpc.CallOption) (*DatabaseGetResponse, error)
 	Set(ctx context.Context, in *DatabaseSetRequest, opts ...grpc.CallOption) (*DatabaseSetResponse, error)
@@ -37,24 +34,6 @@ func NewDatabaseClient(cc grpc.ClientConnInterface) DatabaseClient {
 func (c *databaseClient) RegisterSchema(ctx context.Context, in *DatabaseRegisterSchemaRequest, opts ...grpc.CallOption) (*DatabaseRegisterSchemaResponse, error) {
 	out := new(DatabaseRegisterSchemaResponse)
 	err := c.cc.Invoke(ctx, "/libra.v1.Database/RegisterSchema", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *databaseClient) Lock(ctx context.Context, in *DatabaseLockRequest, opts ...grpc.CallOption) (*DatabaseLockResponse, error) {
-	out := new(DatabaseLockResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Database/Lock", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *databaseClient) Unlock(ctx context.Context, in *DatabaseUnlockRequest, opts ...grpc.CallOption) (*DatabaseUnlockResponse, error) {
-	out := new(DatabaseUnlockResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Database/Unlock", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -84,9 +63,6 @@ func (c *databaseClient) Set(ctx context.Context, in *DatabaseSetRequest, opts .
 // for forward compatibility
 type DatabaseServer interface {
 	RegisterSchema(context.Context, *DatabaseRegisterSchemaRequest) (*DatabaseRegisterSchemaResponse, error)
-	// lock/unlock
-	Lock(context.Context, *DatabaseLockRequest) (*DatabaseLockResponse, error)
-	Unlock(context.Context, *DatabaseUnlockRequest) (*DatabaseUnlockResponse, error)
 	// get/set data
 	Get(context.Context, *DatabaseGetRequest) (*DatabaseGetResponse, error)
 	Set(context.Context, *DatabaseSetRequest) (*DatabaseSetResponse, error)
@@ -99,12 +75,6 @@ type UnimplementedDatabaseServer struct {
 
 func (*UnimplementedDatabaseServer) RegisterSchema(context.Context, *DatabaseRegisterSchemaRequest) (*DatabaseRegisterSchemaResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterSchema not implemented")
-}
-func (*UnimplementedDatabaseServer) Lock(context.Context, *DatabaseLockRequest) (*DatabaseLockResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Lock not implemented")
-}
-func (*UnimplementedDatabaseServer) Unlock(context.Context, *DatabaseUnlockRequest) (*DatabaseUnlockResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Unlock not implemented")
 }
 func (*UnimplementedDatabaseServer) Get(context.Context, *DatabaseGetRequest) (*DatabaseGetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
@@ -132,42 +102,6 @@ func _Database_RegisterSchema_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DatabaseServer).RegisterSchema(ctx, req.(*DatabaseRegisterSchemaRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Database_Lock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DatabaseLockRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DatabaseServer).Lock(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/libra.v1.Database/Lock",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseServer).Lock(ctx, req.(*DatabaseLockRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Database_Unlock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DatabaseUnlockRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DatabaseServer).Unlock(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/libra.v1.Database/Unlock",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseServer).Unlock(ctx, req.(*DatabaseUnlockRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -215,14 +149,6 @@ var _Database_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RegisterSchema",
 			Handler:    _Database_RegisterSchema_Handler,
-		},
-		{
-			MethodName: "Lock",
-			Handler:    _Database_Lock_Handler,
-		},
-		{
-			MethodName: "Unlock",
-			Handler:    _Database_Unlock_Handler,
 		},
 		{
 			MethodName: "Get",
