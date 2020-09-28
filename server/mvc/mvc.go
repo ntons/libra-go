@@ -122,9 +122,11 @@ func (x *mvc) getModel(
 		opt.apply(&o)
 	}
 	req := &v1pb.DatabaseGetRequest{
-		AppId:       x.GetAppId(),
-		Collection:  "models",
-		Id:          id,
+		Key: &v1pb.EntityKey{
+			AppId:      x.GetAppId(),
+			Collection: "models",
+			Id:         id,
+		},
 		LockOptions: &v1pb.SyncLockOptions{}}
 	if o.addIfNotFound != nil {
 		req.AddIfNotFound = newAny(o.addIfNotFound)
@@ -152,9 +154,11 @@ func (x *mvc) submit(ctx context.Context, handleErr error) (firstErr error) {
 				}
 			} else {
 				req := &v1pb.DatabaseSetRequest{
-					AppId:         x.GetAppId(),
-					Collection:    "models",
-					Id:            id,
+					Key: &v1pb.EntityKey{
+						AppId:      x.GetAppId(),
+						Collection: "models",
+						Id:         id,
+					},
 					Data:          data,
 					Lock:          it.lock,
 					UnlockOptions: &v1pb.SyncUnlockOptions{EvenOnFailure: true},
