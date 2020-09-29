@@ -26,6 +26,9 @@ const (
 const _ = proto.ProtoPackageIsVersion4
 
 // EntityKey 代表一个抽象实体的唯一标识
+// 此标识在不同实例间必须唯一，即使是不同服务
+// 比如，一个用户数据服务(Database)实例命名为{foo:roles:1}，
+// 他的邮件服务(Mail)实例或者同步(Sync)实例不能用相同名称
 type EntityKey struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
