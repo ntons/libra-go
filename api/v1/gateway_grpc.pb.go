@@ -26,6 +26,9 @@ type GatewayClient interface {
 	Push(ctx context.Context, in *GatewayPushRequest, opts ...grpc.CallOption) (*GatewayPushResponse, error)
 	// Subscribe a broadcast channel
 	Subscribe(ctx context.Context, in *GatewaySubscribeRequest, opts ...grpc.CallOption) (*GatewaySubscribeResponse, error)
+	Unsubscribe(ctx context.Context, in *GatewayUnsubscribeRequest, opts ...grpc.CallOption) (*GatewayUnsubscribeResponse, error)
+	// Broadcast to a channel
+	Broadcast(ctx context.Context, in *GatewayBroadcastRequest, opts ...grpc.CallOption) (*GatewayBroadcastResponse, error)
 }
 
 type gatewayClient struct {
@@ -86,6 +89,24 @@ func (c *gatewayClient) Subscribe(ctx context.Context, in *GatewaySubscribeReque
 	return out, nil
 }
 
+func (c *gatewayClient) Unsubscribe(ctx context.Context, in *GatewayUnsubscribeRequest, opts ...grpc.CallOption) (*GatewayUnsubscribeResponse, error) {
+	out := new(GatewayUnsubscribeResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.Gateway/Unsubscribe", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gatewayClient) Broadcast(ctx context.Context, in *GatewayBroadcastRequest, opts ...grpc.CallOption) (*GatewayBroadcastResponse, error) {
+	out := new(GatewayBroadcastResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.Gateway/Broadcast", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GatewayServer is the server API for Gateway service.
 // All implementations must embed UnimplementedGatewayServer
 // for forward compatibility
@@ -98,6 +119,9 @@ type GatewayServer interface {
 	Push(context.Context, *GatewayPushRequest) (*GatewayPushResponse, error)
 	// Subscribe a broadcast channel
 	Subscribe(context.Context, *GatewaySubscribeRequest) (*GatewaySubscribeResponse, error)
+	Unsubscribe(context.Context, *GatewayUnsubscribeRequest) (*GatewayUnsubscribeResponse, error)
+	// Broadcast to a channel
+	Broadcast(context.Context, *GatewayBroadcastRequest) (*GatewayBroadcastResponse, error)
 	mustEmbedUnimplementedGatewayServer()
 }
 
@@ -113,6 +137,12 @@ func (*UnimplementedGatewayServer) Push(context.Context, *GatewayPushRequest) (*
 }
 func (*UnimplementedGatewayServer) Subscribe(context.Context, *GatewaySubscribeRequest) (*GatewaySubscribeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
+}
+func (*UnimplementedGatewayServer) Unsubscribe(context.Context, *GatewayUnsubscribeRequest) (*GatewayUnsubscribeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Unsubscribe not implemented")
+}
+func (*UnimplementedGatewayServer) Broadcast(context.Context, *GatewayBroadcastRequest) (*GatewayBroadcastResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Broadcast not implemented")
 }
 func (*UnimplementedGatewayServer) mustEmbedUnimplementedGatewayServer() {}
 
@@ -177,6 +207,42 @@ func _Gateway_Subscribe_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Gateway_Unsubscribe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GatewayUnsubscribeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).Unsubscribe(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.Gateway/Unsubscribe",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).Unsubscribe(ctx, req.(*GatewayUnsubscribeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Gateway_Broadcast_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GatewayBroadcastRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).Broadcast(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.Gateway/Broadcast",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).Broadcast(ctx, req.(*GatewayBroadcastRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Gateway_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "libra.v1.Gateway",
 	HandlerType: (*GatewayServer)(nil),
@@ -188,6 +254,14 @@ var _Gateway_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Subscribe",
 			Handler:    _Gateway_Subscribe_Handler,
+		},
+		{
+			MethodName: "Unsubscribe",
+			Handler:    _Gateway_Unsubscribe_Handler,
+		},
+		{
+			MethodName: "Broadcast",
+			Handler:    _Gateway_Broadcast_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

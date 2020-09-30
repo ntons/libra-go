@@ -6,6 +6,7 @@ import (
 	v1pb "github.com/ntons/libra-go/api/v1"
 	log "github.com/ntons/log-go"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	pb "google.golang.org/protobuf/proto"
 	anypb "google.golang.org/protobuf/types/known/anypb"
 )
@@ -51,8 +52,12 @@ func (x *sdk) OnReply(callback OnReplyFunc) { x.onReply = callback }
 
 func (x *sdk) PushTo(
 	ctx context.Context, roleId string, msg pb.Message) (err error) {
-	req := &v1pb.GatewayPushRequest{RoleId: roleId}
+	req := &v1pb.GatewayPushRequest{}
 	if req.Data, err = anypb.New(msg); err != nil {
+		return
+	}
+	if err = grpc.SetHeader(
+		ctx, metadata.Pairs("x-libra-role-id", roleId)); err != nil {
 		return
 	}
 	if _, err = v1pb.NewGatewayClient(x).Push(ctx, req); err != nil {
