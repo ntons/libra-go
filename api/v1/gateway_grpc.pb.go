@@ -18,14 +18,14 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GatewayClient interface {
-	// Establish the push stream
-	// Access提供客户端接入服务，签入之后可以获取S->C通信管道
-	// 该接口需要校验客户端合法性
-	Access(ctx context.Context, in *GatewayAccessRequest, opts ...grpc.CallOption) (Gateway_AccessClient, error)
-	// Push message to client
-	Push(ctx context.Context, in *GatewayPushRequest, opts ...grpc.CallOption) (*GatewayPushResponse, error)
-	// Subscribe a broadcast channel
+	// Establish the back pushing stream
+	// Which method name is better ????
+	Connect(ctx context.Context, in *GatewayConnectRequest, opts ...grpc.CallOption) (Gateway_ConnectClient, error)
+	// Send message to client
+	Send(ctx context.Context, in *GatewaySendRequest, opts ...grpc.CallOption) (*GatewaySendResponse, error)
+	// Let a certain client to subscribe broadcast channels
 	Subscribe(ctx context.Context, in *GatewaySubscribeRequest, opts ...grpc.CallOption) (*GatewaySubscribeResponse, error)
+	// let a certain client to unsubscribe broadcast channels
 	Unsubscribe(ctx context.Context, in *GatewayUnsubscribeRequest, opts ...grpc.CallOption) (*GatewayUnsubscribeResponse, error)
 	// Broadcast to a channel
 	Broadcast(ctx context.Context, in *GatewayBroadcastRequest, opts ...grpc.CallOption) (*GatewayBroadcastResponse, error)
@@ -39,12 +39,12 @@ func NewGatewayClient(cc grpc.ClientConnInterface) GatewayClient {
 	return &gatewayClient{cc}
 }
 
-func (c *gatewayClient) Access(ctx context.Context, in *GatewayAccessRequest, opts ...grpc.CallOption) (Gateway_AccessClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Gateway_serviceDesc.Streams[0], "/libra.v1.Gateway/Access", opts...)
+func (c *gatewayClient) Connect(ctx context.Context, in *GatewayConnectRequest, opts ...grpc.CallOption) (Gateway_ConnectClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Gateway_serviceDesc.Streams[0], "/libra.v1.Gateway/Connect", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &gatewayAccessClient{stream}
+	x := &gatewayConnectClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -54,16 +54,16 @@ func (c *gatewayClient) Access(ctx context.Context, in *GatewayAccessRequest, op
 	return x, nil
 }
 
-type Gateway_AccessClient interface {
+type Gateway_ConnectClient interface {
 	Recv() (*any.Any, error)
 	grpc.ClientStream
 }
 
-type gatewayAccessClient struct {
+type gatewayConnectClient struct {
 	grpc.ClientStream
 }
 
-func (x *gatewayAccessClient) Recv() (*any.Any, error) {
+func (x *gatewayConnectClient) Recv() (*any.Any, error) {
 	m := new(any.Any)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -71,9 +71,9 @@ func (x *gatewayAccessClient) Recv() (*any.Any, error) {
 	return m, nil
 }
 
-func (c *gatewayClient) Push(ctx context.Context, in *GatewayPushRequest, opts ...grpc.CallOption) (*GatewayPushResponse, error) {
-	out := new(GatewayPushResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Gateway/Push", in, out, opts...)
+func (c *gatewayClient) Send(ctx context.Context, in *GatewaySendRequest, opts ...grpc.CallOption) (*GatewaySendResponse, error) {
+	out := new(GatewaySendResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.Gateway/Send", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -111,14 +111,14 @@ func (c *gatewayClient) Broadcast(ctx context.Context, in *GatewayBroadcastReque
 // All implementations must embed UnimplementedGatewayServer
 // for forward compatibility
 type GatewayServer interface {
-	// Establish the push stream
-	// Access提供客户端接入服务，签入之后可以获取S->C通信管道
-	// 该接口需要校验客户端合法性
-	Access(*GatewayAccessRequest, Gateway_AccessServer) error
-	// Push message to client
-	Push(context.Context, *GatewayPushRequest) (*GatewayPushResponse, error)
-	// Subscribe a broadcast channel
+	// Establish the back pushing stream
+	// Which method name is better ????
+	Connect(*GatewayConnectRequest, Gateway_ConnectServer) error
+	// Send message to client
+	Send(context.Context, *GatewaySendRequest) (*GatewaySendResponse, error)
+	// Let a certain client to subscribe broadcast channels
 	Subscribe(context.Context, *GatewaySubscribeRequest) (*GatewaySubscribeResponse, error)
+	// let a certain client to unsubscribe broadcast channels
 	Unsubscribe(context.Context, *GatewayUnsubscribeRequest) (*GatewayUnsubscribeResponse, error)
 	// Broadcast to a channel
 	Broadcast(context.Context, *GatewayBroadcastRequest) (*GatewayBroadcastResponse, error)
@@ -129,11 +129,11 @@ type GatewayServer interface {
 type UnimplementedGatewayServer struct {
 }
 
-func (*UnimplementedGatewayServer) Access(*GatewayAccessRequest, Gateway_AccessServer) error {
-	return status.Errorf(codes.Unimplemented, "method Access not implemented")
+func (*UnimplementedGatewayServer) Connect(*GatewayConnectRequest, Gateway_ConnectServer) error {
+	return status.Errorf(codes.Unimplemented, "method Connect not implemented")
 }
-func (*UnimplementedGatewayServer) Push(context.Context, *GatewayPushRequest) (*GatewayPushResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Push not implemented")
+func (*UnimplementedGatewayServer) Send(context.Context, *GatewaySendRequest) (*GatewaySendResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
 }
 func (*UnimplementedGatewayServer) Subscribe(context.Context, *GatewaySubscribeRequest) (*GatewaySubscribeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
@@ -150,41 +150,41 @@ func RegisterGatewayServer(s *grpc.Server, srv GatewayServer) {
 	s.RegisterService(&_Gateway_serviceDesc, srv)
 }
 
-func _Gateway_Access_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(GatewayAccessRequest)
+func _Gateway_Connect_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GatewayConnectRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(GatewayServer).Access(m, &gatewayAccessServer{stream})
+	return srv.(GatewayServer).Connect(m, &gatewayConnectServer{stream})
 }
 
-type Gateway_AccessServer interface {
+type Gateway_ConnectServer interface {
 	Send(*any.Any) error
 	grpc.ServerStream
 }
 
-type gatewayAccessServer struct {
+type gatewayConnectServer struct {
 	grpc.ServerStream
 }
 
-func (x *gatewayAccessServer) Send(m *any.Any) error {
+func (x *gatewayConnectServer) Send(m *any.Any) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _Gateway_Push_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GatewayPushRequest)
+func _Gateway_Send_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GatewaySendRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GatewayServer).Push(ctx, in)
+		return srv.(GatewayServer).Send(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/libra.v1.Gateway/Push",
+		FullMethod: "/libra.v1.Gateway/Send",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServer).Push(ctx, req.(*GatewayPushRequest))
+		return srv.(GatewayServer).Send(ctx, req.(*GatewaySendRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -248,8 +248,8 @@ var _Gateway_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*GatewayServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Push",
-			Handler:    _Gateway_Push_Handler,
+			MethodName: "Send",
+			Handler:    _Gateway_Send_Handler,
 		},
 		{
 			MethodName: "Subscribe",
@@ -266,8 +266,8 @@ var _Gateway_serviceDesc = grpc.ServiceDesc{
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "Access",
-			Handler:       _Gateway_Access_Handler,
+			StreamName:    "Connect",
+			Handler:       _Gateway_Connect_Handler,
 			ServerStreams: true,
 		},
 	},

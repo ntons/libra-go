@@ -14,22 +14,28 @@ import (
 	v1pb "github.com/ntons/libra-go/api/v1"
 )
 
+const (
+	xLibraToken  = "x-libra-token"
+	xLibraTicket = "x-libra-ticket"
+)
+
 type Client interface {
 	grpc.ClientConnInterface
 	Close()
 	Recv(ctx context.Context) (proto.Message, error)
-	Login(ctx context.Context, state proto.Message) (*v1pb.User, error)
-	ListRoles(ctx context.Context) ([]*v1pb.Role, error)
-	CreateRole(ctx context.Context, index int32) (*v1pb.Role, error)
+	Login(ctx context.Context, state proto.Message) (*v1pb.UserData, error)
+	ListRoles(ctx context.Context) ([]*v1pb.RoleData, error)
+	CreateRole(ctx context.Context, index uint32) (*v1pb.RoleData, error)
 	SignIn(ctx context.Context, roleId string) error
+	Connect(ctx context.Context) error
 }
 
 type client struct {
 	grpc.ClientConnInterface
 
 	appId  string
-	userId string // assigned after login
-	roleId string // assigned after sigi in
+	userId string // assigned by login
+	roleId string // assigned by sign in
 
 	// session
 	token  string
@@ -41,8 +47,9 @@ type client struct {
 	cancel context.CancelFunc
 	wg     sync.WaitGroup
 
-	gwapi v1pb.GatewayClient
-	ptapi v1pb.AccountClient
+	gwapi   v1pb.GatewayClient
+	userapi v1pb.UserClient
+	roleapi v1pb.RoleClient
 }
 
 func Dial(appId string, addr string, opts ...DialOption) (_ Client, err error) {
@@ -63,7 +70,8 @@ func Dial(appId string, addr string, opts ...DialOption) (_ Client, err error) {
 		return
 	}
 	cli.gwapi = v1pb.NewGatewayClient(cli)
-	cli.ptapi = v1pb.NewAccountClient(cli)
+	cli.userapi = v1pb.NewUserClient(cli)
+	cli.roleapi = v1pb.NewRoleClient(cli)
 	cli.ctx, cli.cancel = context.WithCancel(context.Background())
 	return cli, nil
 }
@@ -85,39 +93,39 @@ func (cli *client) Recv(ctx context.Context) (msg proto.Message, err error) {
 }
 
 func (cli *client) Login(
-	ctx context.Context, state proto.Message) (user *v1pb.User, err error) {
-	req := &v1pb.AccountLoginRequest{AppId: cli.appId}
+	ctx context.Context, state proto.Message) (user *v1pb.UserData, err error) {
+	req := &v1pb.UserLoginRequest{AppId: cli.appId}
 	if req.State, err = anypb.New(state); err != nil {
 		return
 	}
-	resp, err := cli.ptapi.Login(ctx, req)
+	var header metadata.MD
+	resp, err := cli.userapi.Login(ctx, req, grpc.Header(&header))
 	if err != nil {
 		return
 	}
-	cli.token = resp.Token
+	if v := header.Get(xLibraToken); len(v) != 1 {
+		return nil, fmt.Errorf("miss token in response")
+	} else {
+		cli.token = v[0]
+	}
 	cli.userId = resp.User.Id
 	return resp.User, nil
 }
 
 func (cli *client) ListRoles(
-	ctx context.Context) (roles []*v1pb.Role, err error) {
-	req := &v1pb.AccountListRolesRequest{AppId: cli.appId, Token: cli.token}
-	resp, err := cli.ptapi.ListRoles(ctx, req)
+	ctx context.Context) (roles []*v1pb.RoleData, err error) {
+	req := &v1pb.RoleListRequest{}
+	resp, err := cli.roleapi.List(ctx, req)
 	if err != nil {
 		return
 	}
-	roles = resp.Roles
-	return
+	return resp.Roles, nil
 }
 
 func (cli *client) CreateRole(
-	ctx context.Context, index int32) (role *v1pb.Role, err error) {
-	req := &v1pb.AccountCreateRoleRequest{
-		AppId: cli.appId,
-		Token: cli.token,
-		Index: index,
-	}
-	resp, err := cli.ptapi.CreateRole(ctx, req)
+	ctx context.Context, index uint32) (role *v1pb.RoleData, err error) {
+	req := &v1pb.RoleCreateRequest{Index: index}
+	resp, err := cli.roleapi.Create(ctx, req)
 	if err != nil {
 		return
 	}
@@ -126,31 +134,22 @@ func (cli *client) CreateRole(
 }
 
 func (cli *client) SignIn(ctx context.Context, roleId string) (err error) {
-	if err = cli.signIn(ctx, roleId); err != nil {
+	req := &v1pb.RoleSignInRequest{RoleId: roleId}
+	var header metadata.MD
+	if _, err = cli.roleapi.SignIn(ctx, req, grpc.Header(&header)); err != nil {
 		return
 	}
-	if err = cli.access(ctx); err != nil {
-		return
+	if v := header.Get(xLibraTicket); len(v) != 1 {
+		return fmt.Errorf("miss ticket in response")
+	} else {
+		cli.ticket = v[0]
 	}
-	return
-}
-func (cli *client) signIn(ctx context.Context, roleId string) (err error) {
-	req := &v1pb.AccountSignInRequest{
-		AppId:  cli.appId,
-		Token:  cli.token,
-		RoleId: roleId,
-	}
-	var resp *v1pb.AccountSignInResponse
-	if resp, err = cli.ptapi.SignIn(ctx, req); err != nil {
-		return
-	}
-	cli.ticket = resp.Ticket
 	cli.roleId = roleId
 	return
 }
-func (cli *client) access(ctx context.Context) (err error) {
-	req := &v1pb.GatewayAccessRequest{}
-	stream, err := cli.gwapi.Access(ctx, req)
+func (cli *client) Connect(ctx context.Context) (err error) {
+	req := &v1pb.GatewayConnectRequest{}
+	stream, err := cli.gwapi.Connect(ctx, req)
 	if err != nil {
 		return
 	}
@@ -202,18 +201,11 @@ func (cli *client) streamInterceptor(
 func (cli *client) addMd(
 	ctx context.Context, method string) context.Context {
 	md := metadata.MD{}
-	md.Set("x-libra-app-id", cli.appId)
-	if cli.userId != "" {
-		md.Set("x-libra-user-id", cli.userId)
-	}
-	if cli.roleId != "" {
-		md.Set("x-libra-role-id", cli.roleId)
-	}
 	if cli.token != "" {
-		md.Set("x-libra-token", cli.token)
+		md.Set(xLibraToken, cli.token)
 	}
 	if cli.ticket != "" {
-		md.Set("x-libra-ticket", cli.ticket)
+		md.Set(xLibraTicket, cli.ticket)
 	}
 	return metadata.NewOutgoingContext(ctx, md)
 }

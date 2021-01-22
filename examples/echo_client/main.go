@@ -9,7 +9,6 @@ import (
 
 	"google.golang.org/grpc"
 
-	echopb "github.com/ntons/libra-go/api/sdk/examples/echo"
 	v1pb "github.com/ntons/libra-go/api/v1"
 	"github.com/ntons/libra-go/client/mvc"
 	"github.com/ntons/libra-go/client/sdk"
@@ -21,7 +20,7 @@ var (
 
 type EchoClient struct {
 	mvc.Client
-	echopb.EchoClient
+	v1pb.EchoClient
 }
 
 func dial(addr string) (_ *EchoClient, err error) {
@@ -34,7 +33,7 @@ func dial(addr string) (_ *EchoClient, err error) {
 	}
 	return &EchoClient{
 		Client:     mvc.New(cli),
-		EchoClient: echopb.NewEchoClient(cli),
+		EchoClient: v1pb.NewEchoClient(cli),
 	}, nil
 }
 
@@ -62,6 +61,11 @@ func login(ctx context.Context, cli *EchoClient) (err error) {
 	if err := cli.SignIn(ctx, roles[0].Id); err != nil {
 		return fmt.Errorf("failed to sign in: %v", err)
 	}
+	/*
+		if err := cli.Connect(ctx); err != nil {
+			return fmt.Errorf("failed to access: %v", err)
+		}
+	*/
 	fmt.Println("sign in: ok")
 
 	go func() {
@@ -77,7 +81,7 @@ func login(ctx context.Context, cli *EchoClient) (err error) {
 }
 
 func echo(ctx context.Context, cli *EchoClient, content string) (err error) {
-	resp, err := cli.Send(ctx, &echopb.SendRequest{Content: content})
+	resp, err := cli.Echo(ctx, &v1pb.EchoRequest{Content: content})
 	if err != nil {
 		return fmt.Errorf("failed to say hello: %v", err)
 	}
