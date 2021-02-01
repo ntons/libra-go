@@ -17,10 +17,13 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RoleClient interface {
+	// list all roles belonging to user
 	List(ctx context.Context, in *RoleListRequest, opts ...grpc.CallOption) (*RoleListResponse, error)
+	// create a new role
 	Create(ctx context.Context, in *RoleCreateRequest, opts ...grpc.CallOption) (*RoleCreateResponse, error)
+	// set metadata to role
 	SetMetadata(ctx context.Context, in *RoleSetMetadataRequest, opts ...grpc.CallOption) (*RoleSetMetadataResponse, error)
-	// A x-libra-ticket will be replied by grpc-metadata/http-cookie
+	// a `x-libra-ticket` used to identify a role will be replied via metadata/cookie
 	SignIn(ctx context.Context, in *RoleSignInRequest, opts ...grpc.CallOption) (*RoleSignInResponse, error)
 }
 
@@ -72,10 +75,13 @@ func (c *roleClient) SignIn(ctx context.Context, in *RoleSignInRequest, opts ...
 // All implementations must embed UnimplementedRoleServer
 // for forward compatibility
 type RoleServer interface {
+	// list all roles belonging to user
 	List(context.Context, *RoleListRequest) (*RoleListResponse, error)
+	// create a new role
 	Create(context.Context, *RoleCreateRequest) (*RoleCreateResponse, error)
+	// set metadata to role
 	SetMetadata(context.Context, *RoleSetMetadataRequest) (*RoleSetMetadataResponse, error)
-	// A x-libra-ticket will be replied by grpc-metadata/http-cookie
+	// a `x-libra-ticket` used to identify a role will be replied via metadata/cookie
 	SignIn(context.Context, *RoleSignInRequest) (*RoleSignInResponse, error)
 	mustEmbedUnimplementedRoleServer()
 }

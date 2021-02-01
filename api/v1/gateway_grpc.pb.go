@@ -18,9 +18,14 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GatewayClient interface {
+	////////////////////////////////////////////////////////////////////////////
+	// Methods access from client side
+	////////////////////////////////////////////////////////////////////////////
 	// Establish the back pushing stream
-	// Which method name is better ????
 	Connect(ctx context.Context, in *GatewayConnectRequest, opts ...grpc.CallOption) (Gateway_ConnectClient, error)
+	////////////////////////////////////////////////////////////////////////////
+	// Methods access from server side
+	////////////////////////////////////////////////////////////////////////////
 	// Send message to client
 	Send(ctx context.Context, in *GatewaySendRequest, opts ...grpc.CallOption) (*GatewaySendResponse, error)
 	// Let a certain client to subscribe broadcast channels
@@ -111,9 +116,14 @@ func (c *gatewayClient) Broadcast(ctx context.Context, in *GatewayBroadcastReque
 // All implementations must embed UnimplementedGatewayServer
 // for forward compatibility
 type GatewayServer interface {
+	////////////////////////////////////////////////////////////////////////////
+	// Methods access from client side
+	////////////////////////////////////////////////////////////////////////////
 	// Establish the back pushing stream
-	// Which method name is better ????
 	Connect(*GatewayConnectRequest, Gateway_ConnectServer) error
+	////////////////////////////////////////////////////////////////////////////
+	// Methods access from server side
+	////////////////////////////////////////////////////////////////////////////
 	// Send message to client
 	Send(context.Context, *GatewaySendRequest) (*GatewaySendResponse, error)
 	// Let a certain client to subscribe broadcast channels

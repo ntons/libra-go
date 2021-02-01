@@ -17,10 +17,13 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
-	// A x-libra-token will be replied by grpc-metadata/http-cookie
+	// A `x-libra-token` used to identify a user will be replied via metadata/cookie
 	Login(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error)
+	// logout invalidate x-libra-token
 	Logout(ctx context.Context, in *UserLogoutRequest, opts ...grpc.CallOption) (*UserLogoutResponse, error)
+	// bind an account to user
 	Bind(ctx context.Context, in *UserBindRequest, opts ...grpc.CallOption) (*UserBindResponse, error)
+	// set metadata to user
 	SetMetadata(ctx context.Context, in *UserSetMetadataRequest, opts ...grpc.CallOption) (*UserSetMetadataResponse, error)
 }
 
@@ -72,10 +75,13 @@ func (c *userClient) SetMetadata(ctx context.Context, in *UserSetMetadataRequest
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
 type UserServer interface {
-	// A x-libra-token will be replied by grpc-metadata/http-cookie
+	// A `x-libra-token` used to identify a user will be replied via metadata/cookie
 	Login(context.Context, *UserLoginRequest) (*UserLoginResponse, error)
+	// logout invalidate x-libra-token
 	Logout(context.Context, *UserLogoutRequest) (*UserLogoutResponse, error)
+	// bind an account to user
 	Bind(context.Context, *UserBindRequest) (*UserBindResponse, error)
+	// set metadata to user
 	SetMetadata(context.Context, *UserSetMetadataRequest) (*UserSetMetadataResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
