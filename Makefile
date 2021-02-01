@@ -2,6 +2,9 @@
 
 all:
 
+init:
+	git submodule update --init --recursive
+
 api: $(shell find protos/libra-api ! -path '*/google/*' -name "*.proto")
 	mkdir -p api && rm -rf api/*
 	for PROTO in $^; do \
