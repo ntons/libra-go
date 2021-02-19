@@ -11,14 +11,14 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
+// Requires gRPC-Go v1.32.0 or later.
+const _ = grpc.SupportPackageIsVersion7
 
 // DatabaseClient is the client API for Database service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DatabaseClient interface {
 	RegisterSchema(ctx context.Context, in *DatabaseRegisterSchemaRequest, opts ...grpc.CallOption) (*DatabaseRegisterSchemaResponse, error)
-	// get/set data
 	Get(ctx context.Context, in *DatabaseGetRequest, opts ...grpc.CallOption) (*DatabaseGetResponse, error)
 	Set(ctx context.Context, in *DatabaseSetRequest, opts ...grpc.CallOption) (*DatabaseSetResponse, error)
 }
@@ -63,7 +63,6 @@ func (c *databaseClient) Set(ctx context.Context, in *DatabaseSetRequest, opts .
 // for forward compatibility
 type DatabaseServer interface {
 	RegisterSchema(context.Context, *DatabaseRegisterSchemaRequest) (*DatabaseRegisterSchemaResponse, error)
-	// get/set data
 	Get(context.Context, *DatabaseGetRequest) (*DatabaseGetResponse, error)
 	Set(context.Context, *DatabaseSetRequest) (*DatabaseSetResponse, error)
 	mustEmbedUnimplementedDatabaseServer()
@@ -73,19 +72,26 @@ type DatabaseServer interface {
 type UnimplementedDatabaseServer struct {
 }
 
-func (*UnimplementedDatabaseServer) RegisterSchema(context.Context, *DatabaseRegisterSchemaRequest) (*DatabaseRegisterSchemaResponse, error) {
+func (UnimplementedDatabaseServer) RegisterSchema(context.Context, *DatabaseRegisterSchemaRequest) (*DatabaseRegisterSchemaResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterSchema not implemented")
 }
-func (*UnimplementedDatabaseServer) Get(context.Context, *DatabaseGetRequest) (*DatabaseGetResponse, error) {
+func (UnimplementedDatabaseServer) Get(context.Context, *DatabaseGetRequest) (*DatabaseGetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (*UnimplementedDatabaseServer) Set(context.Context, *DatabaseSetRequest) (*DatabaseSetResponse, error) {
+func (UnimplementedDatabaseServer) Set(context.Context, *DatabaseSetRequest) (*DatabaseSetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Set not implemented")
 }
-func (*UnimplementedDatabaseServer) mustEmbedUnimplementedDatabaseServer() {}
+func (UnimplementedDatabaseServer) mustEmbedUnimplementedDatabaseServer() {}
 
-func RegisterDatabaseServer(s *grpc.Server, srv DatabaseServer) {
-	s.RegisterService(&_Database_serviceDesc, srv)
+// UnsafeDatabaseServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to DatabaseServer will
+// result in compilation errors.
+type UnsafeDatabaseServer interface {
+	mustEmbedUnimplementedDatabaseServer()
+}
+
+func RegisterDatabaseServer(s grpc.ServiceRegistrar, srv DatabaseServer) {
+	s.RegisterService(&Database_ServiceDesc, srv)
 }
 
 func _Database_RegisterSchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -142,7 +148,10 @@ func _Database_Set_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-var _Database_serviceDesc = grpc.ServiceDesc{
+// Database_ServiceDesc is the grpc.ServiceDesc for Database service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Database_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "libra.v1.Database",
 	HandlerType: (*DatabaseServer)(nil),
 	Methods: []grpc.MethodDesc{

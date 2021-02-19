@@ -11,7 +11,8 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
+// Requires gRPC-Go v1.32.0 or later.
+const _ = grpc.SupportPackageIsVersion7
 
 // LeaderboardClient is the client API for Leaderboard service.
 //
@@ -120,28 +121,35 @@ type LeaderboardServer interface {
 type UnimplementedLeaderboardServer struct {
 }
 
-func (*UnimplementedLeaderboardServer) SetScore(context.Context, *LeaderboardSetScoreRequest) (*LeaderboardSetScoreResponse, error) {
+func (UnimplementedLeaderboardServer) SetScore(context.Context, *LeaderboardSetScoreRequest) (*LeaderboardSetScoreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetScore not implemented")
 }
-func (*UnimplementedLeaderboardServer) IncrScore(context.Context, *LeaderboardIncrScoreRequest) (*LeaderboardIncrScoreResponse, error) {
+func (UnimplementedLeaderboardServer) IncrScore(context.Context, *LeaderboardIncrScoreRequest) (*LeaderboardIncrScoreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IncrScore not implemented")
 }
-func (*UnimplementedLeaderboardServer) GetRange(context.Context, *LeaderboardGetRangeRequest) (*LeaderboardGetRangeResponse, error) {
+func (UnimplementedLeaderboardServer) GetRange(context.Context, *LeaderboardGetRangeRequest) (*LeaderboardGetRangeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRange not implemented")
 }
-func (*UnimplementedLeaderboardServer) GetById(context.Context, *LeaderboardGetByIdRequest) (*LeaderboardGetByIdResponse, error) {
+func (UnimplementedLeaderboardServer) GetById(context.Context, *LeaderboardGetByIdRequest) (*LeaderboardGetByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
-func (*UnimplementedLeaderboardServer) RemoveById(context.Context, *LeaderboardRemoveByIdRequest) (*LeaderboardRemoveByIdResponse, error) {
+func (UnimplementedLeaderboardServer) RemoveById(context.Context, *LeaderboardRemoveByIdRequest) (*LeaderboardRemoveByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveById not implemented")
 }
-func (*UnimplementedLeaderboardServer) SetInfo(context.Context, *LeaderboardSetInfoRequest) (*LeaderboardSetInfoResponse, error) {
+func (UnimplementedLeaderboardServer) SetInfo(context.Context, *LeaderboardSetInfoRequest) (*LeaderboardSetInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetInfo not implemented")
 }
-func (*UnimplementedLeaderboardServer) mustEmbedUnimplementedLeaderboardServer() {}
+func (UnimplementedLeaderboardServer) mustEmbedUnimplementedLeaderboardServer() {}
 
-func RegisterLeaderboardServer(s *grpc.Server, srv LeaderboardServer) {
-	s.RegisterService(&_Leaderboard_serviceDesc, srv)
+// UnsafeLeaderboardServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to LeaderboardServer will
+// result in compilation errors.
+type UnsafeLeaderboardServer interface {
+	mustEmbedUnimplementedLeaderboardServer()
+}
+
+func RegisterLeaderboardServer(s grpc.ServiceRegistrar, srv LeaderboardServer) {
+	s.RegisterService(&Leaderboard_ServiceDesc, srv)
 }
 
 func _Leaderboard_SetScore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -252,7 +260,10 @@ func _Leaderboard_SetInfo_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-var _Leaderboard_serviceDesc = grpc.ServiceDesc{
+// Leaderboard_ServiceDesc is the grpc.ServiceDesc for Leaderboard service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Leaderboard_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "libra.v1.Leaderboard",
 	HandlerType: (*LeaderboardServer)(nil),
 	Methods: []grpc.MethodDesc{

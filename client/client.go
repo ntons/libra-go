@@ -1,4 +1,4 @@
-package sdk
+package client
 
 import (
 	"context"
@@ -19,19 +19,13 @@ const (
 	xLibraTicket = "x-libra-ticket"
 )
 
-type Client interface {
+type Client struct {
 	grpc.ClientConnInterface
-	Close()
-	Recv(ctx context.Context) (proto.Message, error)
-	Login(ctx context.Context, state proto.Message) (*v1pb.UserData, error)
-	ListRoles(ctx context.Context) ([]*v1pb.RoleData, error)
-	CreateRole(ctx context.Context, index uint32) (*v1pb.RoleData, error)
-	SignIn(ctx context.Context, roleId string) error
-	Connect(ctx context.Context) error
-}
 
-type client struct {
-	grpc.ClientConnInterface
+	// libra clients
+	user    v1pb.UserClient
+	role    v1pb.RoleClient
+	gateway v1pb.GatewayClient
 
 	appId  string
 	userId string // assigned by login
@@ -46,60 +40,45 @@ type client struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 	wg     sync.WaitGroup
-
-	gwapi   v1pb.GatewayClient
-	userapi v1pb.UserClient
-	roleapi v1pb.RoleClient
 }
 
-func Dial(appId string, addr string, opts ...DialOption) (_ Client, err error) {
-	var o dialOptions
-	for _, opt := range opts {
-		opt.apply(&o)
-	}
-	cli := &client{
+// dail to libra edge proxy
+func Dial(
+	appId string, addr string, opts ...grpc.DialOption) (_ *Client, err error) {
+	cli := &Client{
 		appId:   appId,
 		msgChan: make(chan proto.Message, 64),
 	}
 	if cli.ClientConnInterface, err = grpc.Dial(
-		addr, append([]grpc.DialOption{
-			grpc.WithUnaryInterceptor(cli.unaryInterceptor),
-			grpc.WithStreamInterceptor(cli.streamInterceptor),
-		}, o.dialOptions...)...,
+		addr,
+		append(
+			opts,
+			grpc.WithUnaryInterceptor(cli.interceptUnary),
+			grpc.WithStreamInterceptor(cli.interceptStream),
+		)...,
 	); err != nil {
 		return
 	}
-	cli.gwapi = v1pb.NewGatewayClient(cli)
-	cli.userapi = v1pb.NewUserClient(cli)
-	cli.roleapi = v1pb.NewRoleClient(cli)
+	cli.user = v1pb.NewUserClient(cli)
+	cli.role = v1pb.NewRoleClient(cli)
+	cli.gateway = v1pb.NewGatewayClient(cli)
 	cli.ctx, cli.cancel = context.WithCancel(context.Background())
 	return cli, nil
 }
 
-func (cli *client) Close() {
+func (cli *Client) Close() {
 	cli.cancel()
 	cli.wg.Wait()
 }
 
-func (cli *client) Recv(ctx context.Context) (msg proto.Message, err error) {
-	select {
-	case <-ctx.Done():
-		err = ctx.Err()
-	case <-cli.ctx.Done():
-		err = cli.ctx.Err()
-	case msg = <-cli.msgChan:
-	}
-	return
-}
-
-func (cli *client) Login(
+func (cli *Client) Login(
 	ctx context.Context, state proto.Message) (user *v1pb.UserData, err error) {
 	req := &v1pb.UserLoginRequest{AppId: cli.appId}
 	if req.State, err = anypb.New(state); err != nil {
 		return
 	}
 	var header metadata.MD
-	resp, err := cli.userapi.Login(ctx, req, grpc.Header(&header))
+	resp, err := cli.user.Login(ctx, req, grpc.Header(&header))
 	if err != nil {
 		return
 	}
@@ -112,20 +91,20 @@ func (cli *client) Login(
 	return resp.User, nil
 }
 
-func (cli *client) ListRoles(
+func (cli *Client) ListRoles(
 	ctx context.Context) (roles []*v1pb.RoleData, err error) {
 	req := &v1pb.RoleListRequest{}
-	resp, err := cli.roleapi.List(ctx, req)
+	resp, err := cli.role.List(ctx, req)
 	if err != nil {
 		return
 	}
 	return resp.Roles, nil
 }
 
-func (cli *client) CreateRole(
+func (cli *Client) CreateRole(
 	ctx context.Context, index uint32) (role *v1pb.RoleData, err error) {
 	req := &v1pb.RoleCreateRequest{Index: index}
-	resp, err := cli.roleapi.Create(ctx, req)
+	resp, err := cli.role.Create(ctx, req)
 	if err != nil {
 		return
 	}
@@ -133,10 +112,10 @@ func (cli *client) CreateRole(
 	return
 }
 
-func (cli *client) SignIn(ctx context.Context, roleId string) (err error) {
+func (cli *Client) SignIn(ctx context.Context, roleId string) (err error) {
 	req := &v1pb.RoleSignInRequest{RoleId: roleId}
 	var header metadata.MD
-	if _, err = cli.roleapi.SignIn(ctx, req, grpc.Header(&header)); err != nil {
+	if _, err = cli.role.SignIn(ctx, req, grpc.Header(&header)); err != nil {
 		return
 	}
 	if v := header.Get(xLibraTicket); len(v) != 1 {
@@ -147,9 +126,10 @@ func (cli *client) SignIn(ctx context.Context, roleId string) (err error) {
 	cli.roleId = roleId
 	return
 }
-func (cli *client) Connect(ctx context.Context) (err error) {
+
+func (cli *Client) Connect(ctx context.Context) (err error) {
 	req := &v1pb.GatewayConnectRequest{}
-	stream, err := cli.gwapi.Connect(ctx, req)
+	stream, err := cli.gateway.Connect(ctx, req)
 	if err != nil {
 		return
 	}
@@ -185,21 +165,30 @@ func (cli *client) Connect(ctx context.Context) (err error) {
 	}()
 	return
 }
+func (cli *Client) Recv(ctx context.Context) (msg proto.Message, err error) {
+	select {
+	case <-ctx.Done():
+		err = ctx.Err()
+	case <-cli.ctx.Done():
+		err = cli.ctx.Err()
+	case msg = <-cli.msgChan:
+	}
+	return
+}
 
-func (cli *client) unaryInterceptor(
+func (cli *Client) interceptUnary(
 	ctx context.Context, method string, req, reply interface{},
 	cc *grpc.ClientConn, invoker grpc.UnaryInvoker,
 	opts ...grpc.CallOption) error {
-	return invoker(cli.addMd(ctx, method), method, req, reply, cc, opts...)
+	return invoker(cli.withState(ctx), method, req, reply, cc, opts...)
 }
-func (cli *client) streamInterceptor(
+func (cli *Client) interceptStream(
 	ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn,
 	method string, streamer grpc.Streamer, opts ...grpc.CallOption) (
 	grpc.ClientStream, error) {
-	return streamer(cli.addMd(ctx, method), desc, cc, method, opts...)
+	return streamer(cli.withState(ctx), desc, cc, method, opts...)
 }
-func (cli *client) addMd(
-	ctx context.Context, method string) context.Context {
+func (cli *Client) withState(ctx context.Context) context.Context {
 	md := metadata.MD{}
 	if cli.token != "" {
 		md.Set(xLibraToken, cli.token)

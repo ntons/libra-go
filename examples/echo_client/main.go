@@ -4,14 +4,15 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"time"
 
 	"google.golang.org/grpc"
 
+	echopb "github.com/ntons/libra-go/api/examples/echo"
 	v1pb "github.com/ntons/libra-go/api/v1"
-	"github.com/ntons/libra-go/client/mvc"
-	"github.com/ntons/libra-go/client/sdk"
+	"github.com/ntons/libra-go/client"
 )
 
 var (
@@ -19,21 +20,18 @@ var (
 )
 
 type EchoClient struct {
-	mvc.Client
-	v1pb.EchoClient
+	*client.Client
+	echopb.EchoClient
 }
 
 func dial(addr string) (_ *EchoClient, err error) {
-	cli, err := sdk.Dial(
-		appId, addr,
-		sdk.WithGrpcDialOption(grpc.WithInsecure()),
-	)
+	cli, err := client.Dial(appId, addr, grpc.WithInsecure())
 	if err != nil {
 		return
 	}
 	return &EchoClient{
-		Client:     mvc.New(cli),
-		EchoClient: v1pb.NewEchoClient(cli),
+		Client:     cli,
+		EchoClient: echopb.NewEchoClient(cli),
 	}, nil
 }
 
@@ -80,24 +78,40 @@ func login(ctx context.Context, cli *EchoClient) (err error) {
 	return
 }
 
-func echo(ctx context.Context, cli *EchoClient, content string) (err error) {
-	resp, err := cli.Echo(ctx, &v1pb.EchoRequest{Content: content})
+func echo(ctx context.Context, cli *EchoClient) (err error) {
+	resp, err := cli.Echo(ctx, &echopb.EchoRequest{Content: "hello"})
 	if err != nil {
 		return fmt.Errorf("failed to say hello: %v", err)
 	}
-	fmt.Println("reply: ", resp)
+	fmt.Println("echo reply: ", resp.Content)
+	return
+}
 
-	<-time.After(time.Second)
+func repeat(ctx context.Context, cli *EchoClient) (err error) {
+	stream, err := cli.Repeat(ctx, &echopb.EchoRepeatRequest{
+		Content:  "hello",
+		Interval: 100,
+		Count:    10,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to repeat: %v", err)
+	}
+	for i := 1; ; i++ {
+		resp, err := stream.Recv()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return fmt.Errorf("failed to recv: %v", err)
+		}
+		fmt.Printf("repeat reply %02d: %v\n", i, resp.Content)
+	}
 	return
 }
 
 func main() {
-	var (
-		address string
-		content string
-	)
+	var address string
 	flag.StringVar(&address, "a", "127.0.0.1:10000", "server address")
-	flag.StringVar(&content, "m", "hello", "message content")
 	flag.Parse()
 
 	cli, err := dial(address)
@@ -107,16 +121,19 @@ func main() {
 	}
 	defer cli.Close()
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	if err = login(ctx, cli); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	if err := echo(ctx, cli, content); err != nil {
+	if err := echo(ctx, cli); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	<-ctx.Done()
+	if err := repeat(ctx, cli); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }

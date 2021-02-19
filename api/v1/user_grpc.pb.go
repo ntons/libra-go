@@ -11,19 +11,16 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
+// Requires gRPC-Go v1.32.0 or later.
+const _ = grpc.SupportPackageIsVersion7
 
 // UserClient is the client API for User service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
-	// A `x-libra-token` used to identify a user will be replied via metadata/cookie
 	Login(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error)
-	// logout invalidate x-libra-token
 	Logout(ctx context.Context, in *UserLogoutRequest, opts ...grpc.CallOption) (*UserLogoutResponse, error)
-	// bind an account to user
 	Bind(ctx context.Context, in *UserBindRequest, opts ...grpc.CallOption) (*UserBindResponse, error)
-	// set metadata to user
 	SetMetadata(ctx context.Context, in *UserSetMetadataRequest, opts ...grpc.CallOption) (*UserSetMetadataResponse, error)
 }
 
@@ -75,13 +72,9 @@ func (c *userClient) SetMetadata(ctx context.Context, in *UserSetMetadataRequest
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
 type UserServer interface {
-	// A `x-libra-token` used to identify a user will be replied via metadata/cookie
 	Login(context.Context, *UserLoginRequest) (*UserLoginResponse, error)
-	// logout invalidate x-libra-token
 	Logout(context.Context, *UserLogoutRequest) (*UserLogoutResponse, error)
-	// bind an account to user
 	Bind(context.Context, *UserBindRequest) (*UserBindResponse, error)
-	// set metadata to user
 	SetMetadata(context.Context, *UserSetMetadataRequest) (*UserSetMetadataResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
@@ -90,22 +83,29 @@ type UserServer interface {
 type UnimplementedUserServer struct {
 }
 
-func (*UnimplementedUserServer) Login(context.Context, *UserLoginRequest) (*UserLoginResponse, error) {
+func (UnimplementedUserServer) Login(context.Context, *UserLoginRequest) (*UserLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (*UnimplementedUserServer) Logout(context.Context, *UserLogoutRequest) (*UserLogoutResponse, error) {
+func (UnimplementedUserServer) Logout(context.Context, *UserLogoutRequest) (*UserLogoutResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
 }
-func (*UnimplementedUserServer) Bind(context.Context, *UserBindRequest) (*UserBindResponse, error) {
+func (UnimplementedUserServer) Bind(context.Context, *UserBindRequest) (*UserBindResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Bind not implemented")
 }
-func (*UnimplementedUserServer) SetMetadata(context.Context, *UserSetMetadataRequest) (*UserSetMetadataResponse, error) {
+func (UnimplementedUserServer) SetMetadata(context.Context, *UserSetMetadataRequest) (*UserSetMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetMetadata not implemented")
 }
-func (*UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
+func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
-func RegisterUserServer(s *grpc.Server, srv UserServer) {
-	s.RegisterService(&_User_serviceDesc, srv)
+// UnsafeUserServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to UserServer will
+// result in compilation errors.
+type UnsafeUserServer interface {
+	mustEmbedUnimplementedUserServer()
+}
+
+func RegisterUserServer(s grpc.ServiceRegistrar, srv UserServer) {
+	s.RegisterService(&User_ServiceDesc, srv)
 }
 
 func _User_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -180,7 +180,10 @@ func _User_SetMetadata_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
-var _User_serviceDesc = grpc.ServiceDesc{
+// User_ServiceDesc is the grpc.ServiceDesc for User service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var User_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "libra.v1.User",
 	HandlerType: (*UserServer)(nil),
 	Methods: []grpc.MethodDesc{

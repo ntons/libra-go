@@ -7,12 +7,8 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	sdkpb "github.com/ntons/libra-go/api/sdk/v1"
-	"github.com/ntons/libra-go/client/sdk"
+	sdk "github.com/ntons/libra-go/client"
 )
-
-type Client interface {
-	sdk.Client
-}
 
 type client struct {
 	sdk.Client

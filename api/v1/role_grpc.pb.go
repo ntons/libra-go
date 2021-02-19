@@ -11,20 +11,17 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
+// Requires gRPC-Go v1.32.0 or later.
+const _ = grpc.SupportPackageIsVersion7
 
 // RoleClient is the client API for Role service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RoleClient interface {
-	// list all roles belonging to user
 	List(ctx context.Context, in *RoleListRequest, opts ...grpc.CallOption) (*RoleListResponse, error)
-	// create a new role
 	Create(ctx context.Context, in *RoleCreateRequest, opts ...grpc.CallOption) (*RoleCreateResponse, error)
-	// set metadata to role
-	SetMetadata(ctx context.Context, in *RoleSetMetadataRequest, opts ...grpc.CallOption) (*RoleSetMetadataResponse, error)
-	// a `x-libra-ticket` used to identify a role will be replied via metadata/cookie
 	SignIn(ctx context.Context, in *RoleSignInRequest, opts ...grpc.CallOption) (*RoleSignInResponse, error)
+	SetMetadata(ctx context.Context, in *RoleSetMetadataRequest, opts ...grpc.CallOption) (*RoleSetMetadataResponse, error)
 }
 
 type roleClient struct {
@@ -53,18 +50,18 @@ func (c *roleClient) Create(ctx context.Context, in *RoleCreateRequest, opts ...
 	return out, nil
 }
 
-func (c *roleClient) SetMetadata(ctx context.Context, in *RoleSetMetadataRequest, opts ...grpc.CallOption) (*RoleSetMetadataResponse, error) {
-	out := new(RoleSetMetadataResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Role/SetMetadata", in, out, opts...)
+func (c *roleClient) SignIn(ctx context.Context, in *RoleSignInRequest, opts ...grpc.CallOption) (*RoleSignInResponse, error) {
+	out := new(RoleSignInResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.Role/SignIn", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *roleClient) SignIn(ctx context.Context, in *RoleSignInRequest, opts ...grpc.CallOption) (*RoleSignInResponse, error) {
-	out := new(RoleSignInResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Role/SignIn", in, out, opts...)
+func (c *roleClient) SetMetadata(ctx context.Context, in *RoleSetMetadataRequest, opts ...grpc.CallOption) (*RoleSetMetadataResponse, error) {
+	out := new(RoleSetMetadataResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.Role/SetMetadata", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,14 +72,10 @@ func (c *roleClient) SignIn(ctx context.Context, in *RoleSignInRequest, opts ...
 // All implementations must embed UnimplementedRoleServer
 // for forward compatibility
 type RoleServer interface {
-	// list all roles belonging to user
 	List(context.Context, *RoleListRequest) (*RoleListResponse, error)
-	// create a new role
 	Create(context.Context, *RoleCreateRequest) (*RoleCreateResponse, error)
-	// set metadata to role
-	SetMetadata(context.Context, *RoleSetMetadataRequest) (*RoleSetMetadataResponse, error)
-	// a `x-libra-ticket` used to identify a role will be replied via metadata/cookie
 	SignIn(context.Context, *RoleSignInRequest) (*RoleSignInResponse, error)
+	SetMetadata(context.Context, *RoleSetMetadataRequest) (*RoleSetMetadataResponse, error)
 	mustEmbedUnimplementedRoleServer()
 }
 
@@ -90,22 +83,29 @@ type RoleServer interface {
 type UnimplementedRoleServer struct {
 }
 
-func (*UnimplementedRoleServer) List(context.Context, *RoleListRequest) (*RoleListResponse, error) {
+func (UnimplementedRoleServer) List(context.Context, *RoleListRequest) (*RoleListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
-func (*UnimplementedRoleServer) Create(context.Context, *RoleCreateRequest) (*RoleCreateResponse, error) {
+func (UnimplementedRoleServer) Create(context.Context, *RoleCreateRequest) (*RoleCreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (*UnimplementedRoleServer) SetMetadata(context.Context, *RoleSetMetadataRequest) (*RoleSetMetadataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetMetadata not implemented")
-}
-func (*UnimplementedRoleServer) SignIn(context.Context, *RoleSignInRequest) (*RoleSignInResponse, error) {
+func (UnimplementedRoleServer) SignIn(context.Context, *RoleSignInRequest) (*RoleSignInResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignIn not implemented")
 }
-func (*UnimplementedRoleServer) mustEmbedUnimplementedRoleServer() {}
+func (UnimplementedRoleServer) SetMetadata(context.Context, *RoleSetMetadataRequest) (*RoleSetMetadataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetMetadata not implemented")
+}
+func (UnimplementedRoleServer) mustEmbedUnimplementedRoleServer() {}
 
-func RegisterRoleServer(s *grpc.Server, srv RoleServer) {
-	s.RegisterService(&_Role_serviceDesc, srv)
+// UnsafeRoleServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to RoleServer will
+// result in compilation errors.
+type UnsafeRoleServer interface {
+	mustEmbedUnimplementedRoleServer()
+}
+
+func RegisterRoleServer(s grpc.ServiceRegistrar, srv RoleServer) {
+	s.RegisterService(&Role_ServiceDesc, srv)
 }
 
 func _Role_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -144,24 +144,6 @@ func _Role_Create_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Role_SetMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RoleSetMetadataRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RoleServer).SetMetadata(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/libra.v1.Role/SetMetadata",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RoleServer).SetMetadata(ctx, req.(*RoleSetMetadataRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Role_SignIn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RoleSignInRequest)
 	if err := dec(in); err != nil {
@@ -180,7 +162,28 @@ func _Role_SignIn_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
-var _Role_serviceDesc = grpc.ServiceDesc{
+func _Role_SetMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RoleSetMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RoleServer).SetMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.Role/SetMetadata",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RoleServer).SetMetadata(ctx, req.(*RoleSetMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Role_ServiceDesc is the grpc.ServiceDesc for Role service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Role_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "libra.v1.Role",
 	HandlerType: (*RoleServer)(nil),
 	Methods: []grpc.MethodDesc{
@@ -193,12 +196,12 @@ var _Role_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Role_Create_Handler,
 		},
 		{
-			MethodName: "SetMetadata",
-			Handler:    _Role_SetMetadata_Handler,
-		},
-		{
 			MethodName: "SignIn",
 			Handler:    _Role_SignIn_Handler,
+		},
+		{
+			MethodName: "SetMetadata",
+			Handler:    _Role_SetMetadata_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
