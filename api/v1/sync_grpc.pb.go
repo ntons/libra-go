@@ -11,13 +11,13 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
+// Requires gRPC-Go v1.32.0 or later.
+const _ = grpc.SupportPackageIsVersion7
 
 // SyncClient is the client API for Sync service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SyncClient interface {
-	// lock/unlock
 	Lock(ctx context.Context, in *SyncLockRequest, opts ...grpc.CallOption) (*SyncLockResponse, error)
 	Unlock(ctx context.Context, in *SyncUnlockRequest, opts ...grpc.CallOption) (*SyncUnlockResponse, error)
 }
@@ -52,7 +52,6 @@ func (c *syncClient) Unlock(ctx context.Context, in *SyncUnlockRequest, opts ...
 // All implementations must embed UnimplementedSyncServer
 // for forward compatibility
 type SyncServer interface {
-	// lock/unlock
 	Lock(context.Context, *SyncLockRequest) (*SyncLockResponse, error)
 	Unlock(context.Context, *SyncUnlockRequest) (*SyncUnlockResponse, error)
 	mustEmbedUnimplementedSyncServer()
@@ -62,16 +61,23 @@ type SyncServer interface {
 type UnimplementedSyncServer struct {
 }
 
-func (*UnimplementedSyncServer) Lock(context.Context, *SyncLockRequest) (*SyncLockResponse, error) {
+func (UnimplementedSyncServer) Lock(context.Context, *SyncLockRequest) (*SyncLockResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Lock not implemented")
 }
-func (*UnimplementedSyncServer) Unlock(context.Context, *SyncUnlockRequest) (*SyncUnlockResponse, error) {
+func (UnimplementedSyncServer) Unlock(context.Context, *SyncUnlockRequest) (*SyncUnlockResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Unlock not implemented")
 }
-func (*UnimplementedSyncServer) mustEmbedUnimplementedSyncServer() {}
+func (UnimplementedSyncServer) mustEmbedUnimplementedSyncServer() {}
 
-func RegisterSyncServer(s *grpc.Server, srv SyncServer) {
-	s.RegisterService(&_Sync_serviceDesc, srv)
+// UnsafeSyncServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to SyncServer will
+// result in compilation errors.
+type UnsafeSyncServer interface {
+	mustEmbedUnimplementedSyncServer()
+}
+
+func RegisterSyncServer(s grpc.ServiceRegistrar, srv SyncServer) {
+	s.RegisterService(&Sync_ServiceDesc, srv)
 }
 
 func _Sync_Lock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -110,7 +116,10 @@ func _Sync_Unlock_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
-var _Sync_serviceDesc = grpc.ServiceDesc{
+// Sync_ServiceDesc is the grpc.ServiceDesc for Sync service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Sync_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "libra.v1.Sync",
 	HandlerType: (*SyncServer)(nil),
 	Methods: []grpc.MethodDesc{

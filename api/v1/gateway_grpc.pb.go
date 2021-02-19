@@ -4,15 +4,16 @@ package v1
 
 import (
 	context "context"
-	any "github.com/golang/protobuf/ptypes/any"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	anypb "google.golang.org/protobuf/types/known/anypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
+// Requires gRPC-Go v1.32.0 or later.
+const _ = grpc.SupportPackageIsVersion7
 
 // GatewayClient is the client API for Gateway service.
 //
@@ -45,7 +46,7 @@ func NewGatewayClient(cc grpc.ClientConnInterface) GatewayClient {
 }
 
 func (c *gatewayClient) Connect(ctx context.Context, in *GatewayConnectRequest, opts ...grpc.CallOption) (Gateway_ConnectClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Gateway_serviceDesc.Streams[0], "/libra.v1.Gateway/Connect", opts...)
+	stream, err := c.cc.NewStream(ctx, &Gateway_ServiceDesc.Streams[0], "/libra.v1.Gateway/Connect", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +61,7 @@ func (c *gatewayClient) Connect(ctx context.Context, in *GatewayConnectRequest, 
 }
 
 type Gateway_ConnectClient interface {
-	Recv() (*any.Any, error)
+	Recv() (*anypb.Any, error)
 	grpc.ClientStream
 }
 
@@ -68,8 +69,8 @@ type gatewayConnectClient struct {
 	grpc.ClientStream
 }
 
-func (x *gatewayConnectClient) Recv() (*any.Any, error) {
-	m := new(any.Any)
+func (x *gatewayConnectClient) Recv() (*anypb.Any, error) {
+	m := new(anypb.Any)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -139,25 +140,32 @@ type GatewayServer interface {
 type UnimplementedGatewayServer struct {
 }
 
-func (*UnimplementedGatewayServer) Connect(*GatewayConnectRequest, Gateway_ConnectServer) error {
+func (UnimplementedGatewayServer) Connect(*GatewayConnectRequest, Gateway_ConnectServer) error {
 	return status.Errorf(codes.Unimplemented, "method Connect not implemented")
 }
-func (*UnimplementedGatewayServer) Send(context.Context, *GatewaySendRequest) (*GatewaySendResponse, error) {
+func (UnimplementedGatewayServer) Send(context.Context, *GatewaySendRequest) (*GatewaySendResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
 }
-func (*UnimplementedGatewayServer) Subscribe(context.Context, *GatewaySubscribeRequest) (*GatewaySubscribeResponse, error) {
+func (UnimplementedGatewayServer) Subscribe(context.Context, *GatewaySubscribeRequest) (*GatewaySubscribeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
 }
-func (*UnimplementedGatewayServer) Unsubscribe(context.Context, *GatewayUnsubscribeRequest) (*GatewayUnsubscribeResponse, error) {
+func (UnimplementedGatewayServer) Unsubscribe(context.Context, *GatewayUnsubscribeRequest) (*GatewayUnsubscribeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Unsubscribe not implemented")
 }
-func (*UnimplementedGatewayServer) Broadcast(context.Context, *GatewayBroadcastRequest) (*GatewayBroadcastResponse, error) {
+func (UnimplementedGatewayServer) Broadcast(context.Context, *GatewayBroadcastRequest) (*GatewayBroadcastResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Broadcast not implemented")
 }
-func (*UnimplementedGatewayServer) mustEmbedUnimplementedGatewayServer() {}
+func (UnimplementedGatewayServer) mustEmbedUnimplementedGatewayServer() {}
 
-func RegisterGatewayServer(s *grpc.Server, srv GatewayServer) {
-	s.RegisterService(&_Gateway_serviceDesc, srv)
+// UnsafeGatewayServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to GatewayServer will
+// result in compilation errors.
+type UnsafeGatewayServer interface {
+	mustEmbedUnimplementedGatewayServer()
+}
+
+func RegisterGatewayServer(s grpc.ServiceRegistrar, srv GatewayServer) {
+	s.RegisterService(&Gateway_ServiceDesc, srv)
 }
 
 func _Gateway_Connect_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -169,7 +177,7 @@ func _Gateway_Connect_Handler(srv interface{}, stream grpc.ServerStream) error {
 }
 
 type Gateway_ConnectServer interface {
-	Send(*any.Any) error
+	Send(*anypb.Any) error
 	grpc.ServerStream
 }
 
@@ -177,7 +185,7 @@ type gatewayConnectServer struct {
 	grpc.ServerStream
 }
 
-func (x *gatewayConnectServer) Send(m *any.Any) error {
+func (x *gatewayConnectServer) Send(m *anypb.Any) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -253,7 +261,10 @@ func _Gateway_Broadcast_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-var _Gateway_serviceDesc = grpc.ServiceDesc{
+// Gateway_ServiceDesc is the grpc.ServiceDesc for Gateway service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Gateway_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "libra.v1.Gateway",
 	HandlerType: (*GatewayServer)(nil),
 	Methods: []grpc.MethodDesc{

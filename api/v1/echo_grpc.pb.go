@@ -11,7 +11,8 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
+// Requires gRPC-Go v1.32.0 or later.
+const _ = grpc.SupportPackageIsVersion7
 
 // EchoClient is the client API for Echo service.
 //
@@ -41,7 +42,7 @@ func (c *echoClient) Echo(ctx context.Context, in *EchoRequest, opts ...grpc.Cal
 }
 
 func (c *echoClient) Repeat(ctx context.Context, in *EchoRepeatRequest, opts ...grpc.CallOption) (Echo_RepeatClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Echo_serviceDesc.Streams[0], "/libra.v1.Echo/Repeat", opts...)
+	stream, err := c.cc.NewStream(ctx, &Echo_ServiceDesc.Streams[0], "/libra.v1.Echo/Repeat", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -87,16 +88,23 @@ type EchoServer interface {
 type UnimplementedEchoServer struct {
 }
 
-func (*UnimplementedEchoServer) Echo(context.Context, *EchoRequest) (*EchoResponse, error) {
+func (UnimplementedEchoServer) Echo(context.Context, *EchoRequest) (*EchoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Echo not implemented")
 }
-func (*UnimplementedEchoServer) Repeat(*EchoRepeatRequest, Echo_RepeatServer) error {
+func (UnimplementedEchoServer) Repeat(*EchoRepeatRequest, Echo_RepeatServer) error {
 	return status.Errorf(codes.Unimplemented, "method Repeat not implemented")
 }
-func (*UnimplementedEchoServer) mustEmbedUnimplementedEchoServer() {}
+func (UnimplementedEchoServer) mustEmbedUnimplementedEchoServer() {}
 
-func RegisterEchoServer(s *grpc.Server, srv EchoServer) {
-	s.RegisterService(&_Echo_serviceDesc, srv)
+// UnsafeEchoServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to EchoServer will
+// result in compilation errors.
+type UnsafeEchoServer interface {
+	mustEmbedUnimplementedEchoServer()
+}
+
+func RegisterEchoServer(s grpc.ServiceRegistrar, srv EchoServer) {
+	s.RegisterService(&Echo_ServiceDesc, srv)
 }
 
 func _Echo_Echo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -138,7 +146,10 @@ func (x *echoRepeatServer) Send(m *EchoRepeatResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-var _Echo_serviceDesc = grpc.ServiceDesc{
+// Echo_ServiceDesc is the grpc.ServiceDesc for Echo service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Echo_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "libra.v1.Echo",
 	HandlerType: (*EchoServer)(nil),
 	Methods: []grpc.MethodDesc{
