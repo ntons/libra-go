@@ -10,7 +10,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	echopb "github.com/ntons/libra-go/api/examples/echo"
+	examplespb "github.com/ntons/libra-go/api/examples"
 	v1pb "github.com/ntons/libra-go/api/v1"
 	"github.com/ntons/libra-go/client"
 )
@@ -21,7 +21,7 @@ var (
 
 type EchoClient struct {
 	*client.Client
-	echopb.EchoClient
+	examplespb.EchoClient
 }
 
 func dial(addr string) (_ *EchoClient, err error) {
@@ -31,7 +31,7 @@ func dial(addr string) (_ *EchoClient, err error) {
 	}
 	return &EchoClient{
 		Client:     cli,
-		EchoClient: echopb.NewEchoClient(cli),
+		EchoClient: examplespb.NewEchoClient(cli),
 	}, nil
 }
 
@@ -79,7 +79,7 @@ func login(ctx context.Context, cli *EchoClient) (err error) {
 }
 
 func echo(ctx context.Context, cli *EchoClient) (err error) {
-	resp, err := cli.Echo(ctx, &echopb.EchoRequest{Content: "hello"})
+	resp, err := cli.Echo(ctx, &examplespb.EchoRequest{Content: "hello"})
 	if err != nil {
 		return fmt.Errorf("failed to say hello: %v", err)
 	}
@@ -88,7 +88,7 @@ func echo(ctx context.Context, cli *EchoClient) (err error) {
 }
 
 func repeat(ctx context.Context, cli *EchoClient) (err error) {
-	stream, err := cli.Repeat(ctx, &echopb.EchoRepeatRequest{
+	stream, err := cli.Repeat(ctx, &examplespb.EchoRepeatRequest{
 		Content:  "hello",
 		Interval: 100,
 		Count:    10,

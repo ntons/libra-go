@@ -32,7 +32,7 @@ func NewEchoClient(cc grpc.ClientConnInterface) EchoClient {
 
 func (c *echoClient) Echo(ctx context.Context, in *EchoRequest, opts ...grpc.CallOption) (*EchoResponse, error) {
 	out := new(EchoResponse)
-	err := c.cc.Invoke(ctx, "/examples.echo.Echo/Echo", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/libra.examples.Echo/Echo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (c *echoClient) Echo(ctx context.Context, in *EchoRequest, opts ...grpc.Cal
 }
 
 func (c *echoClient) Repeat(ctx context.Context, in *EchoRepeatRequest, opts ...grpc.CallOption) (Echo_RepeatClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Echo_ServiceDesc.Streams[0], "/examples.echo.Echo/Repeat", opts...)
+	stream, err := c.cc.NewStream(ctx, &Echo_ServiceDesc.Streams[0], "/libra.examples.Echo/Repeat", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +113,7 @@ func _Echo_Echo_Handler(srv interface{}, ctx context.Context, dec func(interface
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/examples.echo.Echo/Echo",
+		FullMethod: "/libra.examples.Echo/Echo",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(EchoServer).Echo(ctx, req.(*EchoRequest))
@@ -146,7 +146,7 @@ func (x *echoRepeatServer) Send(m *EchoRepeatResponse) error {
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Echo_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "examples.echo.Echo",
+	ServiceName: "libra.examples.Echo",
 	HandlerType: (*EchoServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -161,5 +161,5 @@ var Echo_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "examples/echo/echo.proto",
+	Metadata: "examples/echo.proto",
 }

@@ -9,23 +9,23 @@ import (
 	"github.com/ntons/libra-go/server"
 	"github.com/ntons/log-go"
 
-	echopb "github.com/ntons/libra-go/api/examples/echo"
+	examplespb "github.com/ntons/libra-go/api/examples"
 )
 
 type EchoServer struct {
-	echopb.UnimplementedEchoServer
+	examplespb.UnimplementedEchoServer
 }
 
 func (EchoServer) Echo(
-	ctx context.Context, req *echopb.EchoRequest) (
-	resp *echopb.EchoResponse, err error) {
-	resp = &echopb.EchoResponse{Content: req.Content}
+	ctx context.Context, req *examplespb.EchoRequest) (
+	resp *examplespb.EchoResponse, err error) {
+	resp = &examplespb.EchoResponse{Content: req.Content}
 	return
 }
 func (EchoServer) Repeat(
-	req *echopb.EchoRepeatRequest, stream echopb.Echo_RepeatServer) (err error) {
+	req *examplespb.EchoRepeatRequest, stream examplespb.Echo_RepeatServer) (err error) {
 	for i := int32(0); i < req.Count; i++ {
-		if err = stream.Send(&echopb.EchoRepeatResponse{
+		if err = stream.Send(&examplespb.EchoRepeatResponse{
 			Content: req.Content,
 			Seq:     i,
 		}); err != nil {
@@ -54,7 +54,7 @@ func main() {
 
 	srv := server.NewServer()
 	echo := &EchoServer{}
-	echopb.RegisterEchoServer(srv, echo)
+	examplespb.RegisterEchoServer(srv, echo)
 
 	var wg sync.WaitGroup
 	defer wg.Wait()
