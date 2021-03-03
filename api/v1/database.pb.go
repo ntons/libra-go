@@ -267,10 +267,11 @@ type DatabaseSetRequest struct {
 
 	Key  *EntryKey  `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
 	Data *anypb.Any `protobuf:"bytes,9,opt,name=data,proto3" json:"data,omitempty"`
-	// 获取到的互斥锁，更新数据前会校验锁是否有效，如果锁无效则不会更新数据
-	// 如果不设置，数据则会被强制更新
+	// 获取到的互斥锁，更新数据前会校验锁是否有效，如果锁无效则不会更新数据。
+	// 如果不设置，数据则会被强制更新。
+	// 每次更新都会重置锁的TTL，即使更新失败。
 	LockToken *anypb.Any `protobuf:"bytes,10,opt,name=lock_token,json=lockToken,proto3" json:"lock_token,omitempty"`
-	// 如果设置unlock_options会在操作完成时解锁，要求lock_token有效
+	// 设置unlock_options会在操作完成时解锁，要求lock_token有效
 	UnlockOptions *DistlockUnlockOptions `protobuf:"bytes,11,opt,name=unlock_options,json=unlockOptions,proto3" json:"unlock_options,omitempty"`
 }
 
