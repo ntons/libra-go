@@ -1,37 +1,37 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: echo-server
+  name: greeter-server
   namespace: examples
   labels:
-    app: echo-server
+    app: greeter-server
 spec:
   ports:
   - port: 80
     name: grpc
   selector:
-    app: echo-server
+    app: greeter-server
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: echo-server
+  name: greeter-server
   namespace: examples
   labels:
-    app: echo-server
+    app: greeter-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: echo-server
+      app: greeter-server
   template:
     metadata:
       labels:
-        app: echo-server
+        app: greeter-server
     spec:
       containers:
-      - name: echo-server
-        image: ntons/echo_server:0.0.1
+      - name: greeter-server
+        image: ntons/greeter_server:0.0.1
         imagePullPolicy: IfNotPresent
         env:
         - name: LIBRA_API_ACCESS_POINT

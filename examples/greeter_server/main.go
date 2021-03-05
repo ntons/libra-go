@@ -3,22 +3,70 @@ package main
 import (
 	"context"
 	"flag"
+	"os"
 	"sync"
 
+	v1pb "github.com/ntons/libra-go/api/v1"
 	"github.com/ntons/log-go"
-	pb "google.golang.org/grpc/examples/helloworld/helloworld"
+	"google.golang.org/grpc"
+	hellopb "google.golang.org/grpc/examples/helloworld/helloworld"
+	anypb "google.golang.org/protobuf/types/known/anypb"
 
-	sdk "github.com/ntons/libra-go/server"
+	sdk "github.com/ntons/libra-go/sdk/server"
 )
 
 type GreeterServer struct {
-	pb.UnimplementedGreeterServer
+	hellopb.UnimplementedGreeterServer
+	api *sdk.Client
 }
 
-func (GreeterServer) SayHello(
-	ctx context.Context, req *pb.HelloRequest) (
-	resp *pb.HelloReply, err error) {
-	return &pb.HelloReply{Message: "Hello " + req.GetName()}, nil
+func (x GreeterServer) SayHello(
+	ctx context.Context, req *hellopb.HelloRequest) (
+	resp *hellopb.HelloReply, err error) {
+	if call, ok := sdk.FromIncomingContext(ctx); ok {
+		key := &v1pb.EntryKey{Kind: "role", Id: call.RoleId}
+		getReq := &v1pb.DatabaseGetRequest{
+			Key:         key,
+			LockOptions: &v1pb.DistlockLockOptions{},
+		}
+		getReq.AddIfNotFound, _ = anypb.New(&Archive{RoleId: call.RoleId})
+		getResp, err := x.api.Database.Get(ctx, getReq)
+		if err != nil {
+			return nil, err
+		}
+		defer func() {
+			if err != nil {
+				req := &v1pb.DistlockUnlockRequest{
+					LockToken: getResp.LockToken,
+				}
+				x.api.Distlock.Unlock(ctx, req)
+			}
+		}()
+
+		var archive Archive
+		if err := getResp.Data.UnmarshalTo(&archive); err != nil {
+			return nil, err
+		}
+
+		archive.History = append(archive.History, req.GetName())
+
+		setReq := &v1pb.DatabaseSetRequest{
+			Key:       key,
+			LockToken: getResp.LockToken,
+			UnlockOptions: &v1pb.DistlockUnlockOptions{
+				EvenOnFailure: true,
+			},
+		}
+		setReq.Data, _ = anypb.New(&archive)
+		setResp, err := x.api.Database.Set(ctx, setReq)
+		if err != nil {
+			return nil, err
+		}
+		log.Debugf(
+			"archive revision for %s: %d",
+			call.RoleId, setResp.GetRevision())
+	}
+	return &hellopb.HelloReply{Message: "Hello " + req.GetName()}, nil
 }
 
 func main() {
@@ -33,9 +81,15 @@ func main() {
 	log.Debugf("serve on: \"%s\"", listen)
 	log.Debugf("libra api: \"%s\"", api)
 
+	cli, err := sdk.Dial(api, grpc.WithInsecure())
+	if err != nil {
+		log.Debugf("failed to dail to libra: %v", err)
+		os.Exit(1)
+	}
+	cli.AddAuth("greeter", "3f67ae95ed060e33d5ac351db031f1c6")
+
 	srv := sdk.NewServer()
-	echo := &GreeterServer{}
-	pb.RegisterGreeterServer(srv, echo)
+	hellopb.RegisterGreeterServer(srv, &GreeterServer{api: cli})
 
 	var wg sync.WaitGroup
 	defer wg.Wait()
@@ -44,7 +98,8 @@ func main() {
 		defer wg.Done()
 		srv.ListenAndServe(listen)
 	}()
-	defer srv.Shutdown()
+	defer srv.Stop()
 
 	sdk.WaitForSignals(sdk.SIGINT, sdk.SIGTERM)
+	log.Debugf("terminated")
 }

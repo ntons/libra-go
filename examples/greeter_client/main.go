@@ -9,29 +9,25 @@ import (
 
 	"google.golang.org/grpc"
 
-	pb "google.golang.org/grpc/examples/helloworld/helloworld"
+	hellopb "google.golang.org/grpc/examples/helloworld/helloworld"
 
 	v1pb "github.com/ntons/libra-go/api/v1"
-	sdk "github.com/ntons/libra-go/client"
-)
-
-var (
-	appId = "example"
+	sdk "github.com/ntons/libra-go/sdk/client"
 )
 
 type GreeterClient struct {
 	*sdk.Client
-	pb.GreeterClient
+	hellopb.GreeterClient
 }
 
 func dial(addr string) (_ *GreeterClient, err error) {
-	cli, err := sdk.Dial(appId, addr, grpc.WithInsecure())
+	cli, err := sdk.Dial("greeter", addr, grpc.WithInsecure())
 	if err != nil {
 		return
 	}
 	return &GreeterClient{
 		Client:        cli,
-		GreeterClient: pb.NewGreeterClient(cli),
+		GreeterClient: hellopb.NewGreeterClient(cli),
 	}, nil
 }
 
@@ -63,7 +59,7 @@ func login(ctx context.Context, cli *GreeterClient) (err error) {
 }
 
 func sayHello(ctx context.Context, cli *GreeterClient) (err error) {
-	resp, err := cli.SayHello(ctx, &pb.HelloRequest{Name: "foo"})
+	resp, err := cli.SayHello(ctx, &hellopb.HelloRequest{Name: "World"})
 	if err != nil {
 		return fmt.Errorf("failed to say hello: %v", err)
 	}
