@@ -31,8 +31,9 @@ func dial(addr string) (_ *GreeterClient, err error) {
 	}, nil
 }
 
-func login(ctx context.Context, cli *GreeterClient) (err error) {
-	user, err := cli.Login(ctx, &v1pb.DevLoginState{Username: "userxxxx"})
+func login(
+	ctx context.Context, cli *GreeterClient, username string) (err error) {
+	user, err := cli.Login(ctx, &v1pb.DevLoginState{Username: username})
 	if err != nil {
 		return fmt.Errorf("failed to login: %v", err)
 	}
@@ -68,11 +69,19 @@ func sayHello(ctx context.Context, cli *GreeterClient) (err error) {
 }
 
 func main() {
-	var address string
-	flag.StringVar(&address, "a", "127.0.0.1:10000", "server address")
+	var (
+		addr string
+		user string
+	)
+	flag.StringVar(&addr, "a", "127.0.0.1:10000", "server address")
+	flag.StringVar(&user, "u", "", "username")
 	flag.Parse()
+	if user == "" {
+		fmt.Println("require username")
+		os.Exit(1)
+	}
 
-	cli, err := dial(address)
+	cli, err := dial(addr)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -82,7 +91,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	if err = login(ctx, cli); err != nil {
+	if err = login(ctx, cli, user); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
