@@ -4,6 +4,7 @@ import (
 	"context"
 	"sync"
 
+	"github.com/ntons/grpc-compressor/lz4"
 	v1pb "github.com/ntons/libra-go/api/v1"
 	"github.com/ntons/log-go"
 	"google.golang.org/grpc"
@@ -38,6 +39,8 @@ func Dial(addr string, opts ...grpc.DialOption) (_ *Client, err error) {
 	conn, err := grpc.Dial(addr, append(
 		opts,
 		grpc.WithChainUnaryInterceptor(cli.intercept),
+		// enable lz4 compression by default
+		grpc.WithDefaultCallOptions(grpc.UseCompressor(lz4.Name)),
 	)...)
 	if err != nil {
 		return
