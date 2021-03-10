@@ -17,10 +17,10 @@ const (
 
 // wait for terminate signals
 // this method can only be used at one place at then same time
-func WaitForSignals(sigs ...os.Signal) os.Signal {
+func WaitForSignals(sigs ...os.Signal) <-chan os.Signal {
 	c := make(chan os.Signal, 1)
 	signal.Ignore(syscall.SIGPIPE)
 	signal.Notify(c, sigs...)
 	defer signal.Stop(c)
-	return <-c
+	return c
 }

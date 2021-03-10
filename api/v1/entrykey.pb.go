@@ -31,8 +31,12 @@ type EntryKey struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"` // data category used to store respectively
-	Id   string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`     // must be unique in the same kind
+	// Entry kind used to store respectively
+	// It's normally mapped to the table name
+	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	// Entry ID used to identify each other
+	// It's normally mapped to the unique key in table
+	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
 }
 
 func (x *EntryKey) Reset() {

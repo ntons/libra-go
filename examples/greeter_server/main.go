@@ -78,6 +78,11 @@ func main() {
 	flag.StringVar(&api, "api", "", "Libra api access point")
 	flag.Parse()
 
+	if api == "" {
+		log.Errorf("requre api url")
+		os.Exit(1)
+	}
+
 	log.Debugf("serve on: \"%s\"", listen)
 	log.Debugf("libra api: \"%s\"", api)
 
@@ -94,12 +99,19 @@ func main() {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 	wg.Add(1)
+
+	quit := make(chan struct{}, 1)
 	go func() {
-		defer wg.Done()
-		srv.ListenAndServe(listen)
+		defer func() { quit <- struct{}{}; wg.Done() }()
+		if err := srv.ListenAndServe(listen); err != nil {
+			log.Errorf("exit with error: %v", err)
+		}
 	}()
 	defer srv.Stop()
 
-	sdk.WaitForSignals(sdk.SIGINT, sdk.SIGTERM)
+	select {
+	case <-quit:
+	case <-sdk.WaitForSignals(sdk.SIGINT, sdk.SIGTERM):
+	}
 	log.Debugf("terminated")
 }
