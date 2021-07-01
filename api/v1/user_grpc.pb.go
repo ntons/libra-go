@@ -21,6 +21,7 @@ type UserClient interface {
 	Login(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error)
 	Logout(ctx context.Context, in *UserLogoutRequest, opts ...grpc.CallOption) (*UserLogoutResponse, error)
 	Bind(ctx context.Context, in *UserBindRequest, opts ...grpc.CallOption) (*UserBindResponse, error)
+	Unbind(ctx context.Context, in *UserUnbindRequest, opts ...grpc.CallOption) (*UserUnbindResponse, error)
 	SetMetadata(ctx context.Context, in *UserSetMetadataRequest, opts ...grpc.CallOption) (*UserSetMetadataResponse, error)
 }
 
@@ -59,6 +60,15 @@ func (c *userClient) Bind(ctx context.Context, in *UserBindRequest, opts ...grpc
 	return out, nil
 }
 
+func (c *userClient) Unbind(ctx context.Context, in *UserUnbindRequest, opts ...grpc.CallOption) (*UserUnbindResponse, error) {
+	out := new(UserUnbindResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.User/Unbind", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userClient) SetMetadata(ctx context.Context, in *UserSetMetadataRequest, opts ...grpc.CallOption) (*UserSetMetadataResponse, error) {
 	out := new(UserSetMetadataResponse)
 	err := c.cc.Invoke(ctx, "/libra.v1.User/SetMetadata", in, out, opts...)
@@ -75,6 +85,7 @@ type UserServer interface {
 	Login(context.Context, *UserLoginRequest) (*UserLoginResponse, error)
 	Logout(context.Context, *UserLogoutRequest) (*UserLogoutResponse, error)
 	Bind(context.Context, *UserBindRequest) (*UserBindResponse, error)
+	Unbind(context.Context, *UserUnbindRequest) (*UserUnbindResponse, error)
 	SetMetadata(context.Context, *UserSetMetadataRequest) (*UserSetMetadataResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
@@ -91,6 +102,9 @@ func (UnimplementedUserServer) Logout(context.Context, *UserLogoutRequest) (*Use
 }
 func (UnimplementedUserServer) Bind(context.Context, *UserBindRequest) (*UserBindResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Bind not implemented")
+}
+func (UnimplementedUserServer) Unbind(context.Context, *UserUnbindRequest) (*UserUnbindResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Unbind not implemented")
 }
 func (UnimplementedUserServer) SetMetadata(context.Context, *UserSetMetadataRequest) (*UserSetMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetMetadata not implemented")
@@ -162,6 +176,24 @@ func _User_Bind_Handler(srv interface{}, ctx context.Context, dec func(interface
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_Unbind_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserUnbindRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).Unbind(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.User/Unbind",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).Unbind(ctx, req.(*UserUnbindRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _User_SetMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserSetMetadataRequest)
 	if err := dec(in); err != nil {
@@ -198,6 +230,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Bind",
 			Handler:    _User_Bind_Handler,
+		},
+		{
+			MethodName: "Unbind",
+			Handler:    _User_Unbind_Handler,
 		},
 		{
 			MethodName: "SetMetadata",
