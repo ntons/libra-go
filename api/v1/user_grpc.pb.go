@@ -23,6 +23,7 @@ type UserClient interface {
 	Bind(ctx context.Context, in *UserBindRequest, opts ...grpc.CallOption) (*UserBindResponse, error)
 	Unbind(ctx context.Context, in *UserUnbindRequest, opts ...grpc.CallOption) (*UserUnbindResponse, error)
 	SetMetadata(ctx context.Context, in *UserSetMetadataRequest, opts ...grpc.CallOption) (*UserSetMetadataResponse, error)
+	GetMetadata(ctx context.Context, in *UserGetMetadataRequest, opts ...grpc.CallOption) (*UserGetMetadataResponse, error)
 }
 
 type userClient struct {
@@ -78,6 +79,15 @@ func (c *userClient) SetMetadata(ctx context.Context, in *UserSetMetadataRequest
 	return out, nil
 }
 
+func (c *userClient) GetMetadata(ctx context.Context, in *UserGetMetadataRequest, opts ...grpc.CallOption) (*UserGetMetadataResponse, error) {
+	out := new(UserGetMetadataResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.User/GetMetadata", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
@@ -87,6 +97,7 @@ type UserServer interface {
 	Bind(context.Context, *UserBindRequest) (*UserBindResponse, error)
 	Unbind(context.Context, *UserUnbindRequest) (*UserUnbindResponse, error)
 	SetMetadata(context.Context, *UserSetMetadataRequest) (*UserSetMetadataResponse, error)
+	GetMetadata(context.Context, *UserGetMetadataRequest) (*UserGetMetadataResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -108,6 +119,9 @@ func (UnimplementedUserServer) Unbind(context.Context, *UserUnbindRequest) (*Use
 }
 func (UnimplementedUserServer) SetMetadata(context.Context, *UserSetMetadataRequest) (*UserSetMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetMetadata not implemented")
+}
+func (UnimplementedUserServer) GetMetadata(context.Context, *UserGetMetadataRequest) (*UserGetMetadataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMetadata not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -212,6 +226,24 @@ func _User_SetMetadata_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_GetMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserGetMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).GetMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.User/GetMetadata",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).GetMetadata(ctx, req.(*UserGetMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -238,6 +270,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetMetadata",
 			Handler:    _User_SetMetadata_Handler,
+		},
+		{
+			MethodName: "GetMetadata",
+			Handler:    _User_GetMetadata_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
