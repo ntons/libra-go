@@ -23,7 +23,7 @@ func RequireAuthByToken(ctx context.Context) *TrustedAuthByToken {
 	if !ok {
 		return nil
 	}
-	if v := md.Get(XLibraTrustedAuthBy); len(v) != 1 || v[0] != XLibraAuthBySecret {
+	if v := md.Get(XLibraTrustedAuthBy); len(v) != 1 || v[0] != XLibraAuthByToken {
 		return nil
 	}
 	trusted := &TrustedAuthByToken{}
@@ -55,7 +55,7 @@ func RequireAuthBySecret(ctx context.Context) *TrustedAuthBySecret {
 	if !ok {
 		return nil
 	}
-	if v := md.Get(XLibraTrustedAuthBy); len(v) != 1 || v[0] != XLibraAuthByToken {
+	if v := md.Get(XLibraTrustedAuthBy); len(v) != 1 || v[0] != XLibraAuthBySecret {
 		return nil
 	}
 	trusted := &TrustedAuthBySecret{}
