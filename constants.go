@@ -17,6 +17,7 @@ const (
 
 // 通用元数据值
 const (
-	XLibraAuthByToken  = "token"
-	XLibraAuthBySecret = "secret"
+	XLibraAuthByToken                  = "token"
+	XLibraAuthBySecret                 = "secret"
+	XLibraAuthBySecretAndOptionalToken = "secret-and-optional-token"
 )
