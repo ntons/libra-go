@@ -3,6 +3,7 @@ package libra
 import (
 	"context"
 	"strconv"
+	"strings"
 
 	"google.golang.org/grpc/metadata"
 )
@@ -18,12 +19,23 @@ type TrustedAuthBySecret struct {
 	AppId string
 }
 
+func isAuthBy(md metadata.MD, authBy string) bool {
+	if v := md.Get(XLibraTrustedAuthBy); len(v) == 1 {
+		for _, w := range strings.Split(v[0], ",") {
+			if w == authBy {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func RequireAuthByToken(ctx context.Context) *TrustedAuthByToken {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil
 	}
-	if v := md.Get(XLibraTrustedAuthBy); len(v) != 1 || v[0] != XLibraAuthByToken {
+	if !isAuthBy(md, XLibraAuthByToken) {
 		return nil
 	}
 	trusted := &TrustedAuthByToken{}
@@ -55,7 +67,7 @@ func RequireAuthBySecret(ctx context.Context) *TrustedAuthBySecret {
 	if !ok {
 		return nil
 	}
-	if v := md.Get(XLibraTrustedAuthBy); len(v) != 1 || v[0] != XLibraAuthBySecret {
+	if !isAuthBy(md, XLibraAuthBySecret) {
 		return nil
 	}
 	trusted := &TrustedAuthBySecret{}
