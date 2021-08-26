@@ -292,5 +292,5 @@ var Gateway_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "v1/gateway.proto",
+	Metadata: "libra/v1/gateway.proto",
 }

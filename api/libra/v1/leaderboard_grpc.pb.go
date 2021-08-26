@@ -293,5 +293,5 @@ var Leaderboard_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "v1/leaderboard.proto",
+	Metadata: "libra/v1/leaderboard.proto",
 }

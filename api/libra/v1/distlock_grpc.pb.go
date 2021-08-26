@@ -133,5 +133,5 @@ var Distlock_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "v1/distlock.proto",
+	Metadata: "libra/v1/distlock.proto",
 }

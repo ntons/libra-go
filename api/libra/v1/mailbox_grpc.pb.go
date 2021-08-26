@@ -169,5 +169,5 @@ var Mailbox_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "v1/mailbox.proto",
+	Metadata: "libra/v1/mailbox.proto",
 }

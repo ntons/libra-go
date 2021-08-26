@@ -241,5 +241,5 @@ var Role_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "v1/role.proto",
+	Metadata: "libra/v1/role.proto",
 }

@@ -169,5 +169,5 @@ var Database_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "v1/database.proto",
+	Metadata: "libra/v1/database.proto",
 }

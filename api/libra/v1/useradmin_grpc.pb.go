@@ -97,5 +97,5 @@ var UserAdmin_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "v1/useradmin.proto",
+	Metadata: "libra/v1/useradmin.proto",
 }
