@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserAdminClient interface {
 	SetMetadata(ctx context.Context, in *UserAdminSetMetadataRequest, opts ...grpc.CallOption) (*UserAdminSetMetadataResponse, error)
+	GetMetadata(ctx context.Context, in *UserAdminGetMetadataRequest, opts ...grpc.CallOption) (*UserAdminGetMetadataResponse, error)
 }
 
 type userAdminClient struct {
@@ -38,11 +39,21 @@ func (c *userAdminClient) SetMetadata(ctx context.Context, in *UserAdminSetMetad
 	return out, nil
 }
 
+func (c *userAdminClient) GetMetadata(ctx context.Context, in *UserAdminGetMetadataRequest, opts ...grpc.CallOption) (*UserAdminGetMetadataResponse, error) {
+	out := new(UserAdminGetMetadataResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.UserAdmin/GetMetadata", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserAdminServer is the server API for UserAdmin service.
 // All implementations must embed UnimplementedUserAdminServer
 // for forward compatibility
 type UserAdminServer interface {
 	SetMetadata(context.Context, *UserAdminSetMetadataRequest) (*UserAdminSetMetadataResponse, error)
+	GetMetadata(context.Context, *UserAdminGetMetadataRequest) (*UserAdminGetMetadataResponse, error)
 	mustEmbedUnimplementedUserAdminServer()
 }
 
@@ -52,6 +63,9 @@ type UnimplementedUserAdminServer struct {
 
 func (UnimplementedUserAdminServer) SetMetadata(context.Context, *UserAdminSetMetadataRequest) (*UserAdminSetMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetMetadata not implemented")
+}
+func (UnimplementedUserAdminServer) GetMetadata(context.Context, *UserAdminGetMetadataRequest) (*UserAdminGetMetadataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMetadata not implemented")
 }
 func (UnimplementedUserAdminServer) mustEmbedUnimplementedUserAdminServer() {}
 
@@ -84,6 +98,24 @@ func _UserAdmin_SetMetadata_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserAdmin_GetMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserAdminGetMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserAdminServer).GetMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.UserAdmin/GetMetadata",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserAdminServer).GetMetadata(ctx, req.(*UserAdminGetMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserAdmin_ServiceDesc is the grpc.ServiceDesc for UserAdmin service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -94,6 +126,10 @@ var UserAdmin_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetMetadata",
 			Handler:    _UserAdmin_SetMetadata_Handler,
+		},
+		{
+			MethodName: "GetMetadata",
+			Handler:    _UserAdmin_GetMetadata_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
