@@ -20,6 +20,12 @@ const _ = grpc.SupportPackageIsVersion7
 type UserAdminClient interface {
 	SetMetadata(ctx context.Context, in *UserAdminSetMetadataRequest, opts ...grpc.CallOption) (*UserAdminSetMetadataResponse, error)
 	GetMetadata(ctx context.Context, in *UserAdminGetMetadataRequest, opts ...grpc.CallOption) (*UserAdminGetMetadataResponse, error)
+	// 查询用户
+	Get(ctx context.Context, in *UserAdminGetRequest, opts ...grpc.CallOption) (*UserAdminGetResponse, error)
+	// 封禁用户
+	Ban(ctx context.Context, in *UserAdminBanRequest, opts ...grpc.CallOption) (*UserAdminBanResponse, error)
+	// 账号绑定转移
+	TransAcctId(ctx context.Context, in *UserAdminTransAcctIdRequest, opts ...grpc.CallOption) (*UserAdminTransAcctIdResponse, error)
 }
 
 type userAdminClient struct {
@@ -48,12 +54,45 @@ func (c *userAdminClient) GetMetadata(ctx context.Context, in *UserAdminGetMetad
 	return out, nil
 }
 
+func (c *userAdminClient) Get(ctx context.Context, in *UserAdminGetRequest, opts ...grpc.CallOption) (*UserAdminGetResponse, error) {
+	out := new(UserAdminGetResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.UserAdmin/Get", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userAdminClient) Ban(ctx context.Context, in *UserAdminBanRequest, opts ...grpc.CallOption) (*UserAdminBanResponse, error) {
+	out := new(UserAdminBanResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.UserAdmin/Ban", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userAdminClient) TransAcctId(ctx context.Context, in *UserAdminTransAcctIdRequest, opts ...grpc.CallOption) (*UserAdminTransAcctIdResponse, error) {
+	out := new(UserAdminTransAcctIdResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.UserAdmin/TransAcctId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserAdminServer is the server API for UserAdmin service.
 // All implementations must embed UnimplementedUserAdminServer
 // for forward compatibility
 type UserAdminServer interface {
 	SetMetadata(context.Context, *UserAdminSetMetadataRequest) (*UserAdminSetMetadataResponse, error)
 	GetMetadata(context.Context, *UserAdminGetMetadataRequest) (*UserAdminGetMetadataResponse, error)
+	// 查询用户
+	Get(context.Context, *UserAdminGetRequest) (*UserAdminGetResponse, error)
+	// 封禁用户
+	Ban(context.Context, *UserAdminBanRequest) (*UserAdminBanResponse, error)
+	// 账号绑定转移
+	TransAcctId(context.Context, *UserAdminTransAcctIdRequest) (*UserAdminTransAcctIdResponse, error)
 	mustEmbedUnimplementedUserAdminServer()
 }
 
@@ -66,6 +105,15 @@ func (UnimplementedUserAdminServer) SetMetadata(context.Context, *UserAdminSetMe
 }
 func (UnimplementedUserAdminServer) GetMetadata(context.Context, *UserAdminGetMetadataRequest) (*UserAdminGetMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMetadata not implemented")
+}
+func (UnimplementedUserAdminServer) Get(context.Context, *UserAdminGetRequest) (*UserAdminGetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedUserAdminServer) Ban(context.Context, *UserAdminBanRequest) (*UserAdminBanResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Ban not implemented")
+}
+func (UnimplementedUserAdminServer) TransAcctId(context.Context, *UserAdminTransAcctIdRequest) (*UserAdminTransAcctIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TransAcctId not implemented")
 }
 func (UnimplementedUserAdminServer) mustEmbedUnimplementedUserAdminServer() {}
 
@@ -116,6 +164,60 @@ func _UserAdmin_GetMetadata_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserAdmin_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserAdminGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserAdminServer).Get(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.UserAdmin/Get",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserAdminServer).Get(ctx, req.(*UserAdminGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserAdmin_Ban_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserAdminBanRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserAdminServer).Ban(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.UserAdmin/Ban",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserAdminServer).Ban(ctx, req.(*UserAdminBanRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserAdmin_TransAcctId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserAdminTransAcctIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserAdminServer).TransAcctId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.UserAdmin/TransAcctId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserAdminServer).TransAcctId(ctx, req.(*UserAdminTransAcctIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserAdmin_ServiceDesc is the grpc.ServiceDesc for UserAdmin service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -130,6 +232,18 @@ var UserAdmin_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMetadata",
 			Handler:    _UserAdmin_GetMetadata_Handler,
+		},
+		{
+			MethodName: "Get",
+			Handler:    _UserAdmin_Get_Handler,
+		},
+		{
+			MethodName: "Ban",
+			Handler:    _UserAdmin_Ban_Handler,
+		},
+		{
+			MethodName: "TransAcctId",
+			Handler:    _UserAdmin_TransAcctId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
