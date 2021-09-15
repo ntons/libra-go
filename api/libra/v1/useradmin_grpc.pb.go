@@ -18,13 +18,14 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserAdminClient interface {
+	// 元数据
 	SetMetadata(ctx context.Context, in *UserAdminSetMetadataRequest, opts ...grpc.CallOption) (*UserAdminSetMetadataResponse, error)
 	GetMetadata(ctx context.Context, in *UserAdminGetMetadataRequest, opts ...grpc.CallOption) (*UserAdminGetMetadataResponse, error)
-	// 查询用户
+	// 查询详细信息
 	Get(ctx context.Context, in *UserAdminGetRequest, opts ...grpc.CallOption) (*UserAdminGetResponse, error)
-	// 封禁用户
+	// 封禁
 	Ban(ctx context.Context, in *UserAdminBanRequest, opts ...grpc.CallOption) (*UserAdminBanResponse, error)
-	// 账号绑定
+	// 绑定
 	BindAcctId(ctx context.Context, in *UserAdminBindAcctIdRequest, opts ...grpc.CallOption) (*UserAdminBindAcctIdResponse, error)
 }
 
@@ -85,13 +86,14 @@ func (c *userAdminClient) BindAcctId(ctx context.Context, in *UserAdminBindAcctI
 // All implementations must embed UnimplementedUserAdminServer
 // for forward compatibility
 type UserAdminServer interface {
+	// 元数据
 	SetMetadata(context.Context, *UserAdminSetMetadataRequest) (*UserAdminSetMetadataResponse, error)
 	GetMetadata(context.Context, *UserAdminGetMetadataRequest) (*UserAdminGetMetadataResponse, error)
-	// 查询用户
+	// 查询详细信息
 	Get(context.Context, *UserAdminGetRequest) (*UserAdminGetResponse, error)
-	// 封禁用户
+	// 封禁
 	Ban(context.Context, *UserAdminBanRequest) (*UserAdminBanResponse, error)
-	// 账号绑定
+	// 绑定
 	BindAcctId(context.Context, *UserAdminBindAcctIdRequest) (*UserAdminBindAcctIdResponse, error)
 	mustEmbedUnimplementedUserAdminServer()
 }
