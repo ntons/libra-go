@@ -327,5 +327,5 @@ var BubbleChart_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "libra/v1/bubblechart.proto",
+	Metadata: "libra/v1/bubble_chart.proto",
 }

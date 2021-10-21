@@ -97,5 +97,5 @@ var RoleAdmin_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "libra/v1/roleadmin.proto",
+	Metadata: "libra/v1/role_admin.proto",
 }
