@@ -34,7 +34,7 @@ func NewAppClient(cc grpc.ClientConnInterface) AppClient {
 
 func (c *appClient) List(ctx context.Context, in *AppListRequest, opts ...grpc.CallOption) (*AppListResponse, error) {
 	out := new(AppListResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.App/List", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/libra.admin.v1.App/List", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (c *appClient) List(ctx context.Context, in *AppListRequest, opts ...grpc.C
 }
 
 func (c *appClient) Watch(ctx context.Context, in *AppListRequest, opts ...grpc.CallOption) (App_WatchClient, error) {
-	stream, err := c.cc.NewStream(ctx, &App_ServiceDesc.Streams[0], "/libra.v1.App/Watch", opts...)
+	stream, err := c.cc.NewStream(ctx, &App_ServiceDesc.Streams[0], "/libra.admin.v1.App/Watch", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +117,7 @@ func _App_List_Handler(srv interface{}, ctx context.Context, dec func(interface{
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/libra.v1.App/List",
+		FullMethod: "/libra.admin.v1.App/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AppServer).List(ctx, req.(*AppListRequest))
@@ -150,7 +150,7 @@ func (x *appWatchServer) Send(m *AppListResponse) error {
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var App_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "libra.v1.App",
+	ServiceName: "libra.admin.v1.App",
 	HandlerType: (*AppServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -165,5 +165,5 @@ var App_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "libra/v1/app.proto",
+	Metadata: "libra/admin/v1/app.proto",
 }
