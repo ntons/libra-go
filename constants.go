@@ -6,9 +6,12 @@ const (
 	XLibraToken            = XLibraPrefix + "token"
 	XLibraAppId            = XLibraPrefix + "app-id"
 	XLibraAppSecret        = XLibraPrefix + "app-secret"
+	XLibraAdminId          = XLibraPrefix + "admin-id"
+	XLibraAdminSecret      = XLibraPrefix + "admin-secret"
 	XLibraAuthBy           = XLibraPrefix + "auth-by"
 	XLibraTrustedPrefix    = XLibraPrefix + "trusted-"
 	XLibraTrustedAuthBy    = XLibraTrustedPrefix + "auth-by"
+	XLibraTrustedAdminId   = XLibraTrustedPrefix + "admin-id"
 	XLibraTrustedAppId     = XLibraTrustedPrefix + "app-id"
 	XLibraTrustedUserId    = XLibraTrustedPrefix + "user-id"
 	XLibraTrustedRoleId    = XLibraTrustedPrefix + "role-id"
@@ -28,8 +31,10 @@ const (
 const (
 	// 必须提供正确token
 	XLibraAuthByToken = "token"
-	// 必须提供正确secret
+	// 必须提供正确的secret
 	XLibraAuthBySecret = "secret"
+	// 必须提供正确的admin secret
+	XLibraAuthByAdminSecret = "admin-secret"
 )
 
 // 策略组合 用于网关策略配置
