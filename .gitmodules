@@ -1,3 +1,0 @@
-[submodule "protos/libra-api"]
-	path = protos/libra-api
-	url = https://github.com/ntons/libra-api.git

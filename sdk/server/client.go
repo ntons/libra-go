@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/ntons/grpc-compressor/lz4"
-	v1pb "github.com/ntons/libra-go/api/v1"
+	v1pb "github.com/ntons/libra-go/api/libra/v1"
 	"github.com/ntons/log-go"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

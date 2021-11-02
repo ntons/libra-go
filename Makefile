@@ -2,20 +2,19 @@
 
 all:
 
-init:
-	git submodule update --init --recursive
-
-api: $(shell find protos/libra-api ! -path '*/google/*' -name "*.proto")
-	mkdir -p api && rm -rf api/*
+api: $(shell find ../libra-api -name "*.proto")
+	mkdir -p api/libra && rm -rf api/libra/*
+	echo "Date:   `date +'%Y-%m-%d %H:%M:%S'`" >> api/libra/VERSION
+	echo "Commit: `git --git-dir=../libra-api/.git --work-tree=../libra-api/ rev-list -1 HEAD`" >> api/libra/VERSION
 	for PROTO in $^; do \
-		protoc -Iprotos/libra-api \
+		protoc -I../libra-api \
 		--go_out=api \
 		--go_opt=paths=source_relative \
 		--go-grpc_out=api \
 		--go-grpc_opt=paths=source_relative \
 		$$PROTO; done
 	for PROTO in $$(grep -H google.api.http $^|cut -d: -f1|sort|uniq); do \
-		protoc -Iprotos/libra-api \
+		protoc -I../libra-api \
 		--grpc-gateway_out=paths=source_relative:api \
 		$$PROTO; done
 

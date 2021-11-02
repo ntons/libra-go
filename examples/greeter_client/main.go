@@ -11,7 +11,7 @@ import (
 
 	hellopb "google.golang.org/grpc/examples/helloworld/helloworld"
 
-	v1pb "github.com/ntons/libra-go/api/v1"
+	v1pb "github.com/ntons/libra-go/api/libra/v1"
 	sdk "github.com/ntons/libra-go/sdk/client"
 )
 
