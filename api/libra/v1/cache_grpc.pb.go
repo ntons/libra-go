@@ -19,7 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CacheClient interface {
 	// 获取缓存
-	Get(ctx context.Context, in *CacheSetRequest, opts ...grpc.CallOption) (*CacheGetResponse, error)
+	Get(ctx context.Context, in *CacheGetRequest, opts ...grpc.CallOption) (*CacheGetResponse, error)
 	// 设置缓存
 	Set(ctx context.Context, in *CacheSetRequest, opts ...grpc.CallOption) (*CacheSetResponse, error)
 	// 新增缓存
@@ -34,7 +34,7 @@ func NewCacheClient(cc grpc.ClientConnInterface) CacheClient {
 	return &cacheClient{cc}
 }
 
-func (c *cacheClient) Get(ctx context.Context, in *CacheSetRequest, opts ...grpc.CallOption) (*CacheGetResponse, error) {
+func (c *cacheClient) Get(ctx context.Context, in *CacheGetRequest, opts ...grpc.CallOption) (*CacheGetResponse, error) {
 	out := new(CacheGetResponse)
 	err := c.cc.Invoke(ctx, "/libra.v1.Cache/Get", in, out, opts...)
 	if err != nil {
@@ -66,7 +66,7 @@ func (c *cacheClient) Add(ctx context.Context, in *CacheAddRequest, opts ...grpc
 // for forward compatibility
 type CacheServer interface {
 	// 获取缓存
-	Get(context.Context, *CacheSetRequest) (*CacheGetResponse, error)
+	Get(context.Context, *CacheGetRequest) (*CacheGetResponse, error)
 	// 设置缓存
 	Set(context.Context, *CacheSetRequest) (*CacheSetResponse, error)
 	// 新增缓存
@@ -78,7 +78,7 @@ type CacheServer interface {
 type UnimplementedCacheServer struct {
 }
 
-func (UnimplementedCacheServer) Get(context.Context, *CacheSetRequest) (*CacheGetResponse, error) {
+func (UnimplementedCacheServer) Get(context.Context, *CacheGetRequest) (*CacheGetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
 func (UnimplementedCacheServer) Set(context.Context, *CacheSetRequest) (*CacheSetResponse, error) {
@@ -101,7 +101,7 @@ func RegisterCacheServer(s grpc.ServiceRegistrar, srv CacheServer) {
 }
 
 func _Cache_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CacheSetRequest)
+	in := new(CacheGetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -113,7 +113,7 @@ func _Cache_Get_Handler(srv interface{}, ctx context.Context, dec func(interface
 		FullMethod: "/libra.v1.Cache/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CacheServer).Get(ctx, req.(*CacheSetRequest))
+		return srv.(CacheServer).Get(ctx, req.(*CacheGetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
