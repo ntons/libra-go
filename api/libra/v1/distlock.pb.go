@@ -327,395 +327,6 @@ func (*DistlockUnlockResponse) Descriptor() ([]byte, []int) {
 	return file_libra_v1_distlock_proto_rawDescGZIP(), []int{5}
 }
 
-type DistlockObtainRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Key                 string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
-	TimeoutMilliseconds int32  `protobuf:"varint,10,opt,name=timeout_milliseconds,json=timeoutMilliseconds,proto3" json:"timeout_milliseconds,omitempty"`
-}
-
-func (x *DistlockObtainRequest) Reset() {
-	*x = DistlockObtainRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_distlock_proto_msgTypes[6]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *DistlockObtainRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DistlockObtainRequest) ProtoMessage() {}
-
-func (x *DistlockObtainRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_distlock_proto_msgTypes[6]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DistlockObtainRequest.ProtoReflect.Descriptor instead.
-func (*DistlockObtainRequest) Descriptor() ([]byte, []int) {
-	return file_libra_v1_distlock_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *DistlockObtainRequest) GetKey() string {
-	if x != nil {
-		return x.Key
-	}
-	return ""
-}
-
-func (x *DistlockObtainRequest) GetTimeoutMilliseconds() int32 {
-	if x != nil {
-		return x.TimeoutMilliseconds
-	}
-	return 0
-}
-
-type DistlockObtainResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	LockToken string `protobuf:"bytes,2,opt,name=lock_token,json=lockToken,proto3" json:"lock_token,omitempty"`
-}
-
-func (x *DistlockObtainResponse) Reset() {
-	*x = DistlockObtainResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_distlock_proto_msgTypes[7]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *DistlockObtainResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DistlockObtainResponse) ProtoMessage() {}
-
-func (x *DistlockObtainResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_distlock_proto_msgTypes[7]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DistlockObtainResponse.ProtoReflect.Descriptor instead.
-func (*DistlockObtainResponse) Descriptor() ([]byte, []int) {
-	return file_libra_v1_distlock_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *DistlockObtainResponse) GetLockToken() string {
-	if x != nil {
-		return x.LockToken
-	}
-	return ""
-}
-
-type DistlockRefreshRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Key                 string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
-	LockToken           string `protobuf:"bytes,2,opt,name=lock_token,json=lockToken,proto3" json:"lock_token,omitempty"`
-	TimeoutMilliseconds int32  `protobuf:"varint,10,opt,name=timeout_milliseconds,json=timeoutMilliseconds,proto3" json:"timeout_milliseconds,omitempty"`
-}
-
-func (x *DistlockRefreshRequest) Reset() {
-	*x = DistlockRefreshRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_distlock_proto_msgTypes[8]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *DistlockRefreshRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DistlockRefreshRequest) ProtoMessage() {}
-
-func (x *DistlockRefreshRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_distlock_proto_msgTypes[8]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DistlockRefreshRequest.ProtoReflect.Descriptor instead.
-func (*DistlockRefreshRequest) Descriptor() ([]byte, []int) {
-	return file_libra_v1_distlock_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *DistlockRefreshRequest) GetKey() string {
-	if x != nil {
-		return x.Key
-	}
-	return ""
-}
-
-func (x *DistlockRefreshRequest) GetLockToken() string {
-	if x != nil {
-		return x.LockToken
-	}
-	return ""
-}
-
-func (x *DistlockRefreshRequest) GetTimeoutMilliseconds() int32 {
-	if x != nil {
-		return x.TimeoutMilliseconds
-	}
-	return 0
-}
-
-type DistlockRefreshResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *DistlockRefreshResponse) Reset() {
-	*x = DistlockRefreshResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_distlock_proto_msgTypes[9]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *DistlockRefreshResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DistlockRefreshResponse) ProtoMessage() {}
-
-func (x *DistlockRefreshResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_distlock_proto_msgTypes[9]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DistlockRefreshResponse.ProtoReflect.Descriptor instead.
-func (*DistlockRefreshResponse) Descriptor() ([]byte, []int) {
-	return file_libra_v1_distlock_proto_rawDescGZIP(), []int{9}
-}
-
-type DistlockReleaseRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Key       string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
-	LockToken string `protobuf:"bytes,2,opt,name=lock_token,json=lockToken,proto3" json:"lock_token,omitempty"`
-}
-
-func (x *DistlockReleaseRequest) Reset() {
-	*x = DistlockReleaseRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_distlock_proto_msgTypes[10]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *DistlockReleaseRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DistlockReleaseRequest) ProtoMessage() {}
-
-func (x *DistlockReleaseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_distlock_proto_msgTypes[10]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DistlockReleaseRequest.ProtoReflect.Descriptor instead.
-func (*DistlockReleaseRequest) Descriptor() ([]byte, []int) {
-	return file_libra_v1_distlock_proto_rawDescGZIP(), []int{10}
-}
-
-func (x *DistlockReleaseRequest) GetKey() string {
-	if x != nil {
-		return x.Key
-	}
-	return ""
-}
-
-func (x *DistlockReleaseRequest) GetLockToken() string {
-	if x != nil {
-		return x.LockToken
-	}
-	return ""
-}
-
-type DistlockReleaseResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *DistlockReleaseResponse) Reset() {
-	*x = DistlockReleaseResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_distlock_proto_msgTypes[11]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *DistlockReleaseResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DistlockReleaseResponse) ProtoMessage() {}
-
-func (x *DistlockReleaseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_distlock_proto_msgTypes[11]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DistlockReleaseResponse.ProtoReflect.Descriptor instead.
-func (*DistlockReleaseResponse) Descriptor() ([]byte, []int) {
-	return file_libra_v1_distlock_proto_rawDescGZIP(), []int{11}
-}
-
-type DistlockHoldRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Key       string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
-	LockToken string `protobuf:"bytes,2,opt,name=lock_token,json=lockToken,proto3" json:"lock_token,omitempty"`
-}
-
-func (x *DistlockHoldRequest) Reset() {
-	*x = DistlockHoldRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_distlock_proto_msgTypes[12]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *DistlockHoldRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DistlockHoldRequest) ProtoMessage() {}
-
-func (x *DistlockHoldRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_distlock_proto_msgTypes[12]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DistlockHoldRequest.ProtoReflect.Descriptor instead.
-func (*DistlockHoldRequest) Descriptor() ([]byte, []int) {
-	return file_libra_v1_distlock_proto_rawDescGZIP(), []int{12}
-}
-
-func (x *DistlockHoldRequest) GetKey() string {
-	if x != nil {
-		return x.Key
-	}
-	return ""
-}
-
-func (x *DistlockHoldRequest) GetLockToken() string {
-	if x != nil {
-		return x.LockToken
-	}
-	return ""
-}
-
-type DistlockHoldNotice struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *DistlockHoldNotice) Reset() {
-	*x = DistlockHoldNotice{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_distlock_proto_msgTypes[13]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *DistlockHoldNotice) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DistlockHoldNotice) ProtoMessage() {}
-
-func (x *DistlockHoldNotice) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_distlock_proto_msgTypes[13]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DistlockHoldNotice.ProtoReflect.Descriptor instead.
-func (*DistlockHoldNotice) Descriptor() ([]byte, []int) {
-	return file_libra_v1_distlock_proto_rawDescGZIP(), []int{13}
-}
-
 var File_libra_v1_distlock_proto protoreflect.FileDescriptor
 
 var file_libra_v1_distlock_proto_rawDesc = []byte{
@@ -759,71 +370,20 @@ var file_libra_v1_distlock_proto_rawDesc = []byte{
 	0x55, 0x6e, 0x6c, 0x6f, 0x63, 0x6b, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x0d, 0x75,
 	0x6e, 0x6c, 0x6f, 0x63, 0x6b, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x18, 0x0a, 0x16,
 	0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x55, 0x6e, 0x6c, 0x6f, 0x63, 0x6b, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x5c, 0x0a, 0x15, 0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f,
-	0x63, 0x6b, 0x4f, 0x62, 0x74, 0x61, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
-	0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65,
-	0x79, 0x12, 0x31, 0x0a, 0x14, 0x74, 0x69, 0x6d, 0x65, 0x6f, 0x75, 0x74, 0x5f, 0x6d, 0x69, 0x6c,
-	0x6c, 0x69, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x73, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x05, 0x52,
-	0x13, 0x74, 0x69, 0x6d, 0x65, 0x6f, 0x75, 0x74, 0x4d, 0x69, 0x6c, 0x6c, 0x69, 0x73, 0x65, 0x63,
-	0x6f, 0x6e, 0x64, 0x73, 0x22, 0x37, 0x0a, 0x16, 0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b,
-	0x4f, 0x62, 0x74, 0x61, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1d,
-	0x0a, 0x0a, 0x6c, 0x6f, 0x63, 0x6b, 0x5f, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x09, 0x6c, 0x6f, 0x63, 0x6b, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x7c, 0x0a,
-	0x16, 0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x52, 0x65, 0x66, 0x72, 0x65, 0x73, 0x68,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x1d, 0x0a, 0x0a, 0x6c, 0x6f, 0x63,
-	0x6b, 0x5f, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x6c,
-	0x6f, 0x63, 0x6b, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x31, 0x0a, 0x14, 0x74, 0x69, 0x6d, 0x65,
-	0x6f, 0x75, 0x74, 0x5f, 0x6d, 0x69, 0x6c, 0x6c, 0x69, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x73,
-	0x18, 0x0a, 0x20, 0x01, 0x28, 0x05, 0x52, 0x13, 0x74, 0x69, 0x6d, 0x65, 0x6f, 0x75, 0x74, 0x4d,
-	0x69, 0x6c, 0x6c, 0x69, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x73, 0x22, 0x19, 0x0a, 0x17, 0x44,
-	0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x52, 0x65, 0x66, 0x72, 0x65, 0x73, 0x68, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x49, 0x0a, 0x16, 0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f,
-	0x63, 0x6b, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b,
-	0x65, 0x79, 0x12, 0x1d, 0x0a, 0x0a, 0x6c, 0x6f, 0x63, 0x6b, 0x5f, 0x74, 0x6f, 0x6b, 0x65, 0x6e,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x6c, 0x6f, 0x63, 0x6b, 0x54, 0x6f, 0x6b, 0x65,
-	0x6e, 0x22, 0x19, 0x0a, 0x17, 0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x52, 0x65, 0x6c,
-	0x65, 0x61, 0x73, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x46, 0x0a, 0x13,
-	0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x6f, 0x6c, 0x64, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x1d, 0x0a, 0x0a, 0x6c, 0x6f, 0x63, 0x6b, 0x5f, 0x74, 0x6f,
-	0x6b, 0x65, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x6c, 0x6f, 0x63, 0x6b, 0x54,
-	0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x14, 0x0a, 0x12, 0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b,
-	0x48, 0x6f, 0x6c, 0x64, 0x4e, 0x6f, 0x74, 0x69, 0x63, 0x65, 0x32, 0xd4, 0x03, 0x0a, 0x08, 0x44,
-	0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x12, 0x45, 0x0a, 0x04, 0x4c, 0x6f, 0x63, 0x6b, 0x12,
-	0x1d, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x69, 0x73, 0x74, 0x6c,
-	0x6f, 0x63, 0x6b, 0x4c, 0x6f, 0x63, 0x6b, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1e,
-	0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f,
-	0x63, 0x6b, 0x4c, 0x6f, 0x63, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4b,
-	0x0a, 0x06, 0x55, 0x6e, 0x6c, 0x6f, 0x63, 0x6b, 0x12, 0x1f, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61,
-	0x2e, 0x76, 0x31, 0x2e, 0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x55, 0x6e, 0x6c, 0x6f,
-	0x63, 0x6b, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x6c, 0x69, 0x62, 0x72,
-	0x61, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x55, 0x6e, 0x6c,
-	0x6f, 0x63, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4b, 0x0a, 0x06, 0x4f,
-	0x62, 0x74, 0x61, 0x69, 0x6e, 0x12, 0x1f, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31,
-	0x2e, 0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x4f, 0x62, 0x74, 0x61, 0x69, 0x6e, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76,
-	0x31, 0x2e, 0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x4f, 0x62, 0x74, 0x61, 0x69, 0x6e,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4e, 0x0a, 0x07, 0x52, 0x65, 0x66, 0x72,
-	0x65, 0x73, 0x68, 0x12, 0x20, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x44,
-	0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x52, 0x65, 0x66, 0x72, 0x65, 0x73, 0x68, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31,
-	0x2e, 0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x52, 0x65, 0x66, 0x72, 0x65, 0x73, 0x68,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4e, 0x0a, 0x07, 0x52, 0x65, 0x6c, 0x65,
-	0x61, 0x73, 0x65, 0x12, 0x20, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x44,
-	0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31,
-	0x2e, 0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x47, 0x0a, 0x04, 0x48, 0x6f, 0x6c, 0x64,
-	0x12, 0x1d, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x69, 0x73, 0x74,
-	0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x6f, 0x6c, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x1c, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x69, 0x73, 0x74, 0x6c,
-	0x6f, 0x63, 0x6b, 0x48, 0x6f, 0x6c, 0x64, 0x4e, 0x6f, 0x74, 0x69, 0x63, 0x65, 0x28, 0x01, 0x30,
-	0x01, 0x42, 0x28, 0x5a, 0x26, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
-	0x6e, 0x74, 0x6f, 0x6e, 0x73, 0x2f, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2d, 0x67, 0x6f, 0x2f, 0x61,
-	0x70, 0x69, 0x2f, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2f, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0x9e, 0x01, 0x0a, 0x08, 0x44, 0x69, 0x73, 0x74, 0x6c,
+	0x6f, 0x63, 0x6b, 0x12, 0x45, 0x0a, 0x04, 0x4c, 0x6f, 0x63, 0x6b, 0x12, 0x1d, 0x2e, 0x6c, 0x69,
+	0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x4c,
+	0x6f, 0x63, 0x6b, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1e, 0x2e, 0x6c, 0x69, 0x62,
+	0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x4c, 0x6f,
+	0x63, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4b, 0x0a, 0x06, 0x55, 0x6e,
+	0x6c, 0x6f, 0x63, 0x6b, 0x12, 0x1f, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e,
+	0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x55, 0x6e, 0x6c, 0x6f, 0x63, 0x6b, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31,
+	0x2e, 0x44, 0x69, 0x73, 0x74, 0x6c, 0x6f, 0x63, 0x6b, 0x55, 0x6e, 0x6c, 0x6f, 0x63, 0x6b, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x28, 0x5a, 0x26, 0x67, 0x69, 0x74, 0x68, 0x75,
+	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6e, 0x74, 0x6f, 0x6e, 0x73, 0x2f, 0x6c, 0x69, 0x62, 0x72,
+	0x61, 0x2d, 0x67, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2f, 0x76,
+	0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -838,49 +398,33 @@ func file_libra_v1_distlock_proto_rawDescGZIP() []byte {
 	return file_libra_v1_distlock_proto_rawDescData
 }
 
-var file_libra_v1_distlock_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_libra_v1_distlock_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_libra_v1_distlock_proto_goTypes = []interface{}{
-	(*DistlockLockOptions)(nil),     // 0: libra.v1.DistlockLockOptions
-	(*DistlockUnlockOptions)(nil),   // 1: libra.v1.DistlockUnlockOptions
-	(*DistlockLockRequest)(nil),     // 2: libra.v1.DistlockLockRequest
-	(*DistlockLockResponse)(nil),    // 3: libra.v1.DistlockLockResponse
-	(*DistlockUnlockRequest)(nil),   // 4: libra.v1.DistlockUnlockRequest
-	(*DistlockUnlockResponse)(nil),  // 5: libra.v1.DistlockUnlockResponse
-	(*DistlockObtainRequest)(nil),   // 6: libra.v1.DistlockObtainRequest
-	(*DistlockObtainResponse)(nil),  // 7: libra.v1.DistlockObtainResponse
-	(*DistlockRefreshRequest)(nil),  // 8: libra.v1.DistlockRefreshRequest
-	(*DistlockRefreshResponse)(nil), // 9: libra.v1.DistlockRefreshResponse
-	(*DistlockReleaseRequest)(nil),  // 10: libra.v1.DistlockReleaseRequest
-	(*DistlockReleaseResponse)(nil), // 11: libra.v1.DistlockReleaseResponse
-	(*DistlockHoldRequest)(nil),     // 12: libra.v1.DistlockHoldRequest
-	(*DistlockHoldNotice)(nil),      // 13: libra.v1.DistlockHoldNotice
-	(*EntryKey)(nil),                // 14: libra.v1.EntryKey
-	(*anypb.Any)(nil),               // 15: google.protobuf.Any
+	(*DistlockLockOptions)(nil),    // 0: libra.v1.DistlockLockOptions
+	(*DistlockUnlockOptions)(nil),  // 1: libra.v1.DistlockUnlockOptions
+	(*DistlockLockRequest)(nil),    // 2: libra.v1.DistlockLockRequest
+	(*DistlockLockResponse)(nil),   // 3: libra.v1.DistlockLockResponse
+	(*DistlockUnlockRequest)(nil),  // 4: libra.v1.DistlockUnlockRequest
+	(*DistlockUnlockResponse)(nil), // 5: libra.v1.DistlockUnlockResponse
+	(*EntryKey)(nil),               // 6: libra.v1.EntryKey
+	(*anypb.Any)(nil),              // 7: google.protobuf.Any
 }
 var file_libra_v1_distlock_proto_depIdxs = []int32{
-	14, // 0: libra.v1.DistlockLockRequest.key:type_name -> libra.v1.EntryKey
-	0,  // 1: libra.v1.DistlockLockRequest.lock_options:type_name -> libra.v1.DistlockLockOptions
-	15, // 2: libra.v1.DistlockLockResponse.lock_token:type_name -> google.protobuf.Any
-	14, // 3: libra.v1.DistlockUnlockRequest.key:type_name -> libra.v1.EntryKey
-	15, // 4: libra.v1.DistlockUnlockRequest.lock_token:type_name -> google.protobuf.Any
-	1,  // 5: libra.v1.DistlockUnlockRequest.unlock_options:type_name -> libra.v1.DistlockUnlockOptions
-	2,  // 6: libra.v1.Distlock.Lock:input_type -> libra.v1.DistlockLockRequest
-	4,  // 7: libra.v1.Distlock.Unlock:input_type -> libra.v1.DistlockUnlockRequest
-	6,  // 8: libra.v1.Distlock.Obtain:input_type -> libra.v1.DistlockObtainRequest
-	8,  // 9: libra.v1.Distlock.Refresh:input_type -> libra.v1.DistlockRefreshRequest
-	10, // 10: libra.v1.Distlock.Release:input_type -> libra.v1.DistlockReleaseRequest
-	12, // 11: libra.v1.Distlock.Hold:input_type -> libra.v1.DistlockHoldRequest
-	3,  // 12: libra.v1.Distlock.Lock:output_type -> libra.v1.DistlockLockResponse
-	5,  // 13: libra.v1.Distlock.Unlock:output_type -> libra.v1.DistlockUnlockResponse
-	7,  // 14: libra.v1.Distlock.Obtain:output_type -> libra.v1.DistlockObtainResponse
-	9,  // 15: libra.v1.Distlock.Refresh:output_type -> libra.v1.DistlockRefreshResponse
-	11, // 16: libra.v1.Distlock.Release:output_type -> libra.v1.DistlockReleaseResponse
-	13, // 17: libra.v1.Distlock.Hold:output_type -> libra.v1.DistlockHoldNotice
-	12, // [12:18] is the sub-list for method output_type
-	6,  // [6:12] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	6, // 0: libra.v1.DistlockLockRequest.key:type_name -> libra.v1.EntryKey
+	0, // 1: libra.v1.DistlockLockRequest.lock_options:type_name -> libra.v1.DistlockLockOptions
+	7, // 2: libra.v1.DistlockLockResponse.lock_token:type_name -> google.protobuf.Any
+	6, // 3: libra.v1.DistlockUnlockRequest.key:type_name -> libra.v1.EntryKey
+	7, // 4: libra.v1.DistlockUnlockRequest.lock_token:type_name -> google.protobuf.Any
+	1, // 5: libra.v1.DistlockUnlockRequest.unlock_options:type_name -> libra.v1.DistlockUnlockOptions
+	2, // 6: libra.v1.Distlock.Lock:input_type -> libra.v1.DistlockLockRequest
+	4, // 7: libra.v1.Distlock.Unlock:input_type -> libra.v1.DistlockUnlockRequest
+	3, // 8: libra.v1.Distlock.Lock:output_type -> libra.v1.DistlockLockResponse
+	5, // 9: libra.v1.Distlock.Unlock:output_type -> libra.v1.DistlockUnlockResponse
+	8, // [8:10] is the sub-list for method output_type
+	6, // [6:8] is the sub-list for method input_type
+	6, // [6:6] is the sub-list for extension type_name
+	6, // [6:6] is the sub-list for extension extendee
+	0, // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_libra_v1_distlock_proto_init() }
@@ -962,102 +506,6 @@ func file_libra_v1_distlock_proto_init() {
 				return nil
 			}
 		}
-		file_libra_v1_distlock_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DistlockObtainRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_libra_v1_distlock_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DistlockObtainResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_libra_v1_distlock_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DistlockRefreshRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_libra_v1_distlock_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DistlockRefreshResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_libra_v1_distlock_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DistlockReleaseRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_libra_v1_distlock_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DistlockReleaseResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_libra_v1_distlock_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DistlockHoldRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_libra_v1_distlock_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DistlockHoldNotice); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1065,7 +513,7 @@ func file_libra_v1_distlock_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_libra_v1_distlock_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

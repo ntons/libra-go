@@ -20,15 +20,6 @@ const _ = grpc.SupportPackageIsVersion7
 type DistlockClient interface {
 	Lock(ctx context.Context, in *DistlockLockRequest, opts ...grpc.CallOption) (*DistlockLockResponse, error)
 	Unlock(ctx context.Context, in *DistlockUnlockRequest, opts ...grpc.CallOption) (*DistlockUnlockResponse, error)
-	// 获取
-	Obtain(ctx context.Context, in *DistlockObtainRequest, opts ...grpc.CallOption) (*DistlockObtainResponse, error)
-	// 续期
-	Refresh(ctx context.Context, in *DistlockRefreshRequest, opts ...grpc.CallOption) (*DistlockRefreshResponse, error)
-	// 释放
-	Release(ctx context.Context, in *DistlockReleaseRequest, opts ...grpc.CallOption) (*DistlockReleaseResponse, error)
-	// 保持，客户端必须在收到Notice时回应Request
-	// 如果当前已经Obtain到了token，在Hold时候一并发送，否则Hold将尝试重新获取
-	Hold(ctx context.Context, opts ...grpc.CallOption) (Distlock_HoldClient, error)
 }
 
 type distlockClient struct {
@@ -57,79 +48,12 @@ func (c *distlockClient) Unlock(ctx context.Context, in *DistlockUnlockRequest, 
 	return out, nil
 }
 
-func (c *distlockClient) Obtain(ctx context.Context, in *DistlockObtainRequest, opts ...grpc.CallOption) (*DistlockObtainResponse, error) {
-	out := new(DistlockObtainResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Distlock/Obtain", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *distlockClient) Refresh(ctx context.Context, in *DistlockRefreshRequest, opts ...grpc.CallOption) (*DistlockRefreshResponse, error) {
-	out := new(DistlockRefreshResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Distlock/Refresh", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *distlockClient) Release(ctx context.Context, in *DistlockReleaseRequest, opts ...grpc.CallOption) (*DistlockReleaseResponse, error) {
-	out := new(DistlockReleaseResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Distlock/Release", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *distlockClient) Hold(ctx context.Context, opts ...grpc.CallOption) (Distlock_HoldClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Distlock_ServiceDesc.Streams[0], "/libra.v1.Distlock/Hold", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &distlockHoldClient{stream}
-	return x, nil
-}
-
-type Distlock_HoldClient interface {
-	Send(*DistlockHoldRequest) error
-	Recv() (*DistlockHoldNotice, error)
-	grpc.ClientStream
-}
-
-type distlockHoldClient struct {
-	grpc.ClientStream
-}
-
-func (x *distlockHoldClient) Send(m *DistlockHoldRequest) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *distlockHoldClient) Recv() (*DistlockHoldNotice, error) {
-	m := new(DistlockHoldNotice)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 // DistlockServer is the server API for Distlock service.
 // All implementations must embed UnimplementedDistlockServer
 // for forward compatibility
 type DistlockServer interface {
 	Lock(context.Context, *DistlockLockRequest) (*DistlockLockResponse, error)
 	Unlock(context.Context, *DistlockUnlockRequest) (*DistlockUnlockResponse, error)
-	// 获取
-	Obtain(context.Context, *DistlockObtainRequest) (*DistlockObtainResponse, error)
-	// 续期
-	Refresh(context.Context, *DistlockRefreshRequest) (*DistlockRefreshResponse, error)
-	// 释放
-	Release(context.Context, *DistlockReleaseRequest) (*DistlockReleaseResponse, error)
-	// 保持，客户端必须在收到Notice时回应Request
-	// 如果当前已经Obtain到了token，在Hold时候一并发送，否则Hold将尝试重新获取
-	Hold(Distlock_HoldServer) error
 	mustEmbedUnimplementedDistlockServer()
 }
 
@@ -142,18 +66,6 @@ func (UnimplementedDistlockServer) Lock(context.Context, *DistlockLockRequest) (
 }
 func (UnimplementedDistlockServer) Unlock(context.Context, *DistlockUnlockRequest) (*DistlockUnlockResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Unlock not implemented")
-}
-func (UnimplementedDistlockServer) Obtain(context.Context, *DistlockObtainRequest) (*DistlockObtainResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Obtain not implemented")
-}
-func (UnimplementedDistlockServer) Refresh(context.Context, *DistlockRefreshRequest) (*DistlockRefreshResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Refresh not implemented")
-}
-func (UnimplementedDistlockServer) Release(context.Context, *DistlockReleaseRequest) (*DistlockReleaseResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Release not implemented")
-}
-func (UnimplementedDistlockServer) Hold(Distlock_HoldServer) error {
-	return status.Errorf(codes.Unimplemented, "method Hold not implemented")
 }
 func (UnimplementedDistlockServer) mustEmbedUnimplementedDistlockServer() {}
 
@@ -204,86 +116,6 @@ func _Distlock_Unlock_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Distlock_Obtain_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DistlockObtainRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DistlockServer).Obtain(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/libra.v1.Distlock/Obtain",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DistlockServer).Obtain(ctx, req.(*DistlockObtainRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Distlock_Refresh_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DistlockRefreshRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DistlockServer).Refresh(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/libra.v1.Distlock/Refresh",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DistlockServer).Refresh(ctx, req.(*DistlockRefreshRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Distlock_Release_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DistlockReleaseRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DistlockServer).Release(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/libra.v1.Distlock/Release",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DistlockServer).Release(ctx, req.(*DistlockReleaseRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Distlock_Hold_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(DistlockServer).Hold(&distlockHoldServer{stream})
-}
-
-type Distlock_HoldServer interface {
-	Send(*DistlockHoldNotice) error
-	Recv() (*DistlockHoldRequest, error)
-	grpc.ServerStream
-}
-
-type distlockHoldServer struct {
-	grpc.ServerStream
-}
-
-func (x *distlockHoldServer) Send(m *DistlockHoldNotice) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *distlockHoldServer) Recv() (*DistlockHoldRequest, error) {
-	m := new(DistlockHoldRequest)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 // Distlock_ServiceDesc is the grpc.ServiceDesc for Distlock service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -299,26 +131,7 @@ var Distlock_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Unlock",
 			Handler:    _Distlock_Unlock_Handler,
 		},
-		{
-			MethodName: "Obtain",
-			Handler:    _Distlock_Obtain_Handler,
-		},
-		{
-			MethodName: "Refresh",
-			Handler:    _Distlock_Refresh_Handler,
-		},
-		{
-			MethodName: "Release",
-			Handler:    _Distlock_Release_Handler,
-		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "Hold",
-			Handler:       _Distlock_Hold_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "libra/v1/distlock.proto",
 }
