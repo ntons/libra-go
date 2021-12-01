@@ -18,6 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RoleClient interface {
+	Get(ctx context.Context, in *RoleGetRequest, opts ...grpc.CallOption) (*RoleGetResponse, error)
 	List(ctx context.Context, in *RoleListRequest, opts ...grpc.CallOption) (*RoleListResponse, error)
 	Create(ctx context.Context, in *RoleCreateRequest, opts ...grpc.CallOption) (*RoleCreateResponse, error)
 	SignIn(ctx context.Context, in *RoleSignInRequest, opts ...grpc.CallOption) (*RoleSignInResponse, error)
@@ -31,6 +32,15 @@ type roleClient struct {
 
 func NewRoleClient(cc grpc.ClientConnInterface) RoleClient {
 	return &roleClient{cc}
+}
+
+func (c *roleClient) Get(ctx context.Context, in *RoleGetRequest, opts ...grpc.CallOption) (*RoleGetResponse, error) {
+	out := new(RoleGetResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.Role/Get", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *roleClient) List(ctx context.Context, in *RoleListRequest, opts ...grpc.CallOption) (*RoleListResponse, error) {
@@ -82,6 +92,7 @@ func (c *roleClient) GetMetadata(ctx context.Context, in *RoleGetMetadataRequest
 // All implementations must embed UnimplementedRoleServer
 // for forward compatibility
 type RoleServer interface {
+	Get(context.Context, *RoleGetRequest) (*RoleGetResponse, error)
 	List(context.Context, *RoleListRequest) (*RoleListResponse, error)
 	Create(context.Context, *RoleCreateRequest) (*RoleCreateResponse, error)
 	SignIn(context.Context, *RoleSignInRequest) (*RoleSignInResponse, error)
@@ -94,6 +105,9 @@ type RoleServer interface {
 type UnimplementedRoleServer struct {
 }
 
+func (UnimplementedRoleServer) Get(context.Context, *RoleGetRequest) (*RoleGetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
 func (UnimplementedRoleServer) List(context.Context, *RoleListRequest) (*RoleListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
@@ -120,6 +134,24 @@ type UnsafeRoleServer interface {
 
 func RegisterRoleServer(s grpc.ServiceRegistrar, srv RoleServer) {
 	s.RegisterService(&Role_ServiceDesc, srv)
+}
+
+func _Role_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RoleGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RoleServer).Get(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.Role/Get",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RoleServer).Get(ctx, req.(*RoleGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Role_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -219,6 +251,10 @@ var Role_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "libra.v1.Role",
 	HandlerType: (*RoleServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Get",
+			Handler:    _Role_Get_Handler,
+		},
 		{
 			MethodName: "List",
 			Handler:    _Role_List_Handler,

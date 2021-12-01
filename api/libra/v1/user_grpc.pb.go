@@ -18,6 +18,12 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
+	// 查询详细信息
+	Get(ctx context.Context, in *UserGetRequest, opts ...grpc.CallOption) (*UserGetResponse, error)
+	// 封禁
+	Ban(ctx context.Context, in *UserBanRequest, opts ...grpc.CallOption) (*UserBanResponse, error)
+	// 绑定
+	BindAcctId(ctx context.Context, in *UserBindAcctIdRequest, opts ...grpc.CallOption) (*UserBindAcctIdResponse, error)
 	Login(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error)
 	Logout(ctx context.Context, in *UserLogoutRequest, opts ...grpc.CallOption) (*UserLogoutResponse, error)
 	Bind(ctx context.Context, in *UserBindRequest, opts ...grpc.CallOption) (*UserBindResponse, error)
@@ -32,6 +38,33 @@ type userClient struct {
 
 func NewUserClient(cc grpc.ClientConnInterface) UserClient {
 	return &userClient{cc}
+}
+
+func (c *userClient) Get(ctx context.Context, in *UserGetRequest, opts ...grpc.CallOption) (*UserGetResponse, error) {
+	out := new(UserGetResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.User/Get", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) Ban(ctx context.Context, in *UserBanRequest, opts ...grpc.CallOption) (*UserBanResponse, error) {
+	out := new(UserBanResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.User/Ban", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) BindAcctId(ctx context.Context, in *UserBindAcctIdRequest, opts ...grpc.CallOption) (*UserBindAcctIdResponse, error) {
+	out := new(UserBindAcctIdResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.User/BindAcctId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *userClient) Login(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error) {
@@ -92,6 +125,12 @@ func (c *userClient) GetMetadata(ctx context.Context, in *UserGetMetadataRequest
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
 type UserServer interface {
+	// 查询详细信息
+	Get(context.Context, *UserGetRequest) (*UserGetResponse, error)
+	// 封禁
+	Ban(context.Context, *UserBanRequest) (*UserBanResponse, error)
+	// 绑定
+	BindAcctId(context.Context, *UserBindAcctIdRequest) (*UserBindAcctIdResponse, error)
 	Login(context.Context, *UserLoginRequest) (*UserLoginResponse, error)
 	Logout(context.Context, *UserLogoutRequest) (*UserLogoutResponse, error)
 	Bind(context.Context, *UserBindRequest) (*UserBindResponse, error)
@@ -105,6 +144,15 @@ type UserServer interface {
 type UnimplementedUserServer struct {
 }
 
+func (UnimplementedUserServer) Get(context.Context, *UserGetRequest) (*UserGetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedUserServer) Ban(context.Context, *UserBanRequest) (*UserBanResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Ban not implemented")
+}
+func (UnimplementedUserServer) BindAcctId(context.Context, *UserBindAcctIdRequest) (*UserBindAcctIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BindAcctId not implemented")
+}
 func (UnimplementedUserServer) Login(context.Context, *UserLoginRequest) (*UserLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
@@ -134,6 +182,60 @@ type UnsafeUserServer interface {
 
 func RegisterUserServer(s grpc.ServiceRegistrar, srv UserServer) {
 	s.RegisterService(&User_ServiceDesc, srv)
+}
+
+func _User_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).Get(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.User/Get",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).Get(ctx, req.(*UserGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_Ban_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserBanRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).Ban(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.User/Ban",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).Ban(ctx, req.(*UserBanRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_BindAcctId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserBindAcctIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).BindAcctId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.User/BindAcctId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).BindAcctId(ctx, req.(*UserBindAcctIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _User_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -251,6 +353,18 @@ var User_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "libra.v1.User",
 	HandlerType: (*UserServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Get",
+			Handler:    _User_Get_Handler,
+		},
+		{
+			MethodName: "Ban",
+			Handler:    _User_Ban_Handler,
+		},
+		{
+			MethodName: "BindAcctId",
+			Handler:    _User_BindAcctId_Handler,
+		},
 		{
 			MethodName: "Login",
 			Handler:    _User_Login_Handler,
