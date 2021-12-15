@@ -22,6 +22,8 @@ type UserClient interface {
 	Get(ctx context.Context, in *UserGetRequest, opts ...grpc.CallOption) (*UserGetResponse, error)
 	// 封禁
 	Ban(ctx context.Context, in *UserBanRequest, opts ...grpc.CallOption) (*UserBanResponse, error)
+	// 扩展封禁
+	Block(ctx context.Context, in *UserBlockRequest, opts ...grpc.CallOption) (*UserBlockResponse, error)
 	// 绑定
 	BindAcctId(ctx context.Context, in *UserBindAcctIdRequest, opts ...grpc.CallOption) (*UserBindAcctIdResponse, error)
 	Login(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error)
@@ -52,6 +54,15 @@ func (c *userClient) Get(ctx context.Context, in *UserGetRequest, opts ...grpc.C
 func (c *userClient) Ban(ctx context.Context, in *UserBanRequest, opts ...grpc.CallOption) (*UserBanResponse, error) {
 	out := new(UserBanResponse)
 	err := c.cc.Invoke(ctx, "/libra.v1.User/Ban", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) Block(ctx context.Context, in *UserBlockRequest, opts ...grpc.CallOption) (*UserBlockResponse, error) {
+	out := new(UserBlockResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.User/Block", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -129,6 +140,8 @@ type UserServer interface {
 	Get(context.Context, *UserGetRequest) (*UserGetResponse, error)
 	// 封禁
 	Ban(context.Context, *UserBanRequest) (*UserBanResponse, error)
+	// 扩展封禁
+	Block(context.Context, *UserBlockRequest) (*UserBlockResponse, error)
 	// 绑定
 	BindAcctId(context.Context, *UserBindAcctIdRequest) (*UserBindAcctIdResponse, error)
 	Login(context.Context, *UserLoginRequest) (*UserLoginResponse, error)
@@ -149,6 +162,9 @@ func (UnimplementedUserServer) Get(context.Context, *UserGetRequest) (*UserGetRe
 }
 func (UnimplementedUserServer) Ban(context.Context, *UserBanRequest) (*UserBanResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ban not implemented")
+}
+func (UnimplementedUserServer) Block(context.Context, *UserBlockRequest) (*UserBlockResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Block not implemented")
 }
 func (UnimplementedUserServer) BindAcctId(context.Context, *UserBindAcctIdRequest) (*UserBindAcctIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BindAcctId not implemented")
@@ -216,6 +232,24 @@ func _User_Ban_Handler(srv interface{}, ctx context.Context, dec func(interface{
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).Ban(ctx, req.(*UserBanRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_Block_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserBlockRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).Block(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.User/Block",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).Block(ctx, req.(*UserBlockRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -360,6 +394,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Ban",
 			Handler:    _User_Ban_Handler,
+		},
+		{
+			MethodName: "Block",
+			Handler:    _User_Block_Handler,
 		},
 		{
 			MethodName: "BindAcctId",
