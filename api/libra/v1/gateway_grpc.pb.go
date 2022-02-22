@@ -7,7 +7,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	anypb "google.golang.org/protobuf/types/known/anypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -23,18 +22,12 @@ type GatewayClient interface {
 	// Methods access from client side
 	////////////////////////////////////////////////////////////////////////////
 	// Establish the back pushing stream
-	Connect(ctx context.Context, in *GatewayConnectRequest, opts ...grpc.CallOption) (Gateway_ConnectClient, error)
+	Watch(ctx context.Context, opts ...grpc.CallOption) (Gateway_WatchClient, error)
 	////////////////////////////////////////////////////////////////////////////
 	// Methods access from server side
 	////////////////////////////////////////////////////////////////////////////
 	// Send message to client
 	Send(ctx context.Context, in *GatewaySendRequest, opts ...grpc.CallOption) (*GatewaySendResponse, error)
-	// Let a certain client to subscribe broadcast channels
-	Subscribe(ctx context.Context, in *GatewaySubscribeRequest, opts ...grpc.CallOption) (*GatewaySubscribeResponse, error)
-	// let a certain client to unsubscribe broadcast channels
-	Unsubscribe(ctx context.Context, in *GatewayUnsubscribeRequest, opts ...grpc.CallOption) (*GatewayUnsubscribeResponse, error)
-	// Broadcast to a channel
-	Broadcast(ctx context.Context, in *GatewayBroadcastRequest, opts ...grpc.CallOption) (*GatewayBroadcastResponse, error)
 }
 
 type gatewayClient struct {
@@ -45,32 +38,31 @@ func NewGatewayClient(cc grpc.ClientConnInterface) GatewayClient {
 	return &gatewayClient{cc}
 }
 
-func (c *gatewayClient) Connect(ctx context.Context, in *GatewayConnectRequest, opts ...grpc.CallOption) (Gateway_ConnectClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Gateway_ServiceDesc.Streams[0], "/libra.v1.Gateway/Connect", opts...)
+func (c *gatewayClient) Watch(ctx context.Context, opts ...grpc.CallOption) (Gateway_WatchClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Gateway_ServiceDesc.Streams[0], "/libra.v1.Gateway/Watch", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &gatewayConnectClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
+	x := &gatewayWatchClient{stream}
 	return x, nil
 }
 
-type Gateway_ConnectClient interface {
-	Recv() (*anypb.Any, error)
+type Gateway_WatchClient interface {
+	Send(*GatewayWatchRequest) error
+	Recv() (*GatewayMessage, error)
 	grpc.ClientStream
 }
 
-type gatewayConnectClient struct {
+type gatewayWatchClient struct {
 	grpc.ClientStream
 }
 
-func (x *gatewayConnectClient) Recv() (*anypb.Any, error) {
-	m := new(anypb.Any)
+func (x *gatewayWatchClient) Send(m *GatewayWatchRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *gatewayWatchClient) Recv() (*GatewayMessage, error) {
+	m := new(GatewayMessage)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -86,33 +78,6 @@ func (c *gatewayClient) Send(ctx context.Context, in *GatewaySendRequest, opts .
 	return out, nil
 }
 
-func (c *gatewayClient) Subscribe(ctx context.Context, in *GatewaySubscribeRequest, opts ...grpc.CallOption) (*GatewaySubscribeResponse, error) {
-	out := new(GatewaySubscribeResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Gateway/Subscribe", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *gatewayClient) Unsubscribe(ctx context.Context, in *GatewayUnsubscribeRequest, opts ...grpc.CallOption) (*GatewayUnsubscribeResponse, error) {
-	out := new(GatewayUnsubscribeResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Gateway/Unsubscribe", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *gatewayClient) Broadcast(ctx context.Context, in *GatewayBroadcastRequest, opts ...grpc.CallOption) (*GatewayBroadcastResponse, error) {
-	out := new(GatewayBroadcastResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Gateway/Broadcast", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // GatewayServer is the server API for Gateway service.
 // All implementations must embed UnimplementedGatewayServer
 // for forward compatibility
@@ -121,18 +86,12 @@ type GatewayServer interface {
 	// Methods access from client side
 	////////////////////////////////////////////////////////////////////////////
 	// Establish the back pushing stream
-	Connect(*GatewayConnectRequest, Gateway_ConnectServer) error
+	Watch(Gateway_WatchServer) error
 	////////////////////////////////////////////////////////////////////////////
 	// Methods access from server side
 	////////////////////////////////////////////////////////////////////////////
 	// Send message to client
 	Send(context.Context, *GatewaySendRequest) (*GatewaySendResponse, error)
-	// Let a certain client to subscribe broadcast channels
-	Subscribe(context.Context, *GatewaySubscribeRequest) (*GatewaySubscribeResponse, error)
-	// let a certain client to unsubscribe broadcast channels
-	Unsubscribe(context.Context, *GatewayUnsubscribeRequest) (*GatewayUnsubscribeResponse, error)
-	// Broadcast to a channel
-	Broadcast(context.Context, *GatewayBroadcastRequest) (*GatewayBroadcastResponse, error)
 	mustEmbedUnimplementedGatewayServer()
 }
 
@@ -140,20 +99,11 @@ type GatewayServer interface {
 type UnimplementedGatewayServer struct {
 }
 
-func (UnimplementedGatewayServer) Connect(*GatewayConnectRequest, Gateway_ConnectServer) error {
-	return status.Errorf(codes.Unimplemented, "method Connect not implemented")
+func (UnimplementedGatewayServer) Watch(Gateway_WatchServer) error {
+	return status.Errorf(codes.Unimplemented, "method Watch not implemented")
 }
 func (UnimplementedGatewayServer) Send(context.Context, *GatewaySendRequest) (*GatewaySendResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
-}
-func (UnimplementedGatewayServer) Subscribe(context.Context, *GatewaySubscribeRequest) (*GatewaySubscribeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
-}
-func (UnimplementedGatewayServer) Unsubscribe(context.Context, *GatewayUnsubscribeRequest) (*GatewayUnsubscribeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Unsubscribe not implemented")
-}
-func (UnimplementedGatewayServer) Broadcast(context.Context, *GatewayBroadcastRequest) (*GatewayBroadcastResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Broadcast not implemented")
 }
 func (UnimplementedGatewayServer) mustEmbedUnimplementedGatewayServer() {}
 
@@ -168,25 +118,30 @@ func RegisterGatewayServer(s grpc.ServiceRegistrar, srv GatewayServer) {
 	s.RegisterService(&Gateway_ServiceDesc, srv)
 }
 
-func _Gateway_Connect_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(GatewayConnectRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(GatewayServer).Connect(m, &gatewayConnectServer{stream})
+func _Gateway_Watch_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(GatewayServer).Watch(&gatewayWatchServer{stream})
 }
 
-type Gateway_ConnectServer interface {
-	Send(*anypb.Any) error
+type Gateway_WatchServer interface {
+	Send(*GatewayMessage) error
+	Recv() (*GatewayWatchRequest, error)
 	grpc.ServerStream
 }
 
-type gatewayConnectServer struct {
+type gatewayWatchServer struct {
 	grpc.ServerStream
 }
 
-func (x *gatewayConnectServer) Send(m *anypb.Any) error {
+func (x *gatewayWatchServer) Send(m *GatewayMessage) error {
 	return x.ServerStream.SendMsg(m)
+}
+
+func (x *gatewayWatchServer) Recv() (*GatewayWatchRequest, error) {
+	m := new(GatewayWatchRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 func _Gateway_Send_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -207,60 +162,6 @@ func _Gateway_Send_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Gateway_Subscribe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GatewaySubscribeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GatewayServer).Subscribe(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/libra.v1.Gateway/Subscribe",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServer).Subscribe(ctx, req.(*GatewaySubscribeRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Gateway_Unsubscribe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GatewayUnsubscribeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GatewayServer).Unsubscribe(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/libra.v1.Gateway/Unsubscribe",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServer).Unsubscribe(ctx, req.(*GatewayUnsubscribeRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Gateway_Broadcast_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GatewayBroadcastRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GatewayServer).Broadcast(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/libra.v1.Gateway/Broadcast",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GatewayServer).Broadcast(ctx, req.(*GatewayBroadcastRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // Gateway_ServiceDesc is the grpc.ServiceDesc for Gateway service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -272,24 +173,13 @@ var Gateway_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Send",
 			Handler:    _Gateway_Send_Handler,
 		},
-		{
-			MethodName: "Subscribe",
-			Handler:    _Gateway_Subscribe_Handler,
-		},
-		{
-			MethodName: "Unsubscribe",
-			Handler:    _Gateway_Unsubscribe_Handler,
-		},
-		{
-			MethodName: "Broadcast",
-			Handler:    _Gateway_Broadcast_Handler,
-		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "Connect",
-			Handler:       _Gateway_Connect_Handler,
+			StreamName:    "Watch",
+			Handler:       _Gateway_Watch_Handler,
 			ServerStreams: true,
+			ClientStreams: true,
 		},
 	},
 	Metadata: "libra/v1/gateway.proto",
