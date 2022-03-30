@@ -20,6 +20,8 @@ const _ = grpc.SupportPackageIsVersion7
 type UserClient interface {
 	// 查询详细信息
 	Get(ctx context.Context, in *UserGetRequest, opts ...grpc.CallOption) (*UserGetResponse, error)
+	// 扩展查询
+	Query(ctx context.Context, in *UserQueryRequest, opts ...grpc.CallOption) (*UserQueryResponse, error)
 	// 封禁
 	Ban(ctx context.Context, in *UserBanRequest, opts ...grpc.CallOption) (*UserBanResponse, error)
 	// 扩展封禁
@@ -45,6 +47,15 @@ func NewUserClient(cc grpc.ClientConnInterface) UserClient {
 func (c *userClient) Get(ctx context.Context, in *UserGetRequest, opts ...grpc.CallOption) (*UserGetResponse, error) {
 	out := new(UserGetResponse)
 	err := c.cc.Invoke(ctx, "/libra.v1.User/Get", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) Query(ctx context.Context, in *UserQueryRequest, opts ...grpc.CallOption) (*UserQueryResponse, error) {
+	out := new(UserQueryResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.User/Query", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -138,6 +149,8 @@ func (c *userClient) GetMetadata(ctx context.Context, in *UserGetMetadataRequest
 type UserServer interface {
 	// 查询详细信息
 	Get(context.Context, *UserGetRequest) (*UserGetResponse, error)
+	// 扩展查询
+	Query(context.Context, *UserQueryRequest) (*UserQueryResponse, error)
 	// 封禁
 	Ban(context.Context, *UserBanRequest) (*UserBanResponse, error)
 	// 扩展封禁
@@ -159,6 +172,9 @@ type UnimplementedUserServer struct {
 
 func (UnimplementedUserServer) Get(context.Context, *UserGetRequest) (*UserGetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedUserServer) Query(context.Context, *UserQueryRequest) (*UserQueryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Query not implemented")
 }
 func (UnimplementedUserServer) Ban(context.Context, *UserBanRequest) (*UserBanResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ban not implemented")
@@ -214,6 +230,24 @@ func _User_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).Get(ctx, req.(*UserGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_Query_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserQueryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).Query(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.User/Query",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).Query(ctx, req.(*UserQueryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -390,6 +424,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Get",
 			Handler:    _User_Get_Handler,
+		},
+		{
+			MethodName: "Query",
+			Handler:    _User_Query_Handler,
 		},
 		{
 			MethodName: "Ban",
