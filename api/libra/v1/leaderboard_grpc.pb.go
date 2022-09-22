@@ -18,11 +18,13 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LeaderboardClient interface {
+	// add entry if not on chart
+	Add(ctx context.Context, in *LeaderboardAddRequest, opts ...grpc.CallOption) (*LeaderboardAddResponse, error)
 	// set entry score by id
 	// set entry info if info field not empty
 	SetScore(ctx context.Context, in *LeaderboardSetScoreRequest, opts ...grpc.CallOption) (*LeaderboardSetScoreResponse, error)
 	// incr entry score by id, if id not exists, add it with score
-	// set entry info if info filed not empty
+	// set entry info if info field not empty
 	IncrScore(ctx context.Context, in *LeaderboardIncrScoreRequest, opts ...grpc.CallOption) (*LeaderboardIncrScoreResponse, error)
 	// get entries by range
 	GetRange(ctx context.Context, in *LeaderboardGetRangeRequest, opts ...grpc.CallOption) (*LeaderboardGetRangeResponse, error)
@@ -40,6 +42,15 @@ type leaderboardClient struct {
 
 func NewLeaderboardClient(cc grpc.ClientConnInterface) LeaderboardClient {
 	return &leaderboardClient{cc}
+}
+
+func (c *leaderboardClient) Add(ctx context.Context, in *LeaderboardAddRequest, opts ...grpc.CallOption) (*LeaderboardAddResponse, error) {
+	out := new(LeaderboardAddResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.Leaderboard/Add", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *leaderboardClient) SetScore(ctx context.Context, in *LeaderboardSetScoreRequest, opts ...grpc.CallOption) (*LeaderboardSetScoreResponse, error) {
@@ -100,11 +111,13 @@ func (c *leaderboardClient) SetInfo(ctx context.Context, in *LeaderboardSetInfoR
 // All implementations must embed UnimplementedLeaderboardServer
 // for forward compatibility
 type LeaderboardServer interface {
+	// add entry if not on chart
+	Add(context.Context, *LeaderboardAddRequest) (*LeaderboardAddResponse, error)
 	// set entry score by id
 	// set entry info if info field not empty
 	SetScore(context.Context, *LeaderboardSetScoreRequest) (*LeaderboardSetScoreResponse, error)
 	// incr entry score by id, if id not exists, add it with score
-	// set entry info if info filed not empty
+	// set entry info if info field not empty
 	IncrScore(context.Context, *LeaderboardIncrScoreRequest) (*LeaderboardIncrScoreResponse, error)
 	// get entries by range
 	GetRange(context.Context, *LeaderboardGetRangeRequest) (*LeaderboardGetRangeResponse, error)
@@ -121,6 +134,9 @@ type LeaderboardServer interface {
 type UnimplementedLeaderboardServer struct {
 }
 
+func (UnimplementedLeaderboardServer) Add(context.Context, *LeaderboardAddRequest) (*LeaderboardAddResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
+}
 func (UnimplementedLeaderboardServer) SetScore(context.Context, *LeaderboardSetScoreRequest) (*LeaderboardSetScoreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetScore not implemented")
 }
@@ -150,6 +166,24 @@ type UnsafeLeaderboardServer interface {
 
 func RegisterLeaderboardServer(s grpc.ServiceRegistrar, srv LeaderboardServer) {
 	s.RegisterService(&Leaderboard_ServiceDesc, srv)
+}
+
+func _Leaderboard_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LeaderboardAddRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LeaderboardServer).Add(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.Leaderboard/Add",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LeaderboardServer).Add(ctx, req.(*LeaderboardAddRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Leaderboard_SetScore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -267,6 +301,10 @@ var Leaderboard_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "libra.v1.Leaderboard",
 	HandlerType: (*LeaderboardServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Add",
+			Handler:    _Leaderboard_Add_Handler,
+		},
 		{
 			MethodName: "SetScore",
 			Handler:    _Leaderboard_SetScore_Handler,
