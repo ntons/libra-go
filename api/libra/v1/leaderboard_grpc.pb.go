@@ -34,6 +34,8 @@ type LeaderboardClient interface {
 	RemoveById(ctx context.Context, in *LeaderboardRemoveByIdRequest, opts ...grpc.CallOption) (*LeaderboardRemoveByIdResponse, error)
 	// set entry info by id
 	SetInfo(ctx context.Context, in *LeaderboardSetInfoRequest, opts ...grpc.CallOption) (*LeaderboardSetInfoResponse, error)
+	// random entries by score
+	RandByScore(ctx context.Context, in *LeaderboardRandByScoreRequest, opts ...grpc.CallOption) (*LeaderboardRandByScoreResponse, error)
 }
 
 type leaderboardClient struct {
@@ -107,6 +109,15 @@ func (c *leaderboardClient) SetInfo(ctx context.Context, in *LeaderboardSetInfoR
 	return out, nil
 }
 
+func (c *leaderboardClient) RandByScore(ctx context.Context, in *LeaderboardRandByScoreRequest, opts ...grpc.CallOption) (*LeaderboardRandByScoreResponse, error) {
+	out := new(LeaderboardRandByScoreResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.Leaderboard/RandByScore", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LeaderboardServer is the server API for Leaderboard service.
 // All implementations must embed UnimplementedLeaderboardServer
 // for forward compatibility
@@ -127,6 +138,8 @@ type LeaderboardServer interface {
 	RemoveById(context.Context, *LeaderboardRemoveByIdRequest) (*LeaderboardRemoveByIdResponse, error)
 	// set entry info by id
 	SetInfo(context.Context, *LeaderboardSetInfoRequest) (*LeaderboardSetInfoResponse, error)
+	// random entries by score
+	RandByScore(context.Context, *LeaderboardRandByScoreRequest) (*LeaderboardRandByScoreResponse, error)
 	mustEmbedUnimplementedLeaderboardServer()
 }
 
@@ -154,6 +167,9 @@ func (UnimplementedLeaderboardServer) RemoveById(context.Context, *LeaderboardRe
 }
 func (UnimplementedLeaderboardServer) SetInfo(context.Context, *LeaderboardSetInfoRequest) (*LeaderboardSetInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetInfo not implemented")
+}
+func (UnimplementedLeaderboardServer) RandByScore(context.Context, *LeaderboardRandByScoreRequest) (*LeaderboardRandByScoreResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RandByScore not implemented")
 }
 func (UnimplementedLeaderboardServer) mustEmbedUnimplementedLeaderboardServer() {}
 
@@ -294,6 +310,24 @@ func _Leaderboard_SetInfo_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Leaderboard_RandByScore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LeaderboardRandByScoreRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LeaderboardServer).RandByScore(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.Leaderboard/RandByScore",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LeaderboardServer).RandByScore(ctx, req.(*LeaderboardRandByScoreRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Leaderboard_ServiceDesc is the grpc.ServiceDesc for Leaderboard service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -328,6 +362,10 @@ var Leaderboard_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetInfo",
 			Handler:    _Leaderboard_SetInfo_Handler,
+		},
+		{
+			MethodName: "RandByScore",
+			Handler:    _Leaderboard_RandByScore_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
