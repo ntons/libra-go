@@ -87,6 +87,8 @@ type LeaderboardAddResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	Entries []*ChartEntry `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"`
 }
 
 func (x *LeaderboardAddResponse) Reset() {
@@ -119,6 +121,13 @@ func (x *LeaderboardAddResponse) ProtoReflect() protoreflect.Message {
 // Deprecated: Use LeaderboardAddResponse.ProtoReflect.Descriptor instead.
 func (*LeaderboardAddResponse) Descriptor() ([]byte, []int) {
 	return file_libra_v1_leaderboard_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *LeaderboardAddResponse) GetEntries() []*ChartEntry {
+	if x != nil {
+		return x.Entries
+	}
+	return nil
 }
 
 type LeaderboardSetScoreRequest struct {
@@ -951,9 +960,12 @@ var file_libra_v1_leaderboard_proto_rawDesc = []byte{
 	0x76, 0x31, 0x2e, 0x43, 0x68, 0x61, 0x72, 0x74, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52,
 	0x07, 0x6f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x24, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18,
 	0x0b, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31,
-	0x2e, 0x43, 0x68, 0x61, 0x72, 0x74, 0x4b, 0x65, 0x79, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x22, 0x18,
+	0x2e, 0x43, 0x68, 0x61, 0x72, 0x74, 0x4b, 0x65, 0x79, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x22, 0x48,
 	0x0a, 0x16, 0x4c, 0x65, 0x61, 0x64, 0x65, 0x72, 0x62, 0x6f, 0x61, 0x72, 0x64, 0x41, 0x64, 0x64,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xa4, 0x01, 0x0a, 0x1a, 0x4c, 0x65, 0x61,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2e, 0x0a, 0x07, 0x65, 0x6e, 0x74, 0x72,
+	0x69, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x6c, 0x69, 0x62, 0x72,
+	0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x68, 0x61, 0x72, 0x74, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52,
+	0x07, 0x65, 0x6e, 0x74, 0x72, 0x69, 0x65, 0x73, 0x22, 0xa4, 0x01, 0x0a, 0x1a, 0x4c, 0x65, 0x61,
 	0x64, 0x65, 0x72, 0x62, 0x6f, 0x61, 0x72, 0x64, 0x53, 0x65, 0x74, 0x53, 0x63, 0x6f, 0x72, 0x65,
 	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2e, 0x0a, 0x07, 0x65, 0x6e, 0x74, 0x72, 0x69,
 	0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61,
@@ -1145,49 +1157,50 @@ var file_libra_v1_leaderboard_proto_depIdxs = []int32{
 	17, // 0: libra.v1.LeaderboardAddRequest.entries:type_name -> libra.v1.ChartEntry
 	18, // 1: libra.v1.LeaderboardAddRequest.options:type_name -> libra.v1.ChartOptions
 	19, // 2: libra.v1.LeaderboardAddRequest.key:type_name -> libra.v1.ChartKey
-	17, // 3: libra.v1.LeaderboardSetScoreRequest.entries:type_name -> libra.v1.ChartEntry
-	18, // 4: libra.v1.LeaderboardSetScoreRequest.options:type_name -> libra.v1.ChartOptions
-	19, // 5: libra.v1.LeaderboardSetScoreRequest.key:type_name -> libra.v1.ChartKey
-	17, // 6: libra.v1.LeaderboardIncrScoreRequest.entries:type_name -> libra.v1.ChartEntry
-	18, // 7: libra.v1.LeaderboardIncrScoreRequest.options:type_name -> libra.v1.ChartOptions
-	19, // 8: libra.v1.LeaderboardIncrScoreRequest.key:type_name -> libra.v1.ChartKey
-	17, // 9: libra.v1.LeaderboardIncrScoreResponse.entries:type_name -> libra.v1.ChartEntry
-	18, // 10: libra.v1.LeaderboardGetRangeRequest.options:type_name -> libra.v1.ChartOptions
-	19, // 11: libra.v1.LeaderboardGetRangeRequest.key:type_name -> libra.v1.ChartKey
-	17, // 12: libra.v1.LeaderboardGetRangeResponse.entries:type_name -> libra.v1.ChartEntry
-	18, // 13: libra.v1.LeaderboardGetByIdRequest.options:type_name -> libra.v1.ChartOptions
-	19, // 14: libra.v1.LeaderboardGetByIdRequest.key:type_name -> libra.v1.ChartKey
-	17, // 15: libra.v1.LeaderboardGetByIdResponse.entries:type_name -> libra.v1.ChartEntry
-	18, // 16: libra.v1.LeaderboardRemoveByIdRequest.options:type_name -> libra.v1.ChartOptions
-	19, // 17: libra.v1.LeaderboardRemoveByIdRequest.key:type_name -> libra.v1.ChartKey
-	17, // 18: libra.v1.LeaderboardSetInfoRequest.entries:type_name -> libra.v1.ChartEntry
-	18, // 19: libra.v1.LeaderboardSetInfoRequest.options:type_name -> libra.v1.ChartOptions
-	19, // 20: libra.v1.LeaderboardSetInfoRequest.key:type_name -> libra.v1.ChartKey
-	16, // 21: libra.v1.LeaderboardRandByScoreRequest.intervals:type_name -> libra.v1.LeaderboardRandByScoreRequest.Interval
-	18, // 22: libra.v1.LeaderboardRandByScoreRequest.options:type_name -> libra.v1.ChartOptions
-	19, // 23: libra.v1.LeaderboardRandByScoreRequest.key:type_name -> libra.v1.ChartKey
-	17, // 24: libra.v1.LeaderboardRandByScoreResponse.entries:type_name -> libra.v1.ChartEntry
-	0,  // 25: libra.v1.Leaderboard.Add:input_type -> libra.v1.LeaderboardAddRequest
-	2,  // 26: libra.v1.Leaderboard.SetScore:input_type -> libra.v1.LeaderboardSetScoreRequest
-	4,  // 27: libra.v1.Leaderboard.IncrScore:input_type -> libra.v1.LeaderboardIncrScoreRequest
-	6,  // 28: libra.v1.Leaderboard.GetRange:input_type -> libra.v1.LeaderboardGetRangeRequest
-	8,  // 29: libra.v1.Leaderboard.GetById:input_type -> libra.v1.LeaderboardGetByIdRequest
-	10, // 30: libra.v1.Leaderboard.RemoveById:input_type -> libra.v1.LeaderboardRemoveByIdRequest
-	12, // 31: libra.v1.Leaderboard.SetInfo:input_type -> libra.v1.LeaderboardSetInfoRequest
-	14, // 32: libra.v1.Leaderboard.RandByScore:input_type -> libra.v1.LeaderboardRandByScoreRequest
-	1,  // 33: libra.v1.Leaderboard.Add:output_type -> libra.v1.LeaderboardAddResponse
-	3,  // 34: libra.v1.Leaderboard.SetScore:output_type -> libra.v1.LeaderboardSetScoreResponse
-	5,  // 35: libra.v1.Leaderboard.IncrScore:output_type -> libra.v1.LeaderboardIncrScoreResponse
-	7,  // 36: libra.v1.Leaderboard.GetRange:output_type -> libra.v1.LeaderboardGetRangeResponse
-	9,  // 37: libra.v1.Leaderboard.GetById:output_type -> libra.v1.LeaderboardGetByIdResponse
-	11, // 38: libra.v1.Leaderboard.RemoveById:output_type -> libra.v1.LeaderboardRemoveByIdResponse
-	13, // 39: libra.v1.Leaderboard.SetInfo:output_type -> libra.v1.LeaderboardSetInfoResponse
-	15, // 40: libra.v1.Leaderboard.RandByScore:output_type -> libra.v1.LeaderboardRandByScoreResponse
-	33, // [33:41] is the sub-list for method output_type
-	25, // [25:33] is the sub-list for method input_type
-	25, // [25:25] is the sub-list for extension type_name
-	25, // [25:25] is the sub-list for extension extendee
-	0,  // [0:25] is the sub-list for field type_name
+	17, // 3: libra.v1.LeaderboardAddResponse.entries:type_name -> libra.v1.ChartEntry
+	17, // 4: libra.v1.LeaderboardSetScoreRequest.entries:type_name -> libra.v1.ChartEntry
+	18, // 5: libra.v1.LeaderboardSetScoreRequest.options:type_name -> libra.v1.ChartOptions
+	19, // 6: libra.v1.LeaderboardSetScoreRequest.key:type_name -> libra.v1.ChartKey
+	17, // 7: libra.v1.LeaderboardIncrScoreRequest.entries:type_name -> libra.v1.ChartEntry
+	18, // 8: libra.v1.LeaderboardIncrScoreRequest.options:type_name -> libra.v1.ChartOptions
+	19, // 9: libra.v1.LeaderboardIncrScoreRequest.key:type_name -> libra.v1.ChartKey
+	17, // 10: libra.v1.LeaderboardIncrScoreResponse.entries:type_name -> libra.v1.ChartEntry
+	18, // 11: libra.v1.LeaderboardGetRangeRequest.options:type_name -> libra.v1.ChartOptions
+	19, // 12: libra.v1.LeaderboardGetRangeRequest.key:type_name -> libra.v1.ChartKey
+	17, // 13: libra.v1.LeaderboardGetRangeResponse.entries:type_name -> libra.v1.ChartEntry
+	18, // 14: libra.v1.LeaderboardGetByIdRequest.options:type_name -> libra.v1.ChartOptions
+	19, // 15: libra.v1.LeaderboardGetByIdRequest.key:type_name -> libra.v1.ChartKey
+	17, // 16: libra.v1.LeaderboardGetByIdResponse.entries:type_name -> libra.v1.ChartEntry
+	18, // 17: libra.v1.LeaderboardRemoveByIdRequest.options:type_name -> libra.v1.ChartOptions
+	19, // 18: libra.v1.LeaderboardRemoveByIdRequest.key:type_name -> libra.v1.ChartKey
+	17, // 19: libra.v1.LeaderboardSetInfoRequest.entries:type_name -> libra.v1.ChartEntry
+	18, // 20: libra.v1.LeaderboardSetInfoRequest.options:type_name -> libra.v1.ChartOptions
+	19, // 21: libra.v1.LeaderboardSetInfoRequest.key:type_name -> libra.v1.ChartKey
+	16, // 22: libra.v1.LeaderboardRandByScoreRequest.intervals:type_name -> libra.v1.LeaderboardRandByScoreRequest.Interval
+	18, // 23: libra.v1.LeaderboardRandByScoreRequest.options:type_name -> libra.v1.ChartOptions
+	19, // 24: libra.v1.LeaderboardRandByScoreRequest.key:type_name -> libra.v1.ChartKey
+	17, // 25: libra.v1.LeaderboardRandByScoreResponse.entries:type_name -> libra.v1.ChartEntry
+	0,  // 26: libra.v1.Leaderboard.Add:input_type -> libra.v1.LeaderboardAddRequest
+	2,  // 27: libra.v1.Leaderboard.SetScore:input_type -> libra.v1.LeaderboardSetScoreRequest
+	4,  // 28: libra.v1.Leaderboard.IncrScore:input_type -> libra.v1.LeaderboardIncrScoreRequest
+	6,  // 29: libra.v1.Leaderboard.GetRange:input_type -> libra.v1.LeaderboardGetRangeRequest
+	8,  // 30: libra.v1.Leaderboard.GetById:input_type -> libra.v1.LeaderboardGetByIdRequest
+	10, // 31: libra.v1.Leaderboard.RemoveById:input_type -> libra.v1.LeaderboardRemoveByIdRequest
+	12, // 32: libra.v1.Leaderboard.SetInfo:input_type -> libra.v1.LeaderboardSetInfoRequest
+	14, // 33: libra.v1.Leaderboard.RandByScore:input_type -> libra.v1.LeaderboardRandByScoreRequest
+	1,  // 34: libra.v1.Leaderboard.Add:output_type -> libra.v1.LeaderboardAddResponse
+	3,  // 35: libra.v1.Leaderboard.SetScore:output_type -> libra.v1.LeaderboardSetScoreResponse
+	5,  // 36: libra.v1.Leaderboard.IncrScore:output_type -> libra.v1.LeaderboardIncrScoreResponse
+	7,  // 37: libra.v1.Leaderboard.GetRange:output_type -> libra.v1.LeaderboardGetRangeResponse
+	9,  // 38: libra.v1.Leaderboard.GetById:output_type -> libra.v1.LeaderboardGetByIdResponse
+	11, // 39: libra.v1.Leaderboard.RemoveById:output_type -> libra.v1.LeaderboardRemoveByIdResponse
+	13, // 40: libra.v1.Leaderboard.SetInfo:output_type -> libra.v1.LeaderboardSetInfoResponse
+	15, // 41: libra.v1.Leaderboard.RandByScore:output_type -> libra.v1.LeaderboardRandByScoreResponse
+	34, // [34:42] is the sub-list for method output_type
+	26, // [26:34] is the sub-list for method input_type
+	26, // [26:26] is the sub-list for extension type_name
+	26, // [26:26] is the sub-list for extension extendee
+	0,  // [0:26] is the sub-list for field type_name
 }
 
 func init() { file_libra_v1_leaderboard_proto_init() }
