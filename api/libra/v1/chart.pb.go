@@ -174,7 +174,7 @@ type ChartOptions struct {
 	ExpireAt int64 `protobuf:"varint,3,opt,name=expire_at,json=expireAt,proto3" json:"expire_at,omitempty"`
 	// chart expire after duration, if expire_at set, this option was ignored
 	IdleExpire int64 `protobuf:"varint,4,opt,name=idle_expire,json=idleExpire,proto3" json:"idle_expire,omitempty"`
-	// not trim tail if reach capacity, an chart full error will be return
+	// not trim tail if reach capacity, an OutOfRange error will be return
 	NotTrim bool `protobuf:"varint,5,opt,name=not_trim,json=notTrim,proto3" json:"not_trim,omitempty"`
 }
 

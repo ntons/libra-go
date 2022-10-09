@@ -21,6 +21,8 @@ type MailboxClient interface {
 	List(ctx context.Context, in *MailboxListRequest, opts ...grpc.CallOption) (*MailboxListResponse, error)
 	Push(ctx context.Context, in *MailboxPushRequest, opts ...grpc.CallOption) (*MailboxPushResponse, error)
 	Pull(ctx context.Context, in *MailboxPullRequest, opts ...grpc.CallOption) (*MailboxPullResponse, error)
+	// 支持批量收件人
+	Send(ctx context.Context, in *MailboxSendRequest, opts ...grpc.CallOption) (*MailboxSendResponse, error)
 }
 
 type mailboxClient struct {
@@ -58,6 +60,15 @@ func (c *mailboxClient) Pull(ctx context.Context, in *MailboxPullRequest, opts .
 	return out, nil
 }
 
+func (c *mailboxClient) Send(ctx context.Context, in *MailboxSendRequest, opts ...grpc.CallOption) (*MailboxSendResponse, error) {
+	out := new(MailboxSendResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.Mailbox/Send", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MailboxServer is the server API for Mailbox service.
 // All implementations must embed UnimplementedMailboxServer
 // for forward compatibility
@@ -65,6 +76,8 @@ type MailboxServer interface {
 	List(context.Context, *MailboxListRequest) (*MailboxListResponse, error)
 	Push(context.Context, *MailboxPushRequest) (*MailboxPushResponse, error)
 	Pull(context.Context, *MailboxPullRequest) (*MailboxPullResponse, error)
+	// 支持批量收件人
+	Send(context.Context, *MailboxSendRequest) (*MailboxSendResponse, error)
 	mustEmbedUnimplementedMailboxServer()
 }
 
@@ -80,6 +93,9 @@ func (UnimplementedMailboxServer) Push(context.Context, *MailboxPushRequest) (*M
 }
 func (UnimplementedMailboxServer) Pull(context.Context, *MailboxPullRequest) (*MailboxPullResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Pull not implemented")
+}
+func (UnimplementedMailboxServer) Send(context.Context, *MailboxSendRequest) (*MailboxSendResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
 }
 func (UnimplementedMailboxServer) mustEmbedUnimplementedMailboxServer() {}
 
@@ -148,6 +164,24 @@ func _Mailbox_Pull_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Mailbox_Send_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MailboxSendRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MailboxServer).Send(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.Mailbox/Send",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MailboxServer).Send(ctx, req.(*MailboxSendRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Mailbox_ServiceDesc is the grpc.ServiceDesc for Mailbox service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -166,6 +200,10 @@ var Mailbox_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Pull",
 			Handler:    _Mailbox_Pull_Handler,
+		},
+		{
+			MethodName: "Send",
+			Handler:    _Mailbox_Send_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
