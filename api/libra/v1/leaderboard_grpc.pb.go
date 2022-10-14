@@ -23,7 +23,7 @@ type LeaderboardClient interface {
 	// set entry info by id
 	SetInfo(ctx context.Context, in *LeaderboardSetInfoRequest, opts ...grpc.CallOption) (*LeaderboardSetInfoResponse, error)
 	// get entries by rank
-	GetByRank(ctx context.Context, in *LeaderboardSetRequest, opts ...grpc.CallOption) (*LeaderboardSetResponse, error)
+	GetByRank(ctx context.Context, in *LeaderboardGetByRankRequest, opts ...grpc.CallOption) (*LeaderboardGetByRankResponse, error)
 	// get entries by id
 	GetById(ctx context.Context, in *LeaderboardGetByIdRequest, opts ...grpc.CallOption) (*LeaderboardGetByIdResponse, error)
 	// random entries by score
@@ -64,8 +64,8 @@ func (c *leaderboardClient) SetInfo(ctx context.Context, in *LeaderboardSetInfoR
 	return out, nil
 }
 
-func (c *leaderboardClient) GetByRank(ctx context.Context, in *LeaderboardSetRequest, opts ...grpc.CallOption) (*LeaderboardSetResponse, error) {
-	out := new(LeaderboardSetResponse)
+func (c *leaderboardClient) GetByRank(ctx context.Context, in *LeaderboardGetByRankRequest, opts ...grpc.CallOption) (*LeaderboardGetByRankResponse, error) {
+	out := new(LeaderboardGetByRankResponse)
 	err := c.cc.Invoke(ctx, "/libra.v1.Leaderboard/GetByRank", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -136,7 +136,7 @@ type LeaderboardServer interface {
 	// set entry info by id
 	SetInfo(context.Context, *LeaderboardSetInfoRequest) (*LeaderboardSetInfoResponse, error)
 	// get entries by rank
-	GetByRank(context.Context, *LeaderboardSetRequest) (*LeaderboardSetResponse, error)
+	GetByRank(context.Context, *LeaderboardGetByRankRequest) (*LeaderboardGetByRankResponse, error)
 	// get entries by id
 	GetById(context.Context, *LeaderboardGetByIdRequest) (*LeaderboardGetByIdResponse, error)
 	// random entries by score
@@ -162,7 +162,7 @@ func (UnimplementedLeaderboardServer) Set(context.Context, *LeaderboardSetReques
 func (UnimplementedLeaderboardServer) SetInfo(context.Context, *LeaderboardSetInfoRequest) (*LeaderboardSetInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetInfo not implemented")
 }
-func (UnimplementedLeaderboardServer) GetByRank(context.Context, *LeaderboardSetRequest) (*LeaderboardSetResponse, error) {
+func (UnimplementedLeaderboardServer) GetByRank(context.Context, *LeaderboardGetByRankRequest) (*LeaderboardGetByRankResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetByRank not implemented")
 }
 func (UnimplementedLeaderboardServer) GetById(context.Context, *LeaderboardGetByIdRequest) (*LeaderboardGetByIdResponse, error) {
@@ -233,7 +233,7 @@ func _Leaderboard_SetInfo_Handler(srv interface{}, ctx context.Context, dec func
 }
 
 func _Leaderboard_GetByRank_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LeaderboardSetRequest)
+	in := new(LeaderboardGetByRankRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -245,7 +245,7 @@ func _Leaderboard_GetByRank_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/libra.v1.Leaderboard/GetByRank",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LeaderboardServer).GetByRank(ctx, req.(*LeaderboardSetRequest))
+		return srv.(LeaderboardServer).GetByRank(ctx, req.(*LeaderboardGetByRankRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
