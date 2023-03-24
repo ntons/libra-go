@@ -86,6 +86,62 @@ func (x *GiftData) GetPayload() *anypb.Any {
 	return nil
 }
 
+type GiftCodeData struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Code string `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
+	// 已兑换标记
+	Redeemed bool `protobuf:"varint,2,opt,name=redeemed,proto3" json:"redeemed,omitempty"`
+}
+
+func (x *GiftCodeData) Reset() {
+	*x = GiftCodeData{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_libra_v1_gift_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GiftCodeData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GiftCodeData) ProtoMessage() {}
+
+func (x *GiftCodeData) ProtoReflect() protoreflect.Message {
+	mi := &file_libra_v1_gift_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GiftCodeData.ProtoReflect.Descriptor instead.
+func (*GiftCodeData) Descriptor() ([]byte, []int) {
+	return file_libra_v1_gift_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *GiftCodeData) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *GiftCodeData) GetRedeemed() bool {
+	if x != nil {
+		return x.Redeemed
+	}
+	return false
+}
+
 type GiftCreateRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -98,7 +154,7 @@ type GiftCreateRequest struct {
 func (x *GiftCreateRequest) Reset() {
 	*x = GiftCreateRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_gift_proto_msgTypes[1]
+		mi := &file_libra_v1_gift_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -111,7 +167,7 @@ func (x *GiftCreateRequest) String() string {
 func (*GiftCreateRequest) ProtoMessage() {}
 
 func (x *GiftCreateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_gift_proto_msgTypes[1]
+	mi := &file_libra_v1_gift_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -124,7 +180,7 @@ func (x *GiftCreateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GiftCreateRequest.ProtoReflect.Descriptor instead.
 func (*GiftCreateRequest) Descriptor() ([]byte, []int) {
-	return file_libra_v1_gift_proto_rawDescGZIP(), []int{1}
+	return file_libra_v1_gift_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GiftCreateRequest) GetData() *GiftData {
@@ -150,7 +206,7 @@ type GiftCreateResponse struct {
 func (x *GiftCreateResponse) Reset() {
 	*x = GiftCreateResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_gift_proto_msgTypes[2]
+		mi := &file_libra_v1_gift_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -163,7 +219,7 @@ func (x *GiftCreateResponse) String() string {
 func (*GiftCreateResponse) ProtoMessage() {}
 
 func (x *GiftCreateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_gift_proto_msgTypes[2]
+	mi := &file_libra_v1_gift_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -176,7 +232,7 @@ func (x *GiftCreateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GiftCreateResponse.ProtoReflect.Descriptor instead.
 func (*GiftCreateResponse) Descriptor() ([]byte, []int) {
-	return file_libra_v1_gift_proto_rawDescGZIP(), []int{2}
+	return file_libra_v1_gift_proto_rawDescGZIP(), []int{3}
 }
 
 type GiftRevokeRequest struct {
@@ -190,7 +246,7 @@ type GiftRevokeRequest struct {
 func (x *GiftRevokeRequest) Reset() {
 	*x = GiftRevokeRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_gift_proto_msgTypes[3]
+		mi := &file_libra_v1_gift_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -203,7 +259,7 @@ func (x *GiftRevokeRequest) String() string {
 func (*GiftRevokeRequest) ProtoMessage() {}
 
 func (x *GiftRevokeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_gift_proto_msgTypes[3]
+	mi := &file_libra_v1_gift_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -216,7 +272,7 @@ func (x *GiftRevokeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GiftRevokeRequest.ProtoReflect.Descriptor instead.
 func (*GiftRevokeRequest) Descriptor() ([]byte, []int) {
-	return file_libra_v1_gift_proto_rawDescGZIP(), []int{3}
+	return file_libra_v1_gift_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GiftRevokeRequest) GetId() string {
@@ -235,7 +291,7 @@ type GiftRevokeResponse struct {
 func (x *GiftRevokeResponse) Reset() {
 	*x = GiftRevokeResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_gift_proto_msgTypes[4]
+		mi := &file_libra_v1_gift_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -248,7 +304,7 @@ func (x *GiftRevokeResponse) String() string {
 func (*GiftRevokeResponse) ProtoMessage() {}
 
 func (x *GiftRevokeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_gift_proto_msgTypes[4]
+	mi := &file_libra_v1_gift_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -261,7 +317,7 @@ func (x *GiftRevokeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GiftRevokeResponse.ProtoReflect.Descriptor instead.
 func (*GiftRevokeResponse) Descriptor() ([]byte, []int) {
-	return file_libra_v1_gift_proto_rawDescGZIP(), []int{4}
+	return file_libra_v1_gift_proto_rawDescGZIP(), []int{5}
 }
 
 type GiftUpdateRequest struct {
@@ -283,7 +339,7 @@ type GiftUpdateRequest struct {
 func (x *GiftUpdateRequest) Reset() {
 	*x = GiftUpdateRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_gift_proto_msgTypes[5]
+		mi := &file_libra_v1_gift_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -296,7 +352,7 @@ func (x *GiftUpdateRequest) String() string {
 func (*GiftUpdateRequest) ProtoMessage() {}
 
 func (x *GiftUpdateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_gift_proto_msgTypes[5]
+	mi := &file_libra_v1_gift_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -309,7 +365,7 @@ func (x *GiftUpdateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GiftUpdateRequest.ProtoReflect.Descriptor instead.
 func (*GiftUpdateRequest) Descriptor() ([]byte, []int) {
-	return file_libra_v1_gift_proto_rawDescGZIP(), []int{5}
+	return file_libra_v1_gift_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GiftUpdateRequest) GetId() string {
@@ -349,7 +405,7 @@ type GiftUpdateResponse struct {
 func (x *GiftUpdateResponse) Reset() {
 	*x = GiftUpdateResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_gift_proto_msgTypes[6]
+		mi := &file_libra_v1_gift_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -362,7 +418,7 @@ func (x *GiftUpdateResponse) String() string {
 func (*GiftUpdateResponse) ProtoMessage() {}
 
 func (x *GiftUpdateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_gift_proto_msgTypes[6]
+	mi := &file_libra_v1_gift_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -375,7 +431,7 @@ func (x *GiftUpdateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GiftUpdateResponse.ProtoReflect.Descriptor instead.
 func (*GiftUpdateResponse) Descriptor() ([]byte, []int) {
-	return file_libra_v1_gift_proto_rawDescGZIP(), []int{6}
+	return file_libra_v1_gift_proto_rawDescGZIP(), []int{7}
 }
 
 type GiftListRequest struct {
@@ -391,7 +447,7 @@ type GiftListRequest struct {
 func (x *GiftListRequest) Reset() {
 	*x = GiftListRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_gift_proto_msgTypes[7]
+		mi := &file_libra_v1_gift_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -404,7 +460,7 @@ func (x *GiftListRequest) String() string {
 func (*GiftListRequest) ProtoMessage() {}
 
 func (x *GiftListRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_gift_proto_msgTypes[7]
+	mi := &file_libra_v1_gift_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -417,7 +473,7 @@ func (x *GiftListRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GiftListRequest.ProtoReflect.Descriptor instead.
 func (*GiftListRequest) Descriptor() ([]byte, []int) {
-	return file_libra_v1_gift_proto_rawDescGZIP(), []int{7}
+	return file_libra_v1_gift_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GiftListRequest) GetId() string {
@@ -438,7 +494,7 @@ type GiftListResponse struct {
 func (x *GiftListResponse) Reset() {
 	*x = GiftListResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_gift_proto_msgTypes[8]
+		mi := &file_libra_v1_gift_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -451,7 +507,7 @@ func (x *GiftListResponse) String() string {
 func (*GiftListResponse) ProtoMessage() {}
 
 func (x *GiftListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_gift_proto_msgTypes[8]
+	mi := &file_libra_v1_gift_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -464,10 +520,116 @@ func (x *GiftListResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GiftListResponse.ProtoReflect.Descriptor instead.
 func (*GiftListResponse) Descriptor() ([]byte, []int) {
-	return file_libra_v1_gift_proto_rawDescGZIP(), []int{8}
+	return file_libra_v1_gift_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GiftListResponse) GetList() []*GiftListResponse_Entry {
+	if x != nil {
+		return x.List
+	}
+	return nil
+}
+
+// 按顺序判定：
+// 指定礼包ID 返回礼包信息和其中的礼包码
+// 指定礼包码 返回所属礼包信息(没有礼包码)
+// 都不指定 返回所有礼包信息(没有礼包码)
+type GiftSearchRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id   string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Code string `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
+}
+
+func (x *GiftSearchRequest) Reset() {
+	*x = GiftSearchRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_libra_v1_gift_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GiftSearchRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GiftSearchRequest) ProtoMessage() {}
+
+func (x *GiftSearchRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_libra_v1_gift_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GiftSearchRequest.ProtoReflect.Descriptor instead.
+func (*GiftSearchRequest) Descriptor() ([]byte, []int) {
+	return file_libra_v1_gift_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *GiftSearchRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *GiftSearchRequest) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+type GiftSearchResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	List []*GiftSearchResponse_Entry `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
+}
+
+func (x *GiftSearchResponse) Reset() {
+	*x = GiftSearchResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_libra_v1_gift_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GiftSearchResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GiftSearchResponse) ProtoMessage() {}
+
+func (x *GiftSearchResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_libra_v1_gift_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GiftSearchResponse.ProtoReflect.Descriptor instead.
+func (*GiftSearchResponse) Descriptor() ([]byte, []int) {
+	return file_libra_v1_gift_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *GiftSearchResponse) GetList() []*GiftSearchResponse_Entry {
 	if x != nil {
 		return x.List
 	}
@@ -485,7 +647,7 @@ type GiftVerifyRequest struct {
 func (x *GiftVerifyRequest) Reset() {
 	*x = GiftVerifyRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_gift_proto_msgTypes[9]
+		mi := &file_libra_v1_gift_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -498,7 +660,7 @@ func (x *GiftVerifyRequest) String() string {
 func (*GiftVerifyRequest) ProtoMessage() {}
 
 func (x *GiftVerifyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_gift_proto_msgTypes[9]
+	mi := &file_libra_v1_gift_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -511,7 +673,7 @@ func (x *GiftVerifyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GiftVerifyRequest.ProtoReflect.Descriptor instead.
 func (*GiftVerifyRequest) Descriptor() ([]byte, []int) {
-	return file_libra_v1_gift_proto_rawDescGZIP(), []int{9}
+	return file_libra_v1_gift_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GiftVerifyRequest) GetCode() string {
@@ -532,7 +694,7 @@ type GiftVerifyResponse struct {
 func (x *GiftVerifyResponse) Reset() {
 	*x = GiftVerifyResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_gift_proto_msgTypes[10]
+		mi := &file_libra_v1_gift_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -545,7 +707,7 @@ func (x *GiftVerifyResponse) String() string {
 func (*GiftVerifyResponse) ProtoMessage() {}
 
 func (x *GiftVerifyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_gift_proto_msgTypes[10]
+	mi := &file_libra_v1_gift_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -558,7 +720,7 @@ func (x *GiftVerifyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GiftVerifyResponse.ProtoReflect.Descriptor instead.
 func (*GiftVerifyResponse) Descriptor() ([]byte, []int) {
-	return file_libra_v1_gift_proto_rawDescGZIP(), []int{10}
+	return file_libra_v1_gift_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GiftVerifyResponse) GetData() *GiftData {
@@ -579,7 +741,7 @@ type GiftRedeemRequest struct {
 func (x *GiftRedeemRequest) Reset() {
 	*x = GiftRedeemRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_gift_proto_msgTypes[11]
+		mi := &file_libra_v1_gift_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -592,7 +754,7 @@ func (x *GiftRedeemRequest) String() string {
 func (*GiftRedeemRequest) ProtoMessage() {}
 
 func (x *GiftRedeemRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_gift_proto_msgTypes[11]
+	mi := &file_libra_v1_gift_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -605,7 +767,7 @@ func (x *GiftRedeemRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GiftRedeemRequest.ProtoReflect.Descriptor instead.
 func (*GiftRedeemRequest) Descriptor() ([]byte, []int) {
-	return file_libra_v1_gift_proto_rawDescGZIP(), []int{11}
+	return file_libra_v1_gift_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GiftRedeemRequest) GetCode() string {
@@ -626,7 +788,7 @@ type GiftRedeemResponse struct {
 func (x *GiftRedeemResponse) Reset() {
 	*x = GiftRedeemResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_gift_proto_msgTypes[12]
+		mi := &file_libra_v1_gift_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -639,7 +801,7 @@ func (x *GiftRedeemResponse) String() string {
 func (*GiftRedeemResponse) ProtoMessage() {}
 
 func (x *GiftRedeemResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_gift_proto_msgTypes[12]
+	mi := &file_libra_v1_gift_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -652,7 +814,7 @@ func (x *GiftRedeemResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GiftRedeemResponse.ProtoReflect.Descriptor instead.
 func (*GiftRedeemResponse) Descriptor() ([]byte, []int) {
-	return file_libra_v1_gift_proto_rawDescGZIP(), []int{12}
+	return file_libra_v1_gift_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *GiftRedeemResponse) GetData() *GiftData {
@@ -675,7 +837,7 @@ type GiftListResponse_Entry struct {
 func (x *GiftListResponse_Entry) Reset() {
 	*x = GiftListResponse_Entry{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_libra_v1_gift_proto_msgTypes[13]
+		mi := &file_libra_v1_gift_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -688,7 +850,7 @@ func (x *GiftListResponse_Entry) String() string {
 func (*GiftListResponse_Entry) ProtoMessage() {}
 
 func (x *GiftListResponse_Entry) ProtoReflect() protoreflect.Message {
-	mi := &file_libra_v1_gift_proto_msgTypes[13]
+	mi := &file_libra_v1_gift_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -701,7 +863,7 @@ func (x *GiftListResponse_Entry) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GiftListResponse_Entry.ProtoReflect.Descriptor instead.
 func (*GiftListResponse_Entry) Descriptor() ([]byte, []int) {
-	return file_libra_v1_gift_proto_rawDescGZIP(), []int{8, 0}
+	return file_libra_v1_gift_proto_rawDescGZIP(), []int{9, 0}
 }
 
 func (x *GiftListResponse_Entry) GetData() *GiftData {
@@ -712,6 +874,61 @@ func (x *GiftListResponse_Entry) GetData() *GiftData {
 }
 
 func (x *GiftListResponse_Entry) GetCodes() []string {
+	if x != nil {
+		return x.Codes
+	}
+	return nil
+}
+
+type GiftSearchResponse_Entry struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Data  *GiftData       `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
+	Codes []*GiftCodeData `protobuf:"bytes,2,rep,name=codes,proto3" json:"codes,omitempty"`
+}
+
+func (x *GiftSearchResponse_Entry) Reset() {
+	*x = GiftSearchResponse_Entry{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_libra_v1_gift_proto_msgTypes[17]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GiftSearchResponse_Entry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GiftSearchResponse_Entry) ProtoMessage() {}
+
+func (x *GiftSearchResponse_Entry) ProtoReflect() protoreflect.Message {
+	mi := &file_libra_v1_gift_proto_msgTypes[17]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GiftSearchResponse_Entry.ProtoReflect.Descriptor instead.
+func (*GiftSearchResponse_Entry) Descriptor() ([]byte, []int) {
+	return file_libra_v1_gift_proto_rawDescGZIP(), []int{11, 0}
+}
+
+func (x *GiftSearchResponse_Entry) GetData() *GiftData {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+func (x *GiftSearchResponse_Entry) GetCodes() []*GiftCodeData {
 	if x != nil {
 		return x.Codes
 	}
@@ -731,7 +948,11 @@ var file_libra_v1_gift_proto_rawDesc = []byte{
 	0x65, 0x41, 0x74, 0x12, 0x2e, 0x0a, 0x07, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x18, 0x0a,
 	0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x41, 0x6e, 0x79, 0x52, 0x07, 0x70, 0x61, 0x79, 0x6c,
-	0x6f, 0x61, 0x64, 0x22, 0x51, 0x0a, 0x11, 0x47, 0x69, 0x66, 0x74, 0x43, 0x72, 0x65, 0x61, 0x74,
+	0x6f, 0x61, 0x64, 0x22, 0x3e, 0x0a, 0x0c, 0x47, 0x69, 0x66, 0x74, 0x43, 0x6f, 0x64, 0x65, 0x44,
+	0x61, 0x74, 0x61, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x72, 0x65, 0x64, 0x65, 0x65,
+	0x6d, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x72, 0x65, 0x64, 0x65, 0x65,
+	0x6d, 0x65, 0x64, 0x22, 0x51, 0x0a, 0x11, 0x47, 0x69, 0x66, 0x74, 0x43, 0x72, 0x65, 0x61, 0x74,
 	0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x26, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76,
 	0x31, 0x2e, 0x47, 0x69, 0x66, 0x74, 0x44, 0x61, 0x74, 0x61, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61,
@@ -763,49 +984,64 @@ var file_libra_v1_gift_proto_rawDesc = []byte{
 	0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e,
 	0x47, 0x69, 0x66, 0x74, 0x44, 0x61, 0x74, 0x61, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x12, 0x14,
 	0x0a, 0x05, 0x63, 0x6f, 0x64, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x05, 0x63,
-	0x6f, 0x64, 0x65, 0x73, 0x22, 0x27, 0x0a, 0x11, 0x47, 0x69, 0x66, 0x74, 0x56, 0x65, 0x72, 0x69,
-	0x66, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64,
-	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x22, 0x3c, 0x0a,
-	0x12, 0x47, 0x69, 0x66, 0x74, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x26, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x12, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66,
-	0x74, 0x44, 0x61, 0x74, 0x61, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x27, 0x0a, 0x11, 0x47,
-	0x69, 0x66, 0x74, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x6f, 0x64, 0x65, 0x73, 0x22, 0x37, 0x0a, 0x11, 0x47, 0x69, 0x66, 0x74, 0x53, 0x65, 0x61, 0x72,
+	0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x22, 0xab, 0x01,
+	0x0a, 0x12, 0x47, 0x69, 0x66, 0x74, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x36, 0x0a, 0x04, 0x6c, 0x69, 0x73, 0x74, 0x18, 0x01, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x22, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69,
+	0x66, 0x74, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x2e, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x04, 0x6c, 0x69, 0x73, 0x74, 0x1a, 0x5d, 0x0a, 0x05,
+	0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x26, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47,
+	0x69, 0x66, 0x74, 0x44, 0x61, 0x74, 0x61, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x12, 0x2c, 0x0a,
+	0x05, 0x63, 0x6f, 0x64, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x6c,
+	0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66, 0x74, 0x43, 0x6f, 0x64, 0x65,
+	0x44, 0x61, 0x74, 0x61, 0x52, 0x05, 0x63, 0x6f, 0x64, 0x65, 0x73, 0x22, 0x27, 0x0a, 0x11, 0x47,
+	0x69, 0x66, 0x74, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
 	0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04,
-	0x63, 0x6f, 0x64, 0x65, 0x22, 0x3c, 0x0a, 0x12, 0x47, 0x69, 0x66, 0x74, 0x52, 0x65, 0x64, 0x65,
-	0x65, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x26, 0x0a, 0x04, 0x64, 0x61,
+	0x63, 0x6f, 0x64, 0x65, 0x22, 0x3c, 0x0a, 0x12, 0x47, 0x69, 0x66, 0x74, 0x56, 0x65, 0x72, 0x69,
+	0x66, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x26, 0x0a, 0x04, 0x64, 0x61,
 	0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61,
 	0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66, 0x74, 0x44, 0x61, 0x74, 0x61, 0x52, 0x04, 0x64, 0x61,
-	0x74, 0x61, 0x32, 0x9e, 0x03, 0x0a, 0x04, 0x47, 0x69, 0x66, 0x74, 0x12, 0x43, 0x0a, 0x06, 0x43,
-	0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x1b, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31,
-	0x2e, 0x47, 0x69, 0x66, 0x74, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x74, 0x61, 0x22, 0x27, 0x0a, 0x11, 0x47, 0x69, 0x66, 0x74, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x22, 0x3c, 0x0a, 0x12, 0x47,
+	0x69, 0x66, 0x74, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x26, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x12, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66, 0x74, 0x44,
+	0x61, 0x74, 0x61, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x32, 0xa4, 0x03, 0x0a, 0x04, 0x47, 0x69,
+	0x66, 0x74, 0x12, 0x43, 0x0a, 0x06, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x1b, 0x2e, 0x6c,
+	0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66, 0x74, 0x43, 0x72, 0x65, 0x61,
+	0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e, 0x6c, 0x69, 0x62, 0x72,
+	0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66, 0x74, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x43, 0x0a, 0x06, 0x52, 0x65, 0x76, 0x6f, 0x6b,
+	0x65, 0x12, 0x1b, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66,
+	0x74, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c,
+	0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66, 0x74, 0x52, 0x65,
+	0x76, 0x6f, 0x6b, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x43, 0x0a, 0x06,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x12, 0x1b, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76,
+	0x31, 0x2e, 0x47, 0x69, 0x66, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47,
+	0x69, 0x66, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x43, 0x0a, 0x06, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x12, 0x1b, 0x2e, 0x6c, 0x69,
+	0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66, 0x74, 0x53, 0x65, 0x61, 0x72, 0x63,
+	0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61,
+	0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66, 0x74, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x43, 0x0a, 0x06, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79,
+	0x12, 0x1b, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66, 0x74,
+	0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e,
+	0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66, 0x74, 0x56, 0x65, 0x72,
+	0x69, 0x66, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x43, 0x0a, 0x06, 0x52,
+	0x65, 0x64, 0x65, 0x65, 0x6d, 0x12, 0x1b, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31,
+	0x2e, 0x47, 0x69, 0x66, 0x74, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65,
 	0x73, 0x74, 0x1a, 0x1c, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69,
-	0x66, 0x74, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x43, 0x0a, 0x06, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x12, 0x1b, 0x2e, 0x6c, 0x69, 0x62,
-	0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66, 0x74, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e,
-	0x76, 0x31, 0x2e, 0x47, 0x69, 0x66, 0x74, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x43, 0x0a, 0x06, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x12,
-	0x1b, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66, 0x74, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e, 0x6c,
-	0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66, 0x74, 0x55, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3d, 0x0a, 0x04, 0x4c, 0x69,
-	0x73, 0x74, 0x12, 0x19, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69,
-	0x66, 0x74, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1a, 0x2e,
-	0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66, 0x74, 0x4c, 0x69, 0x73,
-	0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x43, 0x0a, 0x06, 0x56, 0x65, 0x72,
-	0x69, 0x66, 0x79, 0x12, 0x1b, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47,
-	0x69, 0x66, 0x74, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x1c, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66, 0x74,
-	0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x43,
-	0x0a, 0x06, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d, 0x12, 0x1b, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61,
-	0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x66, 0x74, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2e, 0x76, 0x31,
-	0x2e, 0x47, 0x69, 0x66, 0x74, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x42, 0x28, 0x5a, 0x26, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
-	0x6d, 0x2f, 0x6e, 0x74, 0x6f, 0x6e, 0x73, 0x2f, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2d, 0x67, 0x6f,
-	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2f, 0x76, 0x31, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x66, 0x74, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x42, 0x28, 0x5a, 0x26, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6e,
+	0x74, 0x6f, 0x6e, 0x73, 0x2f, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2d, 0x67, 0x6f, 0x2f, 0x61, 0x70,
+	0x69, 0x2f, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x2f, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -820,49 +1056,56 @@ func file_libra_v1_gift_proto_rawDescGZIP() []byte {
 	return file_libra_v1_gift_proto_rawDescData
 }
 
-var file_libra_v1_gift_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_libra_v1_gift_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_libra_v1_gift_proto_goTypes = []interface{}{
-	(*GiftData)(nil),               // 0: libra.v1.GiftData
-	(*GiftCreateRequest)(nil),      // 1: libra.v1.GiftCreateRequest
-	(*GiftCreateResponse)(nil),     // 2: libra.v1.GiftCreateResponse
-	(*GiftRevokeRequest)(nil),      // 3: libra.v1.GiftRevokeRequest
-	(*GiftRevokeResponse)(nil),     // 4: libra.v1.GiftRevokeResponse
-	(*GiftUpdateRequest)(nil),      // 5: libra.v1.GiftUpdateRequest
-	(*GiftUpdateResponse)(nil),     // 6: libra.v1.GiftUpdateResponse
-	(*GiftListRequest)(nil),        // 7: libra.v1.GiftListRequest
-	(*GiftListResponse)(nil),       // 8: libra.v1.GiftListResponse
-	(*GiftVerifyRequest)(nil),      // 9: libra.v1.GiftVerifyRequest
-	(*GiftVerifyResponse)(nil),     // 10: libra.v1.GiftVerifyResponse
-	(*GiftRedeemRequest)(nil),      // 11: libra.v1.GiftRedeemRequest
-	(*GiftRedeemResponse)(nil),     // 12: libra.v1.GiftRedeemResponse
-	(*GiftListResponse_Entry)(nil), // 13: libra.v1.GiftListResponse.Entry
-	(*anypb.Any)(nil),              // 14: google.protobuf.Any
+	(*GiftData)(nil),                 // 0: libra.v1.GiftData
+	(*GiftCodeData)(nil),             // 1: libra.v1.GiftCodeData
+	(*GiftCreateRequest)(nil),        // 2: libra.v1.GiftCreateRequest
+	(*GiftCreateResponse)(nil),       // 3: libra.v1.GiftCreateResponse
+	(*GiftRevokeRequest)(nil),        // 4: libra.v1.GiftRevokeRequest
+	(*GiftRevokeResponse)(nil),       // 5: libra.v1.GiftRevokeResponse
+	(*GiftUpdateRequest)(nil),        // 6: libra.v1.GiftUpdateRequest
+	(*GiftUpdateResponse)(nil),       // 7: libra.v1.GiftUpdateResponse
+	(*GiftListRequest)(nil),          // 8: libra.v1.GiftListRequest
+	(*GiftListResponse)(nil),         // 9: libra.v1.GiftListResponse
+	(*GiftSearchRequest)(nil),        // 10: libra.v1.GiftSearchRequest
+	(*GiftSearchResponse)(nil),       // 11: libra.v1.GiftSearchResponse
+	(*GiftVerifyRequest)(nil),        // 12: libra.v1.GiftVerifyRequest
+	(*GiftVerifyResponse)(nil),       // 13: libra.v1.GiftVerifyResponse
+	(*GiftRedeemRequest)(nil),        // 14: libra.v1.GiftRedeemRequest
+	(*GiftRedeemResponse)(nil),       // 15: libra.v1.GiftRedeemResponse
+	(*GiftListResponse_Entry)(nil),   // 16: libra.v1.GiftListResponse.Entry
+	(*GiftSearchResponse_Entry)(nil), // 17: libra.v1.GiftSearchResponse.Entry
+	(*anypb.Any)(nil),                // 18: google.protobuf.Any
 }
 var file_libra_v1_gift_proto_depIdxs = []int32{
-	14, // 0: libra.v1.GiftData.payload:type_name -> google.protobuf.Any
+	18, // 0: libra.v1.GiftData.payload:type_name -> google.protobuf.Any
 	0,  // 1: libra.v1.GiftCreateRequest.data:type_name -> libra.v1.GiftData
 	0,  // 2: libra.v1.GiftUpdateRequest.data:type_name -> libra.v1.GiftData
-	13, // 3: libra.v1.GiftListResponse.list:type_name -> libra.v1.GiftListResponse.Entry
-	0,  // 4: libra.v1.GiftVerifyResponse.data:type_name -> libra.v1.GiftData
-	0,  // 5: libra.v1.GiftRedeemResponse.data:type_name -> libra.v1.GiftData
-	0,  // 6: libra.v1.GiftListResponse.Entry.data:type_name -> libra.v1.GiftData
-	1,  // 7: libra.v1.Gift.Create:input_type -> libra.v1.GiftCreateRequest
-	3,  // 8: libra.v1.Gift.Revoke:input_type -> libra.v1.GiftRevokeRequest
-	5,  // 9: libra.v1.Gift.Update:input_type -> libra.v1.GiftUpdateRequest
-	7,  // 10: libra.v1.Gift.List:input_type -> libra.v1.GiftListRequest
-	9,  // 11: libra.v1.Gift.Verify:input_type -> libra.v1.GiftVerifyRequest
-	11, // 12: libra.v1.Gift.Redeem:input_type -> libra.v1.GiftRedeemRequest
-	2,  // 13: libra.v1.Gift.Create:output_type -> libra.v1.GiftCreateResponse
-	4,  // 14: libra.v1.Gift.Revoke:output_type -> libra.v1.GiftRevokeResponse
-	6,  // 15: libra.v1.Gift.Update:output_type -> libra.v1.GiftUpdateResponse
-	8,  // 16: libra.v1.Gift.List:output_type -> libra.v1.GiftListResponse
-	10, // 17: libra.v1.Gift.Verify:output_type -> libra.v1.GiftVerifyResponse
-	12, // 18: libra.v1.Gift.Redeem:output_type -> libra.v1.GiftRedeemResponse
-	13, // [13:19] is the sub-list for method output_type
-	7,  // [7:13] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	16, // 3: libra.v1.GiftListResponse.list:type_name -> libra.v1.GiftListResponse.Entry
+	17, // 4: libra.v1.GiftSearchResponse.list:type_name -> libra.v1.GiftSearchResponse.Entry
+	0,  // 5: libra.v1.GiftVerifyResponse.data:type_name -> libra.v1.GiftData
+	0,  // 6: libra.v1.GiftRedeemResponse.data:type_name -> libra.v1.GiftData
+	0,  // 7: libra.v1.GiftListResponse.Entry.data:type_name -> libra.v1.GiftData
+	0,  // 8: libra.v1.GiftSearchResponse.Entry.data:type_name -> libra.v1.GiftData
+	1,  // 9: libra.v1.GiftSearchResponse.Entry.codes:type_name -> libra.v1.GiftCodeData
+	2,  // 10: libra.v1.Gift.Create:input_type -> libra.v1.GiftCreateRequest
+	4,  // 11: libra.v1.Gift.Revoke:input_type -> libra.v1.GiftRevokeRequest
+	6,  // 12: libra.v1.Gift.Update:input_type -> libra.v1.GiftUpdateRequest
+	10, // 13: libra.v1.Gift.Search:input_type -> libra.v1.GiftSearchRequest
+	12, // 14: libra.v1.Gift.Verify:input_type -> libra.v1.GiftVerifyRequest
+	14, // 15: libra.v1.Gift.Redeem:input_type -> libra.v1.GiftRedeemRequest
+	3,  // 16: libra.v1.Gift.Create:output_type -> libra.v1.GiftCreateResponse
+	5,  // 17: libra.v1.Gift.Revoke:output_type -> libra.v1.GiftRevokeResponse
+	7,  // 18: libra.v1.Gift.Update:output_type -> libra.v1.GiftUpdateResponse
+	11, // 19: libra.v1.Gift.Search:output_type -> libra.v1.GiftSearchResponse
+	13, // 20: libra.v1.Gift.Verify:output_type -> libra.v1.GiftVerifyResponse
+	15, // 21: libra.v1.Gift.Redeem:output_type -> libra.v1.GiftRedeemResponse
+	16, // [16:22] is the sub-list for method output_type
+	10, // [10:16] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_libra_v1_gift_proto_init() }
@@ -884,7 +1127,7 @@ func file_libra_v1_gift_proto_init() {
 			}
 		}
 		file_libra_v1_gift_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GiftCreateRequest); i {
+			switch v := v.(*GiftCodeData); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -896,7 +1139,7 @@ func file_libra_v1_gift_proto_init() {
 			}
 		}
 		file_libra_v1_gift_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GiftCreateResponse); i {
+			switch v := v.(*GiftCreateRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -908,7 +1151,7 @@ func file_libra_v1_gift_proto_init() {
 			}
 		}
 		file_libra_v1_gift_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GiftRevokeRequest); i {
+			switch v := v.(*GiftCreateResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -920,7 +1163,7 @@ func file_libra_v1_gift_proto_init() {
 			}
 		}
 		file_libra_v1_gift_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GiftRevokeResponse); i {
+			switch v := v.(*GiftRevokeRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -932,7 +1175,7 @@ func file_libra_v1_gift_proto_init() {
 			}
 		}
 		file_libra_v1_gift_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GiftUpdateRequest); i {
+			switch v := v.(*GiftRevokeResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -944,7 +1187,7 @@ func file_libra_v1_gift_proto_init() {
 			}
 		}
 		file_libra_v1_gift_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GiftUpdateResponse); i {
+			switch v := v.(*GiftUpdateRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -956,7 +1199,7 @@ func file_libra_v1_gift_proto_init() {
 			}
 		}
 		file_libra_v1_gift_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GiftListRequest); i {
+			switch v := v.(*GiftUpdateResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -968,7 +1211,7 @@ func file_libra_v1_gift_proto_init() {
 			}
 		}
 		file_libra_v1_gift_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GiftListResponse); i {
+			switch v := v.(*GiftListRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -980,7 +1223,7 @@ func file_libra_v1_gift_proto_init() {
 			}
 		}
 		file_libra_v1_gift_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GiftVerifyRequest); i {
+			switch v := v.(*GiftListResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -992,7 +1235,7 @@ func file_libra_v1_gift_proto_init() {
 			}
 		}
 		file_libra_v1_gift_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GiftVerifyResponse); i {
+			switch v := v.(*GiftSearchRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1004,7 +1247,7 @@ func file_libra_v1_gift_proto_init() {
 			}
 		}
 		file_libra_v1_gift_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GiftRedeemRequest); i {
+			switch v := v.(*GiftSearchResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1016,7 +1259,7 @@ func file_libra_v1_gift_proto_init() {
 			}
 		}
 		file_libra_v1_gift_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GiftRedeemResponse); i {
+			switch v := v.(*GiftVerifyRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1028,7 +1271,55 @@ func file_libra_v1_gift_proto_init() {
 			}
 		}
 		file_libra_v1_gift_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GiftVerifyResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_libra_v1_gift_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GiftRedeemRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_libra_v1_gift_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GiftRedeemResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_libra_v1_gift_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GiftListResponse_Entry); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_libra_v1_gift_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GiftSearchResponse_Entry); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1046,7 +1337,7 @@ func file_libra_v1_gift_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_libra_v1_gift_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

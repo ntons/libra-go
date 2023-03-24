@@ -25,7 +25,7 @@ type GiftClient interface {
 	// 更新礼包
 	Update(ctx context.Context, in *GiftUpdateRequest, opts ...grpc.CallOption) (*GiftUpdateResponse, error)
 	// 查询礼包
-	List(ctx context.Context, in *GiftListRequest, opts ...grpc.CallOption) (*GiftListResponse, error)
+	Search(ctx context.Context, in *GiftSearchRequest, opts ...grpc.CallOption) (*GiftSearchResponse, error)
 	// 校验礼包码
 	Verify(ctx context.Context, in *GiftVerifyRequest, opts ...grpc.CallOption) (*GiftVerifyResponse, error)
 	// 兑换礼包码
@@ -67,9 +67,9 @@ func (c *giftClient) Update(ctx context.Context, in *GiftUpdateRequest, opts ...
 	return out, nil
 }
 
-func (c *giftClient) List(ctx context.Context, in *GiftListRequest, opts ...grpc.CallOption) (*GiftListResponse, error) {
-	out := new(GiftListResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.Gift/List", in, out, opts...)
+func (c *giftClient) Search(ctx context.Context, in *GiftSearchRequest, opts ...grpc.CallOption) (*GiftSearchResponse, error) {
+	out := new(GiftSearchResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.Gift/Search", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +105,7 @@ type GiftServer interface {
 	// 更新礼包
 	Update(context.Context, *GiftUpdateRequest) (*GiftUpdateResponse, error)
 	// 查询礼包
-	List(context.Context, *GiftListRequest) (*GiftListResponse, error)
+	Search(context.Context, *GiftSearchRequest) (*GiftSearchResponse, error)
 	// 校验礼包码
 	Verify(context.Context, *GiftVerifyRequest) (*GiftVerifyResponse, error)
 	// 兑换礼包码
@@ -126,8 +126,8 @@ func (UnimplementedGiftServer) Revoke(context.Context, *GiftRevokeRequest) (*Gif
 func (UnimplementedGiftServer) Update(context.Context, *GiftUpdateRequest) (*GiftUpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedGiftServer) List(context.Context, *GiftListRequest) (*GiftListResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
+func (UnimplementedGiftServer) Search(context.Context, *GiftSearchRequest) (*GiftSearchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Search not implemented")
 }
 func (UnimplementedGiftServer) Verify(context.Context, *GiftVerifyRequest) (*GiftVerifyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Verify not implemented")
@@ -202,20 +202,20 @@ func _Gift_Update_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Gift_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GiftListRequest)
+func _Gift_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GiftSearchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GiftServer).List(ctx, in)
+		return srv.(GiftServer).Search(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/libra.v1.Gift/List",
+		FullMethod: "/libra.v1.Gift/Search",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GiftServer).List(ctx, req.(*GiftListRequest))
+		return srv.(GiftServer).Search(ctx, req.(*GiftSearchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -276,8 +276,8 @@ var Gift_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Gift_Update_Handler,
 		},
 		{
-			MethodName: "List",
-			Handler:    _Gift_List_Handler,
+			MethodName: "Search",
+			Handler:    _Gift_Search_Handler,
 		},
 		{
 			MethodName: "Verify",
