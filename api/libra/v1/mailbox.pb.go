@@ -537,11 +537,14 @@ type MailboxSendRequest_Envelope struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Keys        []*EntryKey `protobuf:"bytes,1,rep,name=keys,proto3" json:"keys,omitempty"`
-	Data        *anypb.Any  `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
-	Capacity    int32       `protobuf:"varint,3,opt,name=capacity,proto3" json:"capacity,omitempty"`       // maximum mails to keep
-	Overridable bool        `protobuf:"varint,4,opt,name=overridable,proto3" json:"overridable,omitempty"` // using ring buffer to keep mails, order by (importance,pull order)
-	Importance  int32       `protobuf:"varint,5,opt,name=importance,proto3" json:"importance,omitempty"`   // importance
+	Keys []*EntryKey `protobuf:"bytes,1,rep,name=keys,proto3" json:"keys,omitempty"`
+	Data *anypb.Any  `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	// maximum mails to keep, [1,65534]
+	Capacity int32 `protobuf:"varint,3,opt,name=capacity,proto3" json:"capacity,omitempty"`
+	// using ring buffer to keep mails, order by (importance,pull order)
+	Overridable bool `protobuf:"varint,4,opt,name=overridable,proto3" json:"overridable,omitempty"`
+	// mail importance [-128,127]
+	Importance int32 `protobuf:"varint,5,opt,name=importance,proto3" json:"importance,omitempty"`
 }
 
 func (x *MailboxSendRequest_Envelope) Reset() {
