@@ -18,16 +18,10 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PubSubServiceClient interface {
-	// 发送
-	// 不提供批量发送，因为无法保证原子性
-	Send(ctx context.Context, in *PubSub_SendRequest, opts ...grpc.CallOption) (*PubSub_SendResponse, error)
-	// 读取
-	// 提供起始消息ID，监听并收取该ID及以后的消息
-	Read(ctx context.Context, in *PubSub_ReadRequest, opts ...grpc.CallOption) (PubSubService_ReadClient, error)
-	// 消费
-	// 提供消费组，监听并消费主题消息，消息处理后需要响应ACK
-	// 保证同一个消费组中，主题中的消息都能且只能被消费一次
-	Consume(ctx context.Context, opts ...grpc.CallOption) (PubSubService_ConsumeClient, error)
+	// 发布
+	Publish(ctx context.Context, in *PubSub_PublishRequest, opts ...grpc.CallOption) (*PubSub_PublishResponse, error)
+	// 订阅
+	Subscribe(ctx context.Context, in *PubSub_SubscribeRequest, opts ...grpc.CallOption) (PubSubService_SubscribeClient, error)
 }
 
 type pubSubServiceClient struct {
@@ -38,21 +32,21 @@ func NewPubSubServiceClient(cc grpc.ClientConnInterface) PubSubServiceClient {
 	return &pubSubServiceClient{cc}
 }
 
-func (c *pubSubServiceClient) Send(ctx context.Context, in *PubSub_SendRequest, opts ...grpc.CallOption) (*PubSub_SendResponse, error) {
-	out := new(PubSub_SendResponse)
-	err := c.cc.Invoke(ctx, "/libra.v1.PubSubService/Send", in, out, opts...)
+func (c *pubSubServiceClient) Publish(ctx context.Context, in *PubSub_PublishRequest, opts ...grpc.CallOption) (*PubSub_PublishResponse, error) {
+	out := new(PubSub_PublishResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.PubSubService/Publish", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *pubSubServiceClient) Read(ctx context.Context, in *PubSub_ReadRequest, opts ...grpc.CallOption) (PubSubService_ReadClient, error) {
-	stream, err := c.cc.NewStream(ctx, &PubSubService_ServiceDesc.Streams[0], "/libra.v1.PubSubService/Read", opts...)
+func (c *pubSubServiceClient) Subscribe(ctx context.Context, in *PubSub_SubscribeRequest, opts ...grpc.CallOption) (PubSubService_SubscribeClient, error) {
+	stream, err := c.cc.NewStream(ctx, &PubSubService_ServiceDesc.Streams[0], "/libra.v1.PubSubService/Subscribe", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &pubSubServiceReadClient{stream}
+	x := &pubSubServiceSubscribeClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -62,48 +56,17 @@ func (c *pubSubServiceClient) Read(ctx context.Context, in *PubSub_ReadRequest, 
 	return x, nil
 }
 
-type PubSubService_ReadClient interface {
-	Recv() (*PubSub_ReadResponse, error)
+type PubSubService_SubscribeClient interface {
+	Recv() (*PubSub_SubscribeResponse, error)
 	grpc.ClientStream
 }
 
-type pubSubServiceReadClient struct {
+type pubSubServiceSubscribeClient struct {
 	grpc.ClientStream
 }
 
-func (x *pubSubServiceReadClient) Recv() (*PubSub_ReadResponse, error) {
-	m := new(PubSub_ReadResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *pubSubServiceClient) Consume(ctx context.Context, opts ...grpc.CallOption) (PubSubService_ConsumeClient, error) {
-	stream, err := c.cc.NewStream(ctx, &PubSubService_ServiceDesc.Streams[1], "/libra.v1.PubSubService/Consume", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &pubSubServiceConsumeClient{stream}
-	return x, nil
-}
-
-type PubSubService_ConsumeClient interface {
-	Send(*PubSub_ConsumeRequest) error
-	Recv() (*PubSub_ConsumeResponse, error)
-	grpc.ClientStream
-}
-
-type pubSubServiceConsumeClient struct {
-	grpc.ClientStream
-}
-
-func (x *pubSubServiceConsumeClient) Send(m *PubSub_ConsumeRequest) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *pubSubServiceConsumeClient) Recv() (*PubSub_ConsumeResponse, error) {
-	m := new(PubSub_ConsumeResponse)
+func (x *pubSubServiceSubscribeClient) Recv() (*PubSub_SubscribeResponse, error) {
+	m := new(PubSub_SubscribeResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -114,16 +77,10 @@ func (x *pubSubServiceConsumeClient) Recv() (*PubSub_ConsumeResponse, error) {
 // All implementations must embed UnimplementedPubSubServiceServer
 // for forward compatibility
 type PubSubServiceServer interface {
-	// 发送
-	// 不提供批量发送，因为无法保证原子性
-	Send(context.Context, *PubSub_SendRequest) (*PubSub_SendResponse, error)
-	// 读取
-	// 提供起始消息ID，监听并收取该ID及以后的消息
-	Read(*PubSub_ReadRequest, PubSubService_ReadServer) error
-	// 消费
-	// 提供消费组，监听并消费主题消息，消息处理后需要响应ACK
-	// 保证同一个消费组中，主题中的消息都能且只能被消费一次
-	Consume(PubSubService_ConsumeServer) error
+	// 发布
+	Publish(context.Context, *PubSub_PublishRequest) (*PubSub_PublishResponse, error)
+	// 订阅
+	Subscribe(*PubSub_SubscribeRequest, PubSubService_SubscribeServer) error
 	mustEmbedUnimplementedPubSubServiceServer()
 }
 
@@ -131,14 +88,11 @@ type PubSubServiceServer interface {
 type UnimplementedPubSubServiceServer struct {
 }
 
-func (UnimplementedPubSubServiceServer) Send(context.Context, *PubSub_SendRequest) (*PubSub_SendResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
+func (UnimplementedPubSubServiceServer) Publish(context.Context, *PubSub_PublishRequest) (*PubSub_PublishResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Publish not implemented")
 }
-func (UnimplementedPubSubServiceServer) Read(*PubSub_ReadRequest, PubSubService_ReadServer) error {
-	return status.Errorf(codes.Unimplemented, "method Read not implemented")
-}
-func (UnimplementedPubSubServiceServer) Consume(PubSubService_ConsumeServer) error {
-	return status.Errorf(codes.Unimplemented, "method Consume not implemented")
+func (UnimplementedPubSubServiceServer) Subscribe(*PubSub_SubscribeRequest, PubSubService_SubscribeServer) error {
+	return status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
 }
 func (UnimplementedPubSubServiceServer) mustEmbedUnimplementedPubSubServiceServer() {}
 
@@ -153,69 +107,43 @@ func RegisterPubSubServiceServer(s grpc.ServiceRegistrar, srv PubSubServiceServe
 	s.RegisterService(&PubSubService_ServiceDesc, srv)
 }
 
-func _PubSubService_Send_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PubSub_SendRequest)
+func _PubSubService_Publish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PubSub_PublishRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PubSubServiceServer).Send(ctx, in)
+		return srv.(PubSubServiceServer).Publish(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/libra.v1.PubSubService/Send",
+		FullMethod: "/libra.v1.PubSubService/Publish",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PubSubServiceServer).Send(ctx, req.(*PubSub_SendRequest))
+		return srv.(PubSubServiceServer).Publish(ctx, req.(*PubSub_PublishRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PubSubService_Read_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(PubSub_ReadRequest)
+func _PubSubService_Subscribe_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(PubSub_SubscribeRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(PubSubServiceServer).Read(m, &pubSubServiceReadServer{stream})
+	return srv.(PubSubServiceServer).Subscribe(m, &pubSubServiceSubscribeServer{stream})
 }
 
-type PubSubService_ReadServer interface {
-	Send(*PubSub_ReadResponse) error
+type PubSubService_SubscribeServer interface {
+	Send(*PubSub_SubscribeResponse) error
 	grpc.ServerStream
 }
 
-type pubSubServiceReadServer struct {
+type pubSubServiceSubscribeServer struct {
 	grpc.ServerStream
 }
 
-func (x *pubSubServiceReadServer) Send(m *PubSub_ReadResponse) error {
+func (x *pubSubServiceSubscribeServer) Send(m *PubSub_SubscribeResponse) error {
 	return x.ServerStream.SendMsg(m)
-}
-
-func _PubSubService_Consume_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(PubSubServiceServer).Consume(&pubSubServiceConsumeServer{stream})
-}
-
-type PubSubService_ConsumeServer interface {
-	Send(*PubSub_ConsumeResponse) error
-	Recv() (*PubSub_ConsumeRequest, error)
-	grpc.ServerStream
-}
-
-type pubSubServiceConsumeServer struct {
-	grpc.ServerStream
-}
-
-func (x *pubSubServiceConsumeServer) Send(m *PubSub_ConsumeResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *pubSubServiceConsumeServer) Recv() (*PubSub_ConsumeRequest, error) {
-	m := new(PubSub_ConsumeRequest)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
 }
 
 // PubSubService_ServiceDesc is the grpc.ServiceDesc for PubSubService service.
@@ -226,21 +154,15 @@ var PubSubService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*PubSubServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Send",
-			Handler:    _PubSubService_Send_Handler,
+			MethodName: "Publish",
+			Handler:    _PubSubService_Publish_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "Read",
-			Handler:       _PubSubService_Read_Handler,
+			StreamName:    "Subscribe",
+			Handler:       _PubSubService_Subscribe_Handler,
 			ServerStreams: true,
-		},
-		{
-			StreamName:    "Consume",
-			Handler:       _PubSubService_Consume_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
 		},
 	},
 	Metadata: "libra/v1/pub_sub.proto",
