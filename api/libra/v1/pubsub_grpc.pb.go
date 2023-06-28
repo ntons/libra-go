@@ -22,6 +22,8 @@ type PubSubServiceClient interface {
 	Publish(ctx context.Context, in *PubSub_PublishRequest, opts ...grpc.CallOption) (*PubSub_PublishResponse, error)
 	// 订阅
 	Subscribe(ctx context.Context, in *PubSub_SubscribeRequest, opts ...grpc.CallOption) (PubSubService_SubscribeClient, error)
+	// 消费，如果当时不可消费则阻塞等待直到超时或有可用信息
+	Consume(ctx context.Context, in *PubSub_ConsumeRequest, opts ...grpc.CallOption) (*PubSub_ConsumeResponse, error)
 }
 
 type pubSubServiceClient struct {
@@ -73,6 +75,15 @@ func (x *pubSubServiceSubscribeClient) Recv() (*PubSub_SubscribeResponse, error)
 	return m, nil
 }
 
+func (c *pubSubServiceClient) Consume(ctx context.Context, in *PubSub_ConsumeRequest, opts ...grpc.CallOption) (*PubSub_ConsumeResponse, error) {
+	out := new(PubSub_ConsumeResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.PubSubService/Consume", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PubSubServiceServer is the server API for PubSubService service.
 // All implementations must embed UnimplementedPubSubServiceServer
 // for forward compatibility
@@ -81,6 +92,8 @@ type PubSubServiceServer interface {
 	Publish(context.Context, *PubSub_PublishRequest) (*PubSub_PublishResponse, error)
 	// 订阅
 	Subscribe(*PubSub_SubscribeRequest, PubSubService_SubscribeServer) error
+	// 消费，如果当时不可消费则阻塞等待直到超时或有可用信息
+	Consume(context.Context, *PubSub_ConsumeRequest) (*PubSub_ConsumeResponse, error)
 	mustEmbedUnimplementedPubSubServiceServer()
 }
 
@@ -93,6 +106,9 @@ func (UnimplementedPubSubServiceServer) Publish(context.Context, *PubSub_Publish
 }
 func (UnimplementedPubSubServiceServer) Subscribe(*PubSub_SubscribeRequest, PubSubService_SubscribeServer) error {
 	return status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
+}
+func (UnimplementedPubSubServiceServer) Consume(context.Context, *PubSub_ConsumeRequest) (*PubSub_ConsumeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Consume not implemented")
 }
 func (UnimplementedPubSubServiceServer) mustEmbedUnimplementedPubSubServiceServer() {}
 
@@ -146,6 +162,24 @@ func (x *pubSubServiceSubscribeServer) Send(m *PubSub_SubscribeResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _PubSubService_Consume_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PubSub_ConsumeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PubSubServiceServer).Consume(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.PubSubService/Consume",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PubSubServiceServer).Consume(ctx, req.(*PubSub_ConsumeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PubSubService_ServiceDesc is the grpc.ServiceDesc for PubSubService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -156,6 +190,10 @@ var PubSubService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Publish",
 			Handler:    _PubSubService_Publish_Handler,
+		},
+		{
+			MethodName: "Consume",
+			Handler:    _PubSubService_Consume_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
