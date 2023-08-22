@@ -24,6 +24,8 @@ type RoleClient interface {
 	SignIn(ctx context.Context, in *RoleSignInRequest, opts ...grpc.CallOption) (*RoleSignInResponse, error)
 	SetMetadata(ctx context.Context, in *RoleSetMetadataRequest, opts ...grpc.CallOption) (*RoleSetMetadataResponse, error)
 	GetMetadata(ctx context.Context, in *RoleGetMetadataRequest, opts ...grpc.CallOption) (*RoleGetMetadataResponse, error)
+	// 修改角色index
+	AlterIndex(ctx context.Context, in *RoleAlterIndexRequest, opts ...grpc.CallOption) (*RoleAlterIndexResponse, error)
 }
 
 type roleClient struct {
@@ -88,6 +90,15 @@ func (c *roleClient) GetMetadata(ctx context.Context, in *RoleGetMetadataRequest
 	return out, nil
 }
 
+func (c *roleClient) AlterIndex(ctx context.Context, in *RoleAlterIndexRequest, opts ...grpc.CallOption) (*RoleAlterIndexResponse, error) {
+	out := new(RoleAlterIndexResponse)
+	err := c.cc.Invoke(ctx, "/libra.v1.Role/AlterIndex", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RoleServer is the server API for Role service.
 // All implementations must embed UnimplementedRoleServer
 // for forward compatibility
@@ -98,6 +109,8 @@ type RoleServer interface {
 	SignIn(context.Context, *RoleSignInRequest) (*RoleSignInResponse, error)
 	SetMetadata(context.Context, *RoleSetMetadataRequest) (*RoleSetMetadataResponse, error)
 	GetMetadata(context.Context, *RoleGetMetadataRequest) (*RoleGetMetadataResponse, error)
+	// 修改角色index
+	AlterIndex(context.Context, *RoleAlterIndexRequest) (*RoleAlterIndexResponse, error)
 	mustEmbedUnimplementedRoleServer()
 }
 
@@ -122,6 +135,9 @@ func (UnimplementedRoleServer) SetMetadata(context.Context, *RoleSetMetadataRequ
 }
 func (UnimplementedRoleServer) GetMetadata(context.Context, *RoleGetMetadataRequest) (*RoleGetMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMetadata not implemented")
+}
+func (UnimplementedRoleServer) AlterIndex(context.Context, *RoleAlterIndexRequest) (*RoleAlterIndexResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AlterIndex not implemented")
 }
 func (UnimplementedRoleServer) mustEmbedUnimplementedRoleServer() {}
 
@@ -244,6 +260,24 @@ func _Role_GetMetadata_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Role_AlterIndex_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RoleAlterIndexRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RoleServer).AlterIndex(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libra.v1.Role/AlterIndex",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RoleServer).AlterIndex(ctx, req.(*RoleAlterIndexRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Role_ServiceDesc is the grpc.ServiceDesc for Role service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -274,6 +308,10 @@ var Role_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMetadata",
 			Handler:    _Role_GetMetadata_Handler,
+		},
+		{
+			MethodName: "AlterIndex",
+			Handler:    _Role_AlterIndex_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
